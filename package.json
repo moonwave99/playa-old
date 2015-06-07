@@ -1,0 +1,67 @@
+{
+  "name": "playa",
+  "productName": "Playa",
+  "version": "0.0.1",
+  "description": "The final audio player.",
+  "main": "./src/browser/main.js",
+  "author": "moonwave99 <diego.caponera@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atom/electron-starter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/atom/electron-starter/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/atom/electron-starter/raw/master/LICENSE.md"
+    }
+  ],
+  "dependencies": {
+    "async": "0.2.6",
+    "babel-core": "^5.1.11",
+    "batch": "^0.5.2",
+    "bluebird": "^2.9.27",
+    "bootstrap-styl": "^4.0.4",
+    "coffee-script": "1.7.0",
+    "coffeestack": "0.7.0",
+    "emissary": "^1.3.1",
+    "fs-plus": "^2.3.1",
+    "fstream": "0.1.24",
+    "glob": "^5.0.10",
+    "groove": "^2.4.0",
+    "guid": "0.0.10",
+    "jasmine": "2.2.0",
+    "keymirror": "^0.1.1",
+    "less-cache": "0.17.0",
+    "lodash": "^3.9.3",
+    "mixto": "^1",
+    "mkdirp": "0.3.5",
+    "moment": "^2.10.3",
+    "moment-duration-format": "^1.3.0",
+    "nib": "^1.1.0",
+    "nslog": "^2.0.0",
+    "object-assign": "^3.0.0",
+    "property-accessors": "^1",
+    "q": "^1.0.1",
+    "react": "^0.13.3",
+    "runas": "^2.0.0",
+    "season": "^1.0.2",
+    "semver": "2.2.1",
+    "serializable": "^1",
+    "temp": "0.7.0",
+    "underscore-plus": "^1.6.1",
+    "vm-compatibility-layer": "0.1.0",
+    "yargs": "^1.3.3"
+  },
+  "private": true,
+  "scripts": {
+    "preinstall": "node -e 'process.exit(0)'",
+    "test": "node script/test",
+    "bootstrap": "node script/bootstrap",
+    "build": "node script/build",
+    "run": "node script/run",
+    "clean": "node script/clean"
+  }
+}

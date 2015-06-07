@@ -1,0 +1,22 @@
+html,body
+  font-size $baseFontSize
+  font-family 'Lato', sans-serif
+  @media(min-width: 1700px)
+    font-size $baseFontSizeWide
+  
+body
+  line-height 1.4rem
+  text-rendering optimizeLegibility
+  font-smoothing antialiased
+  
+  h1, h2
+    font-weight 600
+    margin 2rem 0
+    
+  h1
+    font-size scaleSize($baseFontSize, $h1FontSize)
+    line-height scaleSize($baseFontSize, 2 * $h1FontSize)
+    
+  h2
+    font-size scaleSize($baseFontSize, $h2FontSize)
+    line-height scaleSize($baseFontSize, 2 * $h2FontSize)

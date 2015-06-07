@@ -1,0 +1,45 @@
+backgroundHover(
+  defaultColor = rgba(0,0,0,.05),
+  activeColor = rgba(0,0,0,.1),
+  focusColor = activeColor,
+  transitionTime = .2s,
+  transitionEasing = linear)
+  background-color defaultColor
+  transition background-color transitionTime transitionEasing
+  &:hover, &.active
+    background-color activeColor
+  &:focus
+    background-color focusColor
+    
+colorHover(
+  defaultColor = rgba(0,0,0,.05),
+  activeColor = rgba(0,0,0,.1),
+  hoverColor = activeColor,
+  transitionTime = .2s,
+  transitionEasing = linear)
+  color defaultColor
+  transition color transitionTime transitionEasing
+  &:hover
+    color hoverColor
+  &.active
+    color activeColor
+
+ellipsed()
+  white-space nowrap           
+  overflow hidden
+  text-overflow ellipsis
+
+searchBox(width = 15rem, height = 2rem)  
+  border none
+  width 15rem
+  padding 0 unit(scaleSize($baseFontSize, height) / 2, 'rem')
+  line-height scaleSize($baseFontSize, height)
+  border-radius unit(scaleSize($baseFontSize, height) / 2, 'rem')
+  &:focus
+    outline none
+
+serif()
+  font-family 'Merriweather', Georgia, serif
+  
+monospaced()
+  font-family Menlo, Monaco, Consolas, 'Courier New', monospace
