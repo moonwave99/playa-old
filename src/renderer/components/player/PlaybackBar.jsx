@@ -6,6 +6,7 @@ var moment = require('moment')
 var cx = require('classnames')
 require("moment-duration-format")
 
+var MetaDoctor = require('../../util/MetaDoctor')
 var PlayerActions = require('../../actions/PlayerActions')
 
 module.exports = React.createClass({
@@ -28,7 +29,7 @@ module.exports = React.createClass({
     var currentTime = this.props.playbackInfo.position
     var remainingTime = 0
     if(current){
-      metadata = current.file.metadata()
+      metadata = MetaDoctor.normalise(current.file.metadata())
       totalTime = Math.round(current.file.duration())
       remainingTime = Math.round(totalTime - currentTime)
     }else{
@@ -50,14 +51,17 @@ module.exports = React.createClass({
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ metadata.title }</span>
             <span className="playback-track-info-artist">{ metadata.artist } - { metadata.album }</span>
-            <progress value={currentTime} max={totalTime} onClick={this.onProgressbarClick}></progress>
           </div>
           <span className="playback-time-indicator time-remaining">-{moment.duration(remainingTime, "seconds").format("mm:ss", { trim: false })}</span>
+          <div className="progress-area" onClick={this.onProgressAreaClick}>
+            <progress value={currentTime} max={totalTime}></progress>
+          </div>
         </div>
+        <div className="playback-filter"></div>
       </div>      
     )
   },
-  onProgressbarClick: function(event){
+  onProgressAreaClick: function(event){
     var bounds = event.target.getBoundingClientRect()
     PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
   }

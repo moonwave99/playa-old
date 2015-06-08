@@ -11,7 +11,8 @@
   box-shadow 0 0 2rem rgba(0,0,0,.75)
   user-select none
   .playback-buttons
-    flex 0 0 size(3*2*$playbackBarButtonSize)
+    flex 0 0 size(3*3*$playbackBarButtonSize)
+    text-align center
     button
       margin 0
       padding 0
@@ -29,13 +30,30 @@
     display flex
     opacity 1
     transition opacity .3s ease-in-out
+    position relative
     &.hide-info
       opacity 0
+    .progress-area
+      position absolute    
+      bottom 0
+      left 0
+      right 0
+      height size(3 * $playbackBarProgressIndicatorHeight)
+      cursor pointer
+      progress
+        background-color $playbackBarProgressIndicatorBgColor
+        vertical-align middle
+        position absolute    
+        bottom 0
+        width 100%
+        height size($playbackBarProgressIndicatorHeight)
+        &::-webkit-progress-bar-value
+        &::-webkit-progress-value
+          background-color $playbackBarProgressIndicatorColor      
     .playback-track-info
       font-size 1.1rem
       flex 1 100%
       text-align center
-      position relative
       .playback-track-info-artist,
       .playback-track-info-title
         display block
@@ -46,20 +64,14 @@
           color $playbackBarTitleColor
         &.playback-track-info-artist
           font-size size($playbackBarArtistSize)
-      progress
-        background-color $playbackBarProgressIndicatorBgColor
-        vertical-align middle
-        width 100%
-        position absolute
-        bottom 0
-        left 0
-        height size($playbackBarProgressIndicatorHeight)
-        cursor pointer
-        &::-webkit-progress-bar-value
-        &::-webkit-progress-value
-          background-color $playbackBarProgressIndicatorColor
     .playback-time-indicator
       vertical-align middle
       text-align center
       font-size .9rem
       flex 0 0 4rem
+      &.time-progress
+        text-align left
+      &.time-remaining
+        text-align right
+  .playback-filter
+    flex 0 0 size(3*3*$playbackBarButtonSize)
