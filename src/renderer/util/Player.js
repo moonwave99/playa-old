@@ -13,6 +13,19 @@ module.exports = class Player extends EventEmitter{
     this.player = groove.createPlayer()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
+    this.timerId = null
+  }
+  startTimer(){
+    var timer = function(){
+      return setTimeout(() =>{
+        this.emit('playerTick')
+        this.timerId = timer()
+      }, 1000)
+    }.bind(this)
+    timerId = timer()
+  }
+  clearTimer(){
+    this.timerId && clearInterval(this.timerId)
   }
   setPlaylist(playlist){
     this.player.attach(playlist, (err)=>{
@@ -51,9 +64,11 @@ module.exports = class Player extends EventEmitter{
     }else{
       this.playlist.play()
     }
+    this.startTimer()
   }
   pause() {
     this.playlist && this.playlist.pause()
+    this.clearTimer()
   }
   next() {
     var items = this.playlist.items()
@@ -62,7 +77,7 @@ module.exports = class Player extends EventEmitter{
       return item.id == current.item.id
     })
     if(currentIndex < items.length -1){
-      this.playlist.seek(items[currentIndex+1])
+      this.playlist.seek(items[currentIndex+1], -1)
       return true
     }else{
       return false
@@ -75,7 +90,7 @@ module.exports = class Player extends EventEmitter{
       return item.id == current.item.id
     })
     if(currentIndex > 0){
-      this.playlist.seek(items[currentIndex-1])
+      this.playlist.seek(items[currentIndex-1], -1)
       return true
     }else{
       return false
@@ -87,7 +102,7 @@ module.exports = class Player extends EventEmitter{
     }    
     var item = _.findWhere(this.playlist.items(), { id: id })
     if(item){
-      this.playlist.seek(item)
+      this.playlist.seek(item, -1)
     }
   }
   seek(to) {

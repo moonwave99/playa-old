@@ -3,35 +3,15 @@
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var moment = require('moment')
+var cx = require('classnames')
 require("moment-duration-format")
 
 var PlayerActions = require('../../actions/PlayerActions')
-
-var timerId = null;
 
 module.exports = React.createClass({
   propTypes: {
     playbackInfo: ReactPropTypes.object,
     playlist: ReactPropTypes.object
-  },  
-  getInitialState: function() {
-    return {
-      playing: false,
-      currentItem: null,
-      currentPosition: 0
-    };
-  },
-  startTimer: function(){
-    var timer = function(){
-      return setTimeout(() =>{
-        this.setState({ currentPosition: this.props.playbackInfo.position++ })
-        timerId = timer()
-      }, 1000)
-    }.bind(this)
-    timerId = timer()
-  },
-  stopTimer: function(){
-    timerId && clearTimeout(timerId)
   },
   prev: function(){
     PlayerActions.prev()
@@ -40,19 +20,9 @@ module.exports = React.createClass({
     PlayerActions.next()
   },
   play: function(event){
-    if(this.state.playing){
-      PlayerActions.pause()  
-      this.stopTimer()
-    }else{
-      PlayerActions.play(this.props.playlist)
-      this.startTimer()
-    }
-    this.setState({
-      playing: !this.state.playing
-    })
+    this.props.playbackInfo.playing ? PlayerActions.pause() : PlayerActions.play(this.props.playlist)
   },
   render: function() {
-    console.log(this.props.playbackInfo)
     var current = this.props.playbackInfo.currentItem
     var totalTime = 0
     var currentTime = this.props.playbackInfo.position
@@ -64,6 +34,10 @@ module.exports = React.createClass({
     }else{
       metadata = {}
     }
+    var wrapperClasses = cx({
+      'playback-track-info-wrapper' : true,
+      'hide-info' : !current
+    })
     return (
       <div className="playback-bar">
         <div className="playback-buttons">
@@ -71,7 +45,7 @@ module.exports = React.createClass({
           <button onClick={this.play}>{this.props.playbackInfo.playing ? <i className="fa fa-fw fa-pause"></i> : <i className="fa fa-fw fa-play"></i>}</button>
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
-        <div className="playback-track-info-wrapper">
+        <div className={wrapperClasses}>
           <span className="playback-time-indicator time-progress">{moment.duration(currentTime, "seconds").format("mm:ss", { trim: false })}</span>
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ metadata.title }</span>
