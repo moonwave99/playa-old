@@ -29,6 +29,12 @@ var PlayerActions = {
     AppDispatcher.dispatch({
       actionType: PlayerConstants.PREV
     })
+  },
+  seek: function(to){
+    AppDispatcher.dispatch({
+      actionType: PlayerConstants.SEEK,
+      to: to
+    })    
   }
 }
 

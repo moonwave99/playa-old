@@ -7,9 +7,12 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var PlaylistConstants = require('../constants/PlaylistConstants')
 
-var CHANGE_EVENT = 'change'
+var Playa = require('../../playa')
 
+var _player = Playa.player
 var _playlist = groove.createPlaylist()
+
+var CHANGE_EVENT = 'change'
 
 function add(files){
   files.forEach((file)=> {
@@ -46,6 +49,12 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
   
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
+      case PlaylistConstants.PLAY_FILE:
+        if (action.id) {
+          _player.goto(action.id, _playlist)
+          _player.play(_playlist)
+        }
+        break
       case PlaylistConstants.ADD_FILES:
         if (action.files) {
           add(action.files)

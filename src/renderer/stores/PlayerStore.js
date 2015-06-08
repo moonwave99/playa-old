@@ -7,9 +7,9 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var PlayerConstants = require('../constants/PlayerConstants')
 
-var Player = require('../util/Player')
+var Playa = require('../../playa')
 
-var _player = new Player()
+var _player = Playa.player
 
 var CHANGE_EVENT = 'change'
 
@@ -60,6 +60,10 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
           PlayerStore.emitChange()
         }        
         break        
+      case PlayerConstants.SEEK:        
+        _player.seek(action.to)
+        PlayerStore.emitChange()
+        break                
     }
 
     return true // No errors. Needed by promise in Dispatcher.
@@ -67,8 +71,11 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
     
 })
 
+_player.on('nowplaying', function(){
+  PlayerStore.emitChange()
+})
+
 ipc.on('playback:toggle', function(){
-  console.log(arguments, 'space')
   AppDispatcher.dispatch({
     actionType: _player.playing() ? PlayerConstants.PAUSE : PlayerConstants.PLAY
   })

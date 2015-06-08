@@ -20,7 +20,7 @@ module.exports = class Loader {
   }
   openFolder(folder) {
     var batch = new Batch()
-    glob("*.{mp3,flac}", { cwd: folder }, (er, files)=> {
+    glob("**/*.{mp3,flac}", { cwd: folder }, (er, files)=> {
       files.forEach((f)=> {
         batch.push(openFileFn(path.join(folder, f)))
       })

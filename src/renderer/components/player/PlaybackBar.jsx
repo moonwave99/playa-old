@@ -52,25 +52,39 @@ module.exports = React.createClass({
     })
   },
   render: function() {
+    console.log(this.props.playbackInfo)
     var current = this.props.playbackInfo.currentItem
-    var total = 0
-    var timeProgress = this.props.playbackInfo.position
-    var remaining = 0
+    var totalTime = 0
+    var currentTime = this.props.playbackInfo.position
+    var remainingTime = 0
     if(current){
       metadata = current.file.metadata()
-      total = current.file.duration()
-      remaining = Math.floor(total - timeProgress)
+      totalTime = Math.round(current.file.duration())
+      remainingTime = Math.round(totalTime - currentTime)
     }else{
       metadata = {}
     }
-    return <div>
-      <button onClick={this.prev}>Prev</button>
-      <button onClick={this.play}>{this.state.playing ? 'Pause' : 'Play' }</button>
-      <button onClick={this.next}>Next</button>
-      { metadata.artist } - { metadata.title }
-      <span className="time-progress">{moment.duration(timeProgress, "seconds").format("mm:ss", { trim: false })}</span>
-      <progress value={this.state.currentPosition} max={total}></progress>
-      <span className="time-remaining">-{moment.duration(remaining, "seconds").format("mm:ss", { trim: false })}</span>
-    </div>
+    return (
+      <div className="playback-bar">
+        <div className="playback-buttons">
+          <button onClick={this.prev}><i className="fa fa-fw fa-backward"></i></button>
+          <button onClick={this.play}>{this.props.playbackInfo.playing ? <i className="fa fa-fw fa-pause"></i> : <i className="fa fa-fw fa-play"></i>}</button>
+          <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
+        </div>
+        <div className="playback-track-info-wrapper">
+          <span className="playback-time-indicator time-progress">{moment.duration(currentTime, "seconds").format("mm:ss", { trim: false })}</span>
+          <div className="playback-track-info">
+            <span className="playback-track-info-title">{ metadata.title }</span>
+            <span className="playback-track-info-artist">{ metadata.artist } - { metadata.album }</span>
+            <progress value={currentTime} max={totalTime} onClick={this.onProgressbarClick}></progress>
+          </div>
+          <span className="playback-time-indicator time-remaining">-{moment.duration(remainingTime, "seconds").format("mm:ss", { trim: false })}</span>
+        </div>
+      </div>      
+    )
+  },
+  onProgressbarClick: function(event){
+    var bounds = event.target.getBoundingClientRect()
+    PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
   }
 })

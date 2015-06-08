@@ -1,9 +1,9 @@
 {
-  "name": "electron-starter",
-  "version": "0.1.0",
-  "homepage": "https://github.com/atom/electron-starter",
+  "name": "playa",
+  "version": "0.0.1",
+  "homepage": "https://github.com/moonwave99/playa",
   "authors": [
-    "Paul Betts <paul@paulbetts.org>"
+    "moonwave99 <diego.caponera@gmail.com>"
   ],
   "license": "MIT",
   "private": true,
@@ -16,5 +16,14 @@
     "tests"
   ],
   "dependencies": {
-  }
+    "font-awesome": "~4.3.0"
+  },
+  "overrides": {
+    "font-awesome": {
+      "main": [
+        "fonts",
+        "css"
+      ]
+    }
+  }  
 }

@@ -11,10 +11,12 @@ var Playlist = React.createClass({
   },
   render: function() {
     var items = _.map(this.props.items, (item, index)=>{
-      return <PlaylistItem key={item.id} metadata={item.file.metadata()} />
+      return <PlaylistItem key={item.id} metadata={item.file.metadata()} itemKey={item.id}/>
     })
     return (
-      <ul className="list-unstyled">{items}</ul>
+      <div className="playlist">
+        <table className="table"><tbody>{items}</tbody></table>
+      </div>
     )
   }
 })

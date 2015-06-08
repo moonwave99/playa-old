@@ -1,0 +1,60 @@
+.playback-bar
+  display flex
+  flex-direction row
+  position fixed
+  top 0
+  left 0
+  width 100vw
+  height size($playbackBarHeight)
+  background-color $playbackBarBgColor
+  line-height size($playbackBarHeight)
+  box-shadow 0 0 2rem rgba(0,0,0,.75)
+  user-select none
+  .playback-buttons
+    flex 0 0 size(3*2*$playbackBarButtonSize)
+    button
+      margin 0
+      padding 0
+      color $playbackBarButtonColor
+      background-color $playbackBarButtonBgColor
+      border 0
+      width size(2*$playbackBarButtonSize)
+      .fa
+        font-size size($playbackBarButtonSize)
+        vertical-align middle
+      &:focus
+        outline none
+  .playback-track-info-wrapper
+    flex 1 100%
+    display flex
+    .playback-track-info
+      font-size 1.1rem
+      flex 1 100%
+      text-align center
+      position relative
+      .playback-track-info-artist,
+      .playback-track-info-title
+        display block
+        line-height 1.2
+        &.playback-track-info-title
+          margin-top 1rem
+          font-size size($playbackBarTitleSize)
+        &.playback-track-info-artist
+          font-size size($playbackBarArtistSize)
+        
+      progress
+        background-color $playbackBarProgressIndicatorBgColor
+        vertical-align middle
+        width 100%
+        position absolute
+        bottom 0
+        left 0
+        height size($playbackBarProgressIndicatorHeight)
+        &::-webkit-progress-bar-value
+        &::-webkit-progress-value
+          background-color $playbackBarProgressIndicatorColor
+    .playback-time-indicator
+      vertical-align middle
+      text-align center
+      font-size .9rem
+      flex 0 0 4rem

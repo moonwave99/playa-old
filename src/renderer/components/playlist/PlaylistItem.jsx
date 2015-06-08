@@ -2,6 +2,7 @@
 
 var React = require('react')
 var ReactPropTypes = React.PropTypes
+var PlaylistActions = require('../../actions/PlaylistActions')
 
 var PlaylistItem = React.createClass({
   propTypes: {
@@ -9,8 +10,20 @@ var PlaylistItem = React.createClass({
   },
   render: function() {
     return (
-      <li>{ this.props.metadata.track } - { this.props.metadata.artist } - { this.props.metadata.title }</li>
+      <tr onDoubleClick={this.onDoubleClick} onClick={this.onClick}>
+        <td>{ this.props.metadata.track }</td>
+        <td>{ this.props.metadata.artist }</td>
+        <td>{ this.props.metadata.album }</td>
+        <td>{ this.props.metadata.title }</td>
+        <td>{ this.props.metadata.date }</td>
+      </tr>
     )
+  },
+  onDoubleClick: function(event){
+    PlaylistActions.playFile(this.props.itemKey)
+  },
+  onClick: function(event){
+    
   }
 })
 

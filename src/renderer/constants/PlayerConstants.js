@@ -5,5 +5,6 @@ module.exports = keyMirror({
   PAUSE: null,
   STOP: null,
   NEXT: null,
-  PREV: null
+  PREV: null,
+  SEEK: null
 });

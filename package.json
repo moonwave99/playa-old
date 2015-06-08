@@ -7,15 +7,15 @@
   "author": "moonwave99 <diego.caponera@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atom/electron-starter.git"
+    "url": "https://github.com/moonwave99/playa.git"
   },
   "bugs": {
-    "url": "https://github.com/atom/electron-starter/issues"
+    "url": "https://github.com/moonwave99/playa/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/atom/electron-starter/raw/master/LICENSE.md"
+      "url": "http://github.com/moonwave99/playa/raw/master/LICENSE.md"
     }
   ],
   "dependencies": {

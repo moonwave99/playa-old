@@ -9,6 +9,12 @@ var PlaylistActions = {
       actionType: PlaylistConstants.ADD_FILES,
       files: files
     })
+  },
+  playFile: function(id){
+    AppDispatcher.dispatch({
+      actionType: PlaylistConstants.PLAY_FILE,
+      id: id
+    })    
   }
 }
 
