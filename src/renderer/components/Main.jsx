@@ -1,4 +1,4 @@
-"use babel"
+"use babel";
 
 var React = require('react')
 var _ = require('lodash')
@@ -14,41 +14,40 @@ var loader = new Loader()
 
 function getPlaylistState(){
   return {
-    items: PlaylistStore.getAll(),
-    playlist: PlaylistStore.getPlaylist()
+    items: PlaylistStore.getAll() || []
   }  
 }
 
 function getPlayerState(){
   return {
-    playbackInfo: PlayerStore.getPlaybackInfo()
+    playbackInfo: PlayerStore.getPlaybackInfo() || {}
   }
 }
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return _.merge(getPlayerState(), getPlaylistState());
+    return _.merge(getPlayerState(), getPlaylistState())
   },
   componentDidMount: function() {
-    PlaylistStore.addChangeListener(this._onPlaylistChange);
-    PlayerStore.addChangeListener(this._onPlayerChange);
+    PlaylistStore.addChangeListener(this._onPlaylistChange)
+    PlayerStore.addChangeListener(this._onPlayerChange)
   },
   componentWillUnmount: function() {
-    PlaylistStore.removeChangeListener(this._onPlaylistChange);
+    PlaylistStore.removeChangeListener(this._onPlaylistChange)
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },  
   render: function() {
     return (
       <div className="playa-main">
-        <PlaybackBar playlist={this.state.playlist} playbackInfo={this.state.playbackInfo}/>
+        <PlaybackBar playbackInfo={this.state.playbackInfo}/> 
         <Playlist className="playa-playlist-main" items={this.state.items}/>
       </div>
-    );
+    )
   },
   _onPlaylistChange: function() {
-    this.setState(getPlaylistState());
+    this.setState(getPlaylistState())
   },
   _onPlayerChange: function(){
-    this.setState(getPlayerState());
+    this.setState(getPlayerState())
   }  
 })

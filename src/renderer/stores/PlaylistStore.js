@@ -1,7 +1,7 @@
 "use babel"
 
+var ipc = require('ipc')
 var assign = require('object-assign')
-var groove = require('groove')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
@@ -10,23 +10,26 @@ var PlaylistConstants = require('../constants/PlaylistConstants')
 var Playa = require('../../playa')
 
 var _player = Playa.player
-var _playlist = groove.createPlaylist()
 
 var CHANGE_EVENT = 'change'
 
 function add(files){
   files.forEach((file)=> {
-    file && _playlist.insert(file)
+    file && _player.insert(file)
   })  
+}
+
+function clearPlaylist() {
+  return _player.clearPlaylist()
 }
 
 var PlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function() {
-    return _playlist.items()
+    return _player.getAll()
   },
   
   getPlaylist: function(){
-    return _playlist;
+    return _player.playlist;
   },
   
   emitChange: function() {
@@ -51,8 +54,7 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
     switch(action.actionType) {
       case PlaylistConstants.PLAY_FILE:
         if (action.id) {
-          _player.goto(action.id, _playlist)
-          _player.play(_playlist)
+          _player.goto(action.id)
         }
         break
       case PlaylistConstants.ADD_FILES:
@@ -61,11 +63,24 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
           PlaylistStore.emitChange()
         }
         break
+      case PlaylistConstants.CLEAR_PLAYLIST:
+        clearPlaylist().then(function(){
+          PlaylistStore.emitChange()  
+        }).catch((err)=>{
+
+        })
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.
   })  
     
+})
+
+ipc.on('playlist:clear', function(){
+  AppDispatcher.dispatch({
+    actionType: PlaylistConstants.CLEAR_PLAYLIST
+  })  
 })
 
 module.exports = PlaylistStore

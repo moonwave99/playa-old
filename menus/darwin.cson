@@ -25,19 +25,16 @@
   {
     label: 'Controls'
     submenu: [
-      { label: 'Play/Pause', command: 'window:togglePlayback', accelerator: 'Space' }
+      { label: 'Play/Pause', command: 'window:togglePlayback', accelerator: 'MediaPlayPause' }
+      { label: 'Previous Track', command: 'window:prevTrack', accelerator: 'MediaPrevTrack' }
+      { label: 'Next Track', command: 'window:nextTrack', accelerator: 'MediaNextTrack' }
     ]
   }  
 
   {
-    label: 'Edit'
+    label: 'Playlist'
     submenu: [
-      { label: 'Undo', selector: 'undo:', accelerator: 'Command+Z' }
-      { label: 'Redo', selector: 'redo:', accelerator: 'Shift+Command+Z' }
-      { type: 'separator' }
-      { label: 'Cut', selector: 'cut:', accelerator: 'Command+X' }
-      { label: 'Copy', selector: 'copy:', accelerator: 'Command+C' }
-      { label: 'Paste', selector: 'paste:', accelerator: 'Command+V' }
+      { label: 'Clear', command: 'window:clearPlaylist', accelerator: 'Command+Shift+Backspace' }
       { label: 'Select All', selector: 'selectAll:', accelerator: 'Command+A' }
     ]
   }

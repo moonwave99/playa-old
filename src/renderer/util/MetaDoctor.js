@@ -1,11 +1,22 @@
 "use babel";
 
 var _ = require('lodash')
+var moment = require('moment')
 
 var MetaDoctor = {
   normalise(metadata){
     return _.reduce(metadata, (memo, value, key)=>{
-      memo[key.toLowerCase()] = value
+      switch(key = key.toLowerCase()){
+        case 'track':
+          memo[key] = parseInt(value.split('/')[0]) || 0
+          break
+        case 'date':
+          memo[key] = moment(new Date(value)).format('YYYY')
+          break
+        default:
+          memo[key] = value  
+          break
+      }
       return memo
     }, {})
   }  

@@ -4,10 +4,9 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var PlayerConstants = require('../constants/PlayerConstants')
 
 var PlayerActions = {
-  play: function(playlist){
+  play: function(){
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.PLAY,
-      playlist: playlist
+      actionType: PlayerConstants.PLAY
     })
   },
   pause: function(){

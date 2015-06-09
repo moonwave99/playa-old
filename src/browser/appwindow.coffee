@@ -25,8 +25,8 @@ class AppWindow
     windowOpts =
       width: 1024
       height: 768
-      transparent: true
-      frame: false
+      # transparent: true
+      # frame: false
       title: options.title ? "You Should Set options.title"
       'web-preferences':
         'subpixel-font-scaling': true
@@ -56,13 +56,22 @@ class AppWindow
 
     @window.loadUrl targetUrl
     @window.show()
+
+  openFolder: ->
+    folder = dialog.showOpenDialog({ properties: ['openDirectory'], title: 'Open folder' })
+    @window.webContents.send('open:folder', folder[0]) if folder
+    
+  prevTrack: ->  
+    @window.webContents.send('playback:prev')
+    
+  nextTrack: ->  
+    @window.webContents.send('playback:next')
     
   togglePlayback: ->
     @window.webContents.send('playback:toggle')
-      
-  openFolder: ->
-    folder = dialog.showOpenDialog({ properties: ['openDirectory'], title: 'Open folder' })
-    @window.webContents.send('open:folder', folder[0]) if folder    
+    
+  clearPlaylist: ->
+    @window.webContents.send('playlist:clear')
 
   reload: ->
     @window.webContents.reload()

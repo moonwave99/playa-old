@@ -74,8 +74,21 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
 _player.on('nowplaying', function(){
   PlayerStore.emitChange()
 })
+
 _player.on('playerTick', function(){
   PlayerStore.emitChange()
+})
+
+ipc.on('playback:prev', function(){
+  AppDispatcher.dispatch({
+    actionType: PlayerConstants.PREV
+  })
+})
+
+ipc.on('playback:next', function(){
+  AppDispatcher.dispatch({
+    actionType: PlayerConstants.NEXT
+  })
 })
 
 ipc.on('playback:toggle', function(){

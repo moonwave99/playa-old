@@ -2,5 +2,6 @@ var keyMirror = require('keymirror');
 
 module.exports = keyMirror({
   PLAY_FILE: null,
-  ADD_FILES: null
+  ADD_FILES: null,
+  CLEAR_PLAYLIST: null
 });

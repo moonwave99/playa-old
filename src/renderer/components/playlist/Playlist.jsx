@@ -17,7 +17,16 @@ var Playlist = React.createClass({
     })
     return (
       <div className="playlist">
-        <table className="table"><tbody>{items}</tbody></table>
+        <table className="table">
+          <colgroup>
+            <col className="playlist-column-xs" />
+            <col className="playlist-column-md" />
+            <col className="playlist-column-md" />
+            <col className="playlist-column-md" />
+            <col className="playlist-column-sm" />
+          </colgroup>
+          <tbody>{items}</tbody>
+        </table>
       </div>
     )
   }

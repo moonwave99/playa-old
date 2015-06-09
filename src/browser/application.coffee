@@ -89,9 +89,18 @@ class Application
     @menu.on 'window:open', ->
       appWindow.openFolder()
       
+    @menu.on 'window:prevTrack', ->
+      appWindow.prevTrack()      
+      
+    @menu.on 'window:nextTrack', ->
+      appWindow.nextTrack()      
+      
     @menu.on 'window:togglePlayback', ->
       appWindow.togglePlayback()      
-
+      
+    @menu.on 'window:clearPlaylist', ->  
+      appWindow.clearPlaylist()
+      
     @menu.on 'window:reload', ->
       BrowserWindow.getFocusedWindow().reload()
 

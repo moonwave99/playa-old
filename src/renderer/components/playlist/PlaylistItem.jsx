@@ -11,11 +11,11 @@ var PlaylistItem = React.createClass({
   render: function() {
     return (
       <tr onDoubleClick={this.onDoubleClick} onClick={this.onClick}>
-        <td>{ this.props.metadata.track }</td>
-        <td>{ this.props.metadata.artist }</td>
-        <td>{ this.props.metadata.album }</td>
-        <td>{ this.props.metadata.title }</td>
-        <td>{ this.props.metadata.date }</td>
+        <td className="text-center">{ this.props.metadata.track }</td>
+        <td className="text-nowrap">{ this.props.metadata.artist }</td>
+        <td className="text-nowrap">{ this.props.metadata.album }</td>
+        <td className="text-nowrap">{ this.props.metadata.title }</td>
+        <td className="text-center">{ this.props.metadata.date }</td>
       </tr>
     )
   },
