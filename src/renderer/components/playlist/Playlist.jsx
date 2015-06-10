@@ -13,7 +13,8 @@ var Playlist = React.createClass({
   render: function() {
     var items = _.map(this.props.items, (item, index)=>{
       var metadata = MetaDoctor.normalise(item.file.metadata())
-      return <PlaylistItem key={item.id} metadata={metadata} itemKey={item.id}/>
+      var duration = item.file.duration()
+      return <PlaylistItem key={item.id} metadata={metadata} duration={duration} itemKey={item.id}/>
     })
     return (
       <div className="playlist">
@@ -23,6 +24,7 @@ var Playlist = React.createClass({
             <col className="playlist-column-md" />
             <col className="playlist-column-md" />
             <col className="playlist-column-md" />
+            <col className="playlist-column-sm" />
             <col className="playlist-column-sm" />
           </colgroup>
           <tbody>{items}</tbody>
