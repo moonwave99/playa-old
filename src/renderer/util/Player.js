@@ -141,7 +141,9 @@ module.exports = class Player extends EventEmitter{
   }
   insert(file) {
     this.playlist.insert(file)
-    this.playlist.pause()
+    if(this.playing() && !this.attached){
+      this.playlist.pause()
+    }
   }
   clearPlaylist() {
     this.clearTimer()    
