@@ -1,6 +1,7 @@
 "use babel";
 
 var React = require('react')
+var Tabs = require('react-simpletabs')
 var _ = require('lodash')
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
@@ -40,7 +41,17 @@ module.exports = React.createClass({
     return (
       <div className="playa-main">
         <PlaybackBar playbackInfo={this.state.playbackInfo}/> 
-        <Playlist className="playa-playlist-main" items={this.state.items}/>
+        <Tabs>
+          <Tabs.Panel title='Nu'>
+            <Playlist className="playa-playlist-main" items={this.state.items}/>
+          </Tabs.Panel>
+          <Tabs.Panel title='Classic'>
+            <div>No playlist.</div>
+          </Tabs.Panel>
+          <Tabs.Panel title='Oldies'>
+            <div>No playlist.</div>
+          </Tabs.Panel>
+        </Tabs>
       </div>
     )
   },

@@ -47,6 +47,7 @@
     "property-accessors": "^1",
     "q": "^1.0.1",
     "react": "^0.13.3",
+    "react-simpletabs": "^0.6.1",
     "runas": "^2.0.0",
     "season": "^1.0.2",
     "semver": "2.2.1",

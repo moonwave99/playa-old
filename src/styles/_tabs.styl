@@ -1,0 +1,22 @@
+.tabs-navigation
+  position fixed
+  top $playbackBarHeight
+  left 0
+  right 0
+  line-height size($tabsBarHeight)
+  background-color $tabsBarBgColor
+  box-shadow 0 0 2rem rgba(0,0,0,.75)
+  .tabs-menu
+    list-style none
+    padding 0
+    margin 0
+    font-size size($tabsBarFontSize)
+    .tabs-menu-item
+      float left
+      a
+        display block
+        padding 0 1rem
+        color $tabsBarColor
+      &.is-active
+        a
+          background-color rgba(white, .2)
