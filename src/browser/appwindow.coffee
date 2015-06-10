@@ -25,8 +25,8 @@ class AppWindow
     windowOpts =
       width: 1024
       height: 768
-      # transparent: true
-      # frame: false
+      transparent: true
+      frame: false
       title: options.title ? "You Should Set options.title"
       'web-preferences':
         'subpixel-font-scaling': true
