@@ -4,7 +4,6 @@ var React = require('react')
 var ReactPropTypes = React.PropTypes
 var moment = require('moment')
 require("moment-duration-format")
-var PlaylistActions = require('../../actions/PlaylistActions')
 
 var PlaylistItem = React.createClass({
   propTypes: {
@@ -25,11 +24,11 @@ var PlaylistItem = React.createClass({
       </tr>
     )
   },
-  onDoubleClick: function(event){
-    PlaylistActions.playFile(this.props.itemKey)
+  onDoubleClick: function(){
+    this.props.onDoubleClick(this)
   },
-  onClick: function(event){
-    
+  onClick: function(){
+    this.props.onClick(this)
   }
 })
 

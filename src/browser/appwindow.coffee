@@ -70,6 +70,9 @@ class AppWindow
   togglePlayback: ->
     @window.webContents.send('playback:toggle')
     
+  createPlaylist: ->
+    @window.webContents.send('playlist:create')
+    
   clearPlaylist: ->
     @window.webContents.send('playlist:clear')
 

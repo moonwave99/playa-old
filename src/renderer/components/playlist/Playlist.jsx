@@ -3,18 +3,18 @@
 var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var MetaDoctor = require('../../util/MetaDoctor')
 var PlaylistItem = require('./PlaylistItem.jsx')
+
+var PlaylistActions = require('../../actions/PlaylistActions')
+var PlayerActions = require('../../actions/PlayerActions')
 
 var Playlist = React.createClass({
   propTypes: {
-    items: ReactPropTypes.array
+    playlist: ReactPropTypes.object
   },
   render: function() {
-    var items = _.map(this.props.items, (item, index)=>{
-      var metadata = MetaDoctor.normalise(item.file.metadata())
-      var duration = item.file.duration()
-      return <PlaylistItem key={item.id} metadata={metadata} duration={duration} itemKey={item.id}/>
+    var items = _.map(this.props.playlist.items(), (item, index)=>{
+      return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick}/>
     })
     return (
       <div className="playlist">
@@ -31,6 +31,13 @@ var Playlist = React.createClass({
         </table>
       </div>
     )
+  },
+  handleClick: function(item){
+    
+  },
+  handleDoubleClick: function(item){
+    PlaylistActions.playFile(item.props.itemKey, this.props.playlist)
+    PlayerActions.play()    
   }
 })
 

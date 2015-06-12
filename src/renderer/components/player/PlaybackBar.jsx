@@ -37,8 +37,8 @@ module.exports = React.createClass({
   },
   componentWillReceiveProps: function(nextProps){
     var info = nextProps.playbackInfo
-    var totalTime = Math.round(info.currentItem && info.currentItem.file.duration())
-    var currentTime = Math.round(info.position)
+    var totalTime = Math.round(info.currentItem && info.currentItem.file.duration()) || 0
+    var currentTime = Math.round(info.position) || 0
     this.setState({
       totalTime: totalTime,
       currentTime: currentTime,

@@ -16,7 +16,6 @@ module.exports = class Player extends EventEmitter{
     this.player.on('nowplaying', this.onNowplaying.bind(this))
     this.timerId = null        
     this.attached = false;
-    this.playlist = groove.createPlaylist()
   }
   getAll(){
     return this.playlist ? this.playlist.items() : []
@@ -38,7 +37,7 @@ module.exports = class Player extends EventEmitter{
       if(this.attached){
         resolve()
       }else if(!this.playlist){
-        reject()
+        reject(new Error('No playlist set!'))
       }else{
         this.player.attach(this.playlist, (err)=>{
           if(err){
@@ -56,9 +55,9 @@ module.exports = class Player extends EventEmitter{
       if(!this.attached){
         resolve()
       }else if(!this.playlist){
-        reject()
+        reject(new Error('No playlist to detach!'))
       }else{
-        this.player.detach(this.playlist, (err)=>{
+        this.player.detach((err)=>{
           if(err){
             reject(err)
           }else{
@@ -82,6 +81,9 @@ module.exports = class Player extends EventEmitter{
     return this.playlist && this.playlist.playing()
   }
   playbackInfo() {
+    if(!this.playlist){
+      return null;
+    }
     var info = this.playlist.position()
     return {
       currentItem: info.item,

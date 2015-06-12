@@ -98,6 +98,9 @@ class Application
     @menu.on 'window:togglePlayback', ->
       appWindow.togglePlayback()      
       
+    @menu.on 'window:createPlaylist', ->  
+      appWindow.createPlaylist()
+            
     @menu.on 'window:clearPlaylist', ->  
       appWindow.clearPlaylist()
       

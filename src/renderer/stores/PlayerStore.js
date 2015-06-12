@@ -40,7 +40,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
   dispatcherIndex: AppDispatcher.register(function(action) {    
     switch(action.actionType) {
       case PlayerConstants.PLAY:
-        _player.play(action.playlist)
+        _player.play()
         PlayerStore.emitChange()
         break
       case PlayerConstants.PAUSE:
