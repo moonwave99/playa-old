@@ -13,7 +13,7 @@ var Playlist = React.createClass({
     playlist: ReactPropTypes.object
   },
   render: function() {
-    var items = _.map(this.props.playlist.items(), (item, index)=>{
+    var items = _.map(this.props.playlist.items, (item, index)=>{
       return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick}/>
     })
     return (

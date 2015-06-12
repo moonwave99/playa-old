@@ -2,36 +2,37 @@
 
 var groove = require('groove')
 var Batch = require('batch')
+var Loader = require('./Loader')
 var MetaDoctor = require('./MetaDoctor')
+var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class Playlist{
   constructor(options){
-    this.groovePlaylist = groove.createPlaylist()
+    this.items = []
     this.title = options.title
+    this.id = options.id
   }
-  add(files){
-    files.forEach((file)=> {
-      file && this.groovePlaylist.insert(file)
-    })
-  }
-  items(){
-    return this.groovePlaylist.items().map((item)=>{
-      return {
-        id: item.id,
-        metadata: MetaDoctor.normalise(item.file.metadata()),
-        duration: item.file.duration(),
-        file: item.file
-      }
-    })
-  }
-  clear(){
-    return new Promise((resolve, reject)=>{
-      var batch = new Batch()      
-      var files = this.groovePlaylist.items().map(function(item) { return item.file })
-      this.groovePlaylist.clear()      
+  add(folder){
+    var loader = new Loader({ folder: folder })
+    return loader.load().then((files)=>{
       files.forEach((file)=> {
+        this.items.push(new PlaylistItem(
+          {
+            id: file.filename,
+            metadata: MetaDoctor.normalise(file.metadata()),
+            duration: file.duration(),
+            grooveFile: file
+          }        
+        ))
+      })      
+    })
+  }
+  closeFiles(){
+    var batch = new Batch()
+    return new Promise((resolve, reject)=>{
+      this.items.forEach((item)=> {
         batch.push((cb)=> {
-          file.close(cb)
+          item.grooveFile.close(cb)
         })
       })     
       batch.end((err)=> {
@@ -41,6 +42,11 @@ module.exports = class Playlist{
           resolve()
         }
       })
+    })        
+  }
+  clear(){
+    return this.closeFiles().then(()=>{
+      this.items = []
     })
   }
 }

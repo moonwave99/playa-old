@@ -9,12 +9,17 @@ var PlaylistActions = {
       actionType: PlaylistConstants.CREATE
     })    
   },
-  addFiles: function(files){
+  clearPlaylist: function(){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.ADD_FILES,
-      files: files
+      actionType: PlaylistConstants.CLEAR_PLAYLIST,
     })
   },
+  addFolder: function(folder){
+    AppDispatcher.dispatch({
+      actionType: PlaylistConstants.ADD_FOLDER,
+      folder: folder
+    })
+  },  
   playFile: function(id, playlist){
     AppDispatcher.dispatch({
       actionType: PlaylistConstants.PLAY_FILE,

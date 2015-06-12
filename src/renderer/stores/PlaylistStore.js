@@ -16,6 +16,7 @@ var CHANGE_EVENT = 'change'
 
 var _playlists = []
 var _selectedIndex = -1
+var _activeIndex = -1
 
 var PlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function() {
@@ -28,6 +29,10 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
   
   getSelectedIndex: function(){
     return _selectedIndex;
+  },
+  
+  getActiveIndex: function(){
+    return _activeIndex;
   },
   
   emitChange: function() {
@@ -50,12 +55,6 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
   
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
-      case PlaylistConstants.ACTIVATE_PLAYLIST:
-        if(_playlists[action.selected]){
-          _player.playlist = _playlists[_selectedIndex].groovePlaylist
-          PlaylistStore.emitChange()
-        }        
-        break
       case PlaylistConstants.SELECT_PLAYLIST:
         if(_playlists[action.selected]){
           _selectedIndex = action.selected
@@ -63,27 +62,24 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
         }
         break
       case PlaylistConstants.CREATE:
-        _playlists.push( new Playlist({ title: uid() }) )
+        _playlists.push( new Playlist({ title: uid(), id: uid() }) )
         PlaylistStore.emitChange()
         break
-      case PlaylistConstants.ADD_FILES:
-        if (action.files && _playlists[_selectedIndex]) {
-          _playlists[_selectedIndex].add(action.files)
-          if(_playlists[_selectedIndex] !== _player.playlist){
-            // _playlists[_selectedIndex].groovePlaylist.pause()
-          }
-          PlaylistStore.emitChange()
-        }
+      case PlaylistConstants.ADD_FOLDER:
+        if (action.folder && _playlists[_selectedIndex]) {
+          _playlists[_selectedIndex].add(action.folder).then(()=>{
+            PlaylistStore.emitChange()  
+          })
+        }        
         break
       case PlaylistConstants.PLAY_FILE:
-        if(action.playlist.groovePlaylist !== _player.playlist){
-          _player.detach().then(()=>{
-            _player.playlist = action.playlist.groovePlaylist
-            _player.goto(action.id)
-          }).catch((error)=>{
-            console.error(error.stack)
-          })
+        if(action.playlist.id !== _activeIndex){
+          _player.clearPlaylist()
+          _player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
+          _player.goto(action.id)
+          _activeIndex = action.playlist.id          
         }else if (action.id) {
+          _activeIndex = action.playlist.id
           _player.goto(action.id)
         }
         break

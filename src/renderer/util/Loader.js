@@ -1,4 +1,4 @@
-"use babel";
+"use babel"
 
 var PlaylistActions = require('../actions/PlaylistActions')
 var ipc = require('ipc')
@@ -16,17 +16,23 @@ function openFileFn(filename) {
 
 module.exports = class Loader {
   constructor(options) {
-    ipc.on('open:folder', this.openFolder.bind(this))
+    this.folder = options.folder
   }
-  openFolder(folder) {
-    var batch = new Batch()
-    glob("**/*.{mp3,flac}", { cwd: folder }, (er, files)=> {
-      files.forEach((f)=> {
-        batch.push(openFileFn(path.join(folder, f)))
-      })
-      batch.end((err, files)=> {          
-        PlaylistActions.addFiles(files)
-      }) 
+  load() {
+    return new Promise((resolve, reject)=>{
+      var batch = new Batch()
+      glob("**/*.{mp3,flac}", { cwd: this.folder }, (er, files)=> {
+        files.forEach((f)=> {
+          batch.push(openFileFn(path.join(this.folder, f)))
+        })
+        batch.end((err, files)=> {
+          if(err){
+            reject(err)
+          }else{
+            resolve(files)
+          }
+        }) 
+      })      
     })
   }  
 }

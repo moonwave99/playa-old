@@ -16,9 +16,6 @@ var PlayerStore = require('../stores/PlayerStore')
 var PlaylistConstants = require('../constants/PlaylistConstants')
 var PlaylistActions = require('../actions/PlaylistActions')
 
-var Loader = require('../util/Loader')
-var loader = new Loader()
-
 ipc.on('playlist:create', function(){
   PlaylistActions.create()
 })
@@ -26,7 +23,12 @@ ipc.on('playlist:create', function(){
 ipc.on('playlist:clear', function(){
   AppDispatcher.dispatch({
     actionType: PlaylistConstants.CLEAR_PLAYLIST
-  })  
+  })
+  PlaylistActions.clearPlaylist()
+})
+
+ipc.on('open:folder', function(folder){
+  PlaylistActions.addFolder(folder)
 })
 
 function getPlaylistState(){
@@ -63,7 +65,7 @@ module.exports = React.createClass({
   render: function() {   
     var playlists = this.state.playlists.map((playlist)=>{
       return (
-        <Tabs.Panel title={playlist.title} key={playlist.title}>
+        <Tabs.Panel title={playlist.title} key={playlist.id}>
           <Playlist className="playa-playlist-main" playlist={playlist}/>
         </Tabs.Panel>
       )

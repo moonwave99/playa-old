@@ -12,10 +12,11 @@ module.exports = class Player extends EventEmitter{
   constructor(options) {
     super(options)
     this.player = groove.createPlayer()
+    this.playlist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
     this.timerId = null        
-    this.attached = false;
+    this.attached = false
   }
   getAll(){
     return this.playlist ? this.playlist.items() : []
@@ -75,6 +76,8 @@ module.exports = class Player extends EventEmitter{
         this.startTimer()
       }
       this.emit('nowplaying', current)  
+    }else{
+      this.clearTimer()
     }
   }
   playing() {
@@ -127,7 +130,9 @@ module.exports = class Player extends EventEmitter{
     }    
   }
   goto(id) {
-    var item = _.findWhere(this.playlist.items(), { id: id })
+    var item = _.find(this.playlist.items(), (item)=>{
+      return id == item.file.filename
+    })
     if(item){
       this.playlist.seek(item, -1)
       !this.playlist.playing() && this.play()
@@ -148,23 +153,14 @@ module.exports = class Player extends EventEmitter{
     }
   }
   clearPlaylist() {
-    this.clearTimer()    
-    return new Promise((resolve, reject)=>{
-      var batch = new Batch()      
-      var files = this.playlist.items().map(function(item) { return item.file })
-      this.playlist.clear()      
-      files.forEach((file)=> {
-        batch.push((cb)=> {
-          file.close(cb)
-        })
-      })     
-      batch.end((err)=> {
-        if(err){
-          reject(err)
-        }else{
-          resolve()
-        }
-      })
-    }).then(this.detach)
+    this.playlist.clear()      
+  }
+  append(files){
+    files.forEach((file)=>{
+      file && this.playlist.insert(file)
+    })
+    // if(this.playing() && !this.attached){
+    //   this.playlist.pause()
+    // }
   }
 }
