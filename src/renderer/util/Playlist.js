@@ -1,9 +1,10 @@
 "use babel"
 
 var groove = require('groove')
+var md5 = require('MD5')
 var Batch = require('batch')
 var Loader = require('./Loader')
-var MetaDoctor = require('./MetaDoctor')
+var Playa = require('../../playa')
 var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class Playlist{
@@ -16,15 +17,17 @@ module.exports = class Playlist{
     var loader = new Loader({ folder: folder })
     return loader.load().then((files)=>{
       files.forEach((file)=> {
+        var hash = md5(file.filename)
+        var info = Playa.playerCache.get(file)
         this.items.push(new PlaylistItem(
           {
-            id: file.filename,
-            metadata: MetaDoctor.normalise(file.metadata()),
-            duration: file.duration(),
-            grooveFile: file
+            id: info.id,
+            grooveFile: file,
+            duration: info.duration,
+            metadata: info.metadata
           }        
         ))
-      })      
+      })
     })
   }
   closeFiles(){

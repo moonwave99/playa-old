@@ -6,7 +6,6 @@ var cx = require('classnames')
 var moment = require('moment')
 require("moment-duration-format")
 
-var MetaDoctor = require('../../util/MetaDoctor')
 var PlayerActions = require('../../actions/PlayerActions')
 
 module.exports = React.createClass({
@@ -15,12 +14,13 @@ module.exports = React.createClass({
   },
   getInitialState: function(){
     return {
-      totalTime: 0,
+      duration: 0,
       currentTime: 0,
       remainingTime: 0,
       playing: false,
       hideInfo: true,
-      metadata: {}
+      metadata: {},
+      filename: null
     }
   },
   formatTime: function(time){
@@ -37,16 +37,17 @@ module.exports = React.createClass({
   },
   componentWillReceiveProps: function(nextProps){
     var info = nextProps.playbackInfo
-    var totalTime = Math.round(info.currentItem && info.currentItem.file.duration()) || 0
+    var totalTime = info.duration
     var currentTime = Math.round(info.position) || 0
     this.setState({
       totalTime: totalTime,
       currentTime: currentTime,
       remainingTime: totalTime - currentTime,
       playing: !!info.playing,      
-      hideInfo: !info.currentItem,
-      metadata: (info.currentItem && info.currentItem.file.metadata()) || {}
-    })
+      hideInfo: !info.duration,
+      metadata: info.metadata || {},
+      filename: info.filename || null
+    })    
   },
   render: function() {    
     var wrapperClasses = cx({
@@ -67,6 +68,7 @@ module.exports = React.createClass({
             <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
           </div>
           <span className="playback-time-indicator time-remaining">-{this.formatTime(this.state.remainingTime)}</span>
+          <div className="waveform" ref="waveform"></div>
           <div className="progress-area" onClick={this.onProgressAreaClick}>
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>

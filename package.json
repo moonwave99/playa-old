@@ -19,6 +19,7 @@
     }
   ],
   "dependencies": {
+    "MD5": "^1.2.2",
     "async": "0.2.6",
     "babel-core": "^5.1.11",
     "batch": "^0.5.2",

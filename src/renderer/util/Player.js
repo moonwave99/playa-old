@@ -3,6 +3,7 @@
 var EventEmitter = require('events').EventEmitter
 var assert = require('assert')
 var groove = require('groove')
+var md5 = require('MD5')
 var Batch = require('batch')
 var _ = require('lodash')
 
@@ -15,23 +16,23 @@ module.exports = class Player extends EventEmitter{
     this.playlist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
-    this.timerId = null        
+    this.timer = null        
     this.attached = false
   }
   getAll(){
     return this.playlist ? this.playlist.items() : []
   }
   startTimer(){
-    var timer = function(){
-      return setTimeout(() =>{
-        this.emit('playerTick')
-        this.timerId = timer()
-      }, 1000)
-    }.bind(this)
-    timerId = timer()
+    if(this.timer)
+      return
+      
+    this.timer = setInterval(()=>{
+      this.emit('playerTick')
+    }, 1000)
   }
   clearTimer(){
-    this.timerId && clearInterval(this.timerId)
+    this.timer && clearInterval(this.timer)
+    this.timer = null
   }
   attach(){
     return new Promise((resolve, reject)=>{
@@ -72,10 +73,10 @@ module.exports = class Player extends EventEmitter{
   onNowplaying() {
     var current = this.playlist.position()
     if(current.item){
-      if(!this.timerId){
+      if(!this.timer){
         this.startTimer()
       }
-      this.emit('nowplaying', current)  
+      this.emit('nowplaying')  
     }else{
       this.clearTimer()
     }
@@ -88,10 +89,14 @@ module.exports = class Player extends EventEmitter{
       return null;
     }
     var info = this.playlist.position()
+    var currentItem = info.item ? this.playerCache.get(info.item.file) : {}
     return {
-      currentItem: info.item,
+      metadata: currentItem.metadata || {},
+      duration: currentItem.duration || 0,
       position: info.pos,
-      playing: info.item && this.playlist.playing()
+      playing: info.item && this.playlist.playing(),
+      id: currentItem.id,
+      filename: info.item ? info.item.file.filename : null
     }
   }
   play() {
@@ -132,7 +137,7 @@ module.exports = class Player extends EventEmitter{
   }
   goto(id) {
     var item = _.find(this.playlist.items(), (item)=>{
-      return id == item.file.filename
+      return id == md5(item.file.filename)
     })
     if(item){
       this.playlist.seek(item, -1)
@@ -160,8 +165,5 @@ module.exports = class Player extends EventEmitter{
     files.forEach((file)=>{
       file && this.playlist.insert(file)
     })
-    // if(this.playing() && !this.attached){
-    //   this.playlist.pause()
-    // }
   }
 }
