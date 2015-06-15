@@ -19,7 +19,7 @@ var _selectedIndex = -1
 var _activeIndex = -1
 
 var PlaylistStore = assign({}, EventEmitter.prototype, {
-  getAll: function() {
+  getAll: function(){
     return _playlists;
   },
   
@@ -35,21 +35,21 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
     return _activeIndex;
   },
   
-  emitChange: function() {
+  emitChange: function(){
     this.emit(CHANGE_EVENT)
   },
 
   /**
    * @param {function} callback
    */
-  addChangeListener: function(callback) {
+  addChangeListener: function(callback){
     this.on(CHANGE_EVENT, callback)
   },
 
   /**
    * @param {function} callback
    */
-  removeChangeListener: function(callback) {
+  removeChangeListener: function(callback){
     this.removeListener(CHANGE_EVENT, callback)
   },
   
@@ -91,7 +91,7 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
 
           })          
         }
-        break        
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.

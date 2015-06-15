@@ -33,8 +33,8 @@ ipc.on('open:folder', function(folder){
 
 function getPlaylistState(){
   return {
-    playlists: PlaylistStore.getAll() || {},
-    selectedPlaylist: PlaylistStore.getSelectedIndex()
+    playlists: PlaylistStore.getAll() || [],
+    selectedPlaylist: PlaylistStore.getSelectedIndex() || 0
   }  
 }
 
@@ -43,6 +43,8 @@ function getPlayerState(){
     playbackInfo: PlayerStore.getPlaybackInfo() || {}
   }
 }
+
+_ui = {}
 
 module.exports = React.createClass({
   getInitialState: function() {
@@ -62,11 +64,14 @@ module.exports = React.createClass({
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     PlaylistActions.select(selectedIndex-1)
   },
+  handleScroll: function(item, event){
+    _ui[item.props.playlist.id] = React.findDOMNode(item).scrollTop
+  },  
   render: function() {   
     var playlists = this.state.playlists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist className="playa-playlist-main" playlist={playlist}/>
+          <Playlist className="playa-playlist-main" playlist={playlist} handleScroll={this.handleScroll} scrollBy={_ui[playlist.id] || 0}/>
         </Tabs.Panel>
       )
     })

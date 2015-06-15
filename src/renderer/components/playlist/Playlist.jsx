@@ -12,6 +12,14 @@ var Playlist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object
   },
+  componentDidMount: function(){
+    var node = React.findDOMNode(this)
+    node.addEventListener('scroll', _.throttle(this.handleScroll, 100))
+    node.scrollTop = this.props.scrollBy
+  },
+  componentWillUnmount: function(){
+    React.findDOMNode(this).removeEventListener('scroll')
+  },
   render: function() {
     var items = _.map(this.props.playlist.items, (item, index)=>{
       return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick}/>
@@ -31,6 +39,9 @@ var Playlist = React.createClass({
         </table>
       </div>
     )
+  },
+  handleScroll: function(event){
+    this.props.handleScroll(this, event)
   },
   handleClick: function(item){
     
