@@ -96,6 +96,7 @@ module.exports = class Player extends EventEmitter{
   }
   play() {
     this.attach().then(()=>{
+      this.startTimer()
       this.playlist.play()
     })
   }
