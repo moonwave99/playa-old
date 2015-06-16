@@ -71,7 +71,7 @@ module.exports = React.createClass({
     var playlists = this.state.playlists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist className="playa-playlist-main" playlist={playlist} handleScroll={this.handleScroll} scrollBy={_ui[playlist.id] || 0}/>
+          <Playlist className="playa-playlist-main" playlist={playlist} handleScroll={this.handleScroll} scrollBy={_ui[playlist.id] || 0} currentItem={this.state.playbackInfo.item}/>
         </Tabs.Panel>
       )
     })

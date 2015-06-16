@@ -22,12 +22,13 @@ var Playlist = React.createClass({
   },
   render: function() {
     var items = _.map(this.props.playlist.items, (item, index)=>{
-      return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick}/>
+      return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} isPlaying={item.id==this.props.currentItem.id}/>
     })
     return (
       <div className="playlist">
         <table className="table">
           <colgroup>
+            <col className="playlist-column-xs" />
             <col className="playlist-column-xs" />
             <col className="playlist-column-md" />
             <col className="playlist-column-md" />
