@@ -14,6 +14,11 @@ var PlaylistActions = {
       actionType: PlaylistConstants.CLEAR_PLAYLIST,
     })
   },
+  closePlaylist: function(){
+    AppDispatcher.dispatch({
+      actionType: PlaylistConstants.CLOSE_PLAYLIST,
+    })
+  },  
   addFolder: function(folder){
     AppDispatcher.dispatch({
       actionType: PlaylistConstants.ADD_FOLDER,

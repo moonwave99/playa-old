@@ -35,7 +35,8 @@
     label: 'Playlist'
     submenu: [
       { label: 'New Playlist', command: 'window:createPlaylist', accelerator: 'Command+T' }
-      { label: 'Clear', command: 'window:clearPlaylist', accelerator: 'Command+Shift+Backspace' }
+      { label: 'Clear Current Playlist', command: 'window:clearPlaylist', accelerator: 'Command+Shift+Backspace' }
+      { label: 'Close Current Playlist', command: 'window:closePlaylist', accelerator: 'Command+W' }
       { label: 'Select All', selector: 'selectAll:', accelerator: 'Command+A' }
     ]
   }

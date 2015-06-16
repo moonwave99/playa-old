@@ -92,6 +92,18 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
           })          
         }
         break
+      case PlaylistConstants.CLOSE_PLAYLIST:
+        if(_playlists[_selectedIndex]){
+          _playlists[_selectedIndex].clear().then(function(){
+            _playlists = _playlists.filter((playlist)=>{
+              return playlist !== _playlists[_selectedIndex]
+            })
+            PlaylistStore.emitChange()  
+          }).catch((err)=>{
+
+          })          
+        }
+        break        
     }
 
     return true // No errors. Needed by promise in Dispatcher.

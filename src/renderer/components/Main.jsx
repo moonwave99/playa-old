@@ -21,10 +21,11 @@ ipc.on('playlist:create', function(){
 })
 
 ipc.on('playlist:clear', function(){
-  AppDispatcher.dispatch({
-    actionType: PlaylistConstants.CLEAR_PLAYLIST
-  })
   PlaylistActions.clearPlaylist()
+})
+
+ipc.on('playlist:close', function(){
+  PlaylistActions.closePlaylist()
 })
 
 ipc.on('open:folder', function(folder){
