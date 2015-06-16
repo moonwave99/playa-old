@@ -1,38 +1,56 @@
 "use babel"
 
-var PlaylistActions = require('../actions/PlaylistActions')
 var ipc = require('ipc')
+var md5 = require('MD5')
 var path = require('path')
 var groove = require('groove')
 var assert = require('assert')
-var Batch = require('batch')
 var glob = require('glob')
+var MetaDoctor = require('../util/MetaDoctor')
 
-function openFileFn(filename) {
-  return function(cb) {
-    groove.open(filename, cb)
-  }
-}
+var PlaylistItem = require('../util/PlaylistItem')
 
 module.exports = class Loader {
   constructor(options) {
-    this.folder = options.folder
+    this.cache = {}
   }
-  load() {
+  load(folder) {
     return new Promise((resolve, reject)=>{
-      var batch = new Batch()
-      glob("**/*.{mp3,flac}", { cwd: this.folder }, (er, files)=> {
-        files.forEach((f)=> {
-          batch.push(openFileFn(path.join(this.folder, f)))
+      glob("**/*.{mp3,flac}", { cwd: folder }, (er, files)=> {
+        Promise.all(
+          files.map((f)=>{ return this.openFile( path.join(folder, f) ) })
+        ).then((files)=>{
+          resolve(files)
+        }).catch((err)=>{
+          reject(err)
         })
-        batch.end((err, files)=> {
+      })      
+    })
+  }
+  openFile(filename){
+    return new Promise((resolve, reject)=>{
+      var hash = md5(filename)
+      if(this.cache[hash]){
+        resolve(this.cache[hash])
+      }else{
+        groove.open(filename, (err, file)=>{
           if(err){
             reject(err)
           }else{
-            resolve(files)
+            this.cache[hash] = new PlaylistItem({
+              filename: file.filename,
+              metadata: MetaDoctor.normalise(file.metadata()),
+              duration: file.duration(),
+              grooveFile: file
+            })
+            resolve(this.cache[hash])
           }
-        }) 
-      })      
+        })  
+      }    
     })
-  }  
+  }
+  getFromPool(filename){
+    var hash = md5(filename)
+    return this.cache[hash];
+  }
 }

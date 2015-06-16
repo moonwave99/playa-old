@@ -1,13 +1,13 @@
 "use babel"
 
-var groove = require('groove')
-var PlaylistItem = require('./PlaylistItem')
+var md5 = require('MD5')
 
 module.exports = class PlaylistItem{
   constructor(options){
-    this.id = options.id
     this.metadata = options.metadata
     this.duration = options.duration
     this.grooveFile = options.grooveFile
+    this.filename = options.filename
+    this.id = md5(this.filename)
   }
 }

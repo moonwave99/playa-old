@@ -37,16 +37,16 @@ module.exports = React.createClass({
   },
   componentWillReceiveProps: function(nextProps){
     var info = nextProps.playbackInfo
-    var totalTime = info.duration
+    var totalTime = info.item.duration
     var currentTime = Math.round(info.position) || 0
     this.setState({
       totalTime: totalTime,
       currentTime: currentTime,
       remainingTime: totalTime - currentTime,
       playing: !!info.playing,      
-      hideInfo: !info.duration,
-      metadata: info.metadata || {},
-      filename: info.filename || null
+      hideInfo: !info.item.duration,
+      metadata: info.item.metadata || {},
+      filename: info.item.filename || null
     })    
   },
   render: function() {    

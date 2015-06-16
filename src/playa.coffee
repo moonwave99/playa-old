@@ -1,9 +1,9 @@
 Player = require('./renderer/util/Player')
-PlayerCache = require('./renderer/util/PlayerCache')
+Loader = require('./renderer/util/Loader')
 
 Playa =
   player: new Player()
-  playerCache: new PlayerCache()
+  loader: new Loader()
 
-Playa.player.playerCache = Playa.playerCache
+Playa.player.loader = Playa.loader
 module.exports = Playa

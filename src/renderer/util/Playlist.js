@@ -14,20 +14,8 @@ module.exports = class Playlist{
     this.id = options.id
   }
   add(folder){
-    var loader = new Loader({ folder: folder })
-    return loader.load().then((files)=>{
-      files.forEach((file)=> {
-        var hash = md5(file.filename)
-        var info = Playa.playerCache.get(file)
-        this.items.push(new PlaylistItem(
-          {
-            id: info.id,
-            grooveFile: file,
-            duration: info.duration,
-            metadata: info.metadata
-          }        
-        ))
-      })
+    return Playa.loader.load(folder).then((items)=>{
+      this.items = this.items.concat(items);
     })
   }
   closeFiles(){

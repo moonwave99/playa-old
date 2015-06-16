@@ -89,14 +89,10 @@ module.exports = class Player extends EventEmitter{
       return null;
     }
     var info = this.playlist.position()
-    var currentItem = info.item ? this.playerCache.get(info.item.file) : {}
     return {
-      metadata: currentItem.metadata || {},
-      duration: currentItem.duration || 0,
       position: info.pos,
       playing: info.item && this.playlist.playing(),
-      id: currentItem.id,
-      filename: info.item ? info.item.file.filename : null
+      item: info.item ? this.loader.getFromPool(info.item.file.filename) : {}
     }
   }
   play() {
