@@ -50,7 +50,6 @@ module.exports = class Loader {
     })
   }
   getFromPool(filename){
-    var hash = md5(filename)
-    return this.cache[hash];
+    return this.cache[md5(filename)];
   }
 }
