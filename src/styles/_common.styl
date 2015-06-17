@@ -15,7 +15,33 @@ html
   width 100vw
   color $mainColor
   background-color $backgroundColor
-  overflow-y scroll
+  overflow-y auto
+  overflow-x hidden
+  backface-visibility hidden
   .playa-main
     width 100vw
     padding-top size($playbackBarHeight + $tabsBarHeight)
+    backface-visibility hidden
+    position relative
+    &.sidebar-open
+      .playa-main-wrapper
+        width "calc(100vw - %s)" % $sidebarWidth
+    .playa-main-wrapper
+      width "calc(100vw - %s)" % $sidebarClosedWidth
+      transition width .2s ease-in-out
+      backface-visibility hidden
+      position absolute
+      right 0
+    .sidebar
+      width size($sidebarWidth)
+      height "calc(100vh - %s)" % $playbackBarHeight
+      backface-visibility hidden
+      user-select none
+      position absolute
+      top $playbackBarHeight
+      transition transform .2s ease-in-out
+      &.sidebar-left
+        transform s('translateX(calc(%s - %s))', $sidebarClosedWidth, $sidebarWidth)
+        left 0
+      &.open
+        transform translateX(0)

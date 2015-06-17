@@ -107,6 +107,9 @@ class Application
     @menu.on 'window:clearPlaylist', ->  
       appWindow.clearPlaylist()
       
+    @menu.on 'window:toggleSidebar', ->
+      appWindow.toggleSidebar()
+      
     @menu.on 'window:reload', ->
       BrowserWindow.getFocusedWindow().reload()
 

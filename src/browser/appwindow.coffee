@@ -79,6 +79,9 @@ class AppWindow
   clearPlaylist: ->
     @window.webContents.send('playlist:clear')
 
+  toggleSidebar: ->
+    @window.webContents.send('sidebar:toggle')
+    
   reload: ->
     @window.webContents.reload()
 
