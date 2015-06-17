@@ -12,6 +12,11 @@ module.exports = class Playlist{
     this.items = []
     this.title = options.title
     this.id = options.id
+    this.path = options.path
+    this.displayMode = 'table'
+  }
+  isNew(){
+    return !!this.path
   }
   add(folder){
     return Playa.loader.load(folder).then((items)=>{

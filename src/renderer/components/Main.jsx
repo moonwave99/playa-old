@@ -54,7 +54,7 @@ function getPlayerState(){
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return _.merge({ playlistsUI: {}},getSidebarState() ,getPlayerState(), getPlaylistState())
+    return _.merge(getSidebarState() ,getPlayerState(), getPlaylistState())
   },
   componentDidMount: function() {
     PlaylistStore.addChangeListener(this._onPlaylistChange)
@@ -73,17 +73,23 @@ module.exports = React.createClass({
     PlaylistActions.select(selectedIndex-1)
   },
   handleScroll: function(item, event){
-    var _ui = this.state.playlistsUI
-    _ui[item.props.playlist.id] = _ui[item.props.playlist.id] || {}
-    _ui[item.props.playlist.id].scrollBy = React.findDOMNode(item).scrollTop
-    this.setState({ playlistsUI: _ui })
-  },  
+    PlaylistActions.updateUI(item.props.playlist.id, { scrollBy: React.findDOMNode(item).scrollTop })
+  },
+  handleViewSwitchClick: function(){
+    var selectedPlaylist = this.state.playlists[this.state.selectedPlaylist]
+    if(!selectedPlaylist)
+      return
+    PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })    
+  },
   render: function() {   
     var openPlaylists = this.state.playlists.map((playlist)=>{
-      var _scrollBy = this.state.playlistsUI[playlist.id] ? this.state.playlistsUI[playlist.id].scrollBy : 0
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist className="playa-playlist-main" playlist={playlist} handleScroll={this.handleScroll} scrollBy={_scrollBy} currentItem={this.state.playbackInfo.item}/>
+          <Playlist
+            className="playa-playlist-main"
+            playlist={playlist}
+            handleScroll={this.handleScroll}
+            currentItem={this.state.playbackInfo.item}/>
         </Tabs.Panel>
       )
     })
@@ -94,7 +100,7 @@ module.exports = React.createClass({
     return (
       <div className={classes}>
         <PlaybackBar playbackInfo={this.state.playbackInfo}/>
-        <Sidebar isOpen={this.state.showSidebar}/>
+        <Sidebar isOpen={this.state.showSidebar} handleViewSwitchClick={this.handleViewSwitchClick}/>
         <div className="playa-main-wrapper">
           <Tabs
             tabActive={this.state.selectedPlaylist+1}

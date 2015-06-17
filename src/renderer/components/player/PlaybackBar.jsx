@@ -68,7 +68,6 @@ module.exports = React.createClass({
             <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
           </div>
           <span className="playback-time-indicator time-remaining">-{this.formatTime(this.state.remainingTime)}</span>
-          <div className="waveform" ref="waveform"></div>
           <div className="progress-area" onClick={this.onProgressAreaClick}>
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>

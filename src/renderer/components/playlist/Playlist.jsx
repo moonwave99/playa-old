@@ -3,43 +3,45 @@
 var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var PlaylistItem = require('./PlaylistItem.jsx')
+var PlaylistTable = require('./PlaylistTable.jsx')
+var PlaylistAlbums = require('./PlaylistAlbums.jsx')
 
 var PlaylistActions = require('../../actions/PlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 
 var Playlist = React.createClass({
   propTypes: {
-    playlist: ReactPropTypes.object
+    playlist: ReactPropTypes.object,
+    currentItem: ReactPropTypes.object,
+    handleClick: ReactPropTypes.func,
+    handleDoubleClick: ReactPropTypes.func,
+    handleScroll: ReactPropTypes.func    
   },
   componentDidMount: function(){
     var node = React.findDOMNode(this)
     node.addEventListener('scroll', _.throttle(this.handleScroll, 100))
-    node.scrollTop = this.props.scrollBy
+    node.scrollTop = this.props.playlist.scrollBy
   },
   componentWillUnmount: function(){
     React.findDOMNode(this).removeEventListener('scroll')
   },
   render: function() {
-    var items = _.map(this.props.playlist.items, (item, index)=>{
-      return <PlaylistItem key={item.id} metadata={item.metadata} duration={item.duration} itemKey={item.id} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} isPlaying={item.id==this.props.currentItem.id}/>
-    })
-    return (
-      <div className="playlist">
-        <table className="table">
-          <colgroup>
-            <col className="playlist-column-xs" />
-            <col className="playlist-column-xs" />
-            <col className="playlist-column-md" />
-            <col className="playlist-column-md" />
-            <col className="playlist-column-md" />
-            <col className="playlist-column-sm" />
-            <col className="playlist-column-sm" />
-          </colgroup>
-          <tbody>{items}</tbody>
-        </table>
-      </div>
-    )
+    switch(this.props.playlist.displayMode){
+      case 'albums':
+        return (
+          <div className="playlist">
+            <PlaylistAlbums playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} currentItem={this.props.currentItem}/>  
+          </div>
+        )
+        break
+      default:
+        return (
+          <div className="playlist">
+            <PlaylistTable playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} currentItem={this.props.currentItem}/>        
+          </div>
+        )        
+        break;
+    }
   },
   handleScroll: function(event){
     this.props.handleScroll(this, event)

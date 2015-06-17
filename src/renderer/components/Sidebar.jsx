@@ -17,8 +17,15 @@ var Sidebar = React.createClass({
       'open' : this.props.isOpen
     })
     return (
-      <div className={classes}></div>
+      <div className={classes}>
+        <ul className="icons list-unstyled">
+          <li><a href="#" onClick={this.handleViewSwitchClick}><i className="fa fa-fw fa-th-large"></i></a></li>
+        </ul>
+      </div>
     )
+  },
+  handleViewSwitchClick: function(event){
+    this.props.handleViewSwitchClick(this)
   }
 })
 

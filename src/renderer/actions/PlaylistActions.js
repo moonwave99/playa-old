@@ -43,6 +43,13 @@ var PlaylistActions = {
       actionType: PlaylistConstants.ACTIVATE_PLAYLIST,
       selected: index
     })
+  },
+  updateUI: function(id, ui){
+    AppDispatcher.dispatch({
+      actionType: PlaylistConstants.UPDATE_UI,
+      id: id,
+      ui: ui
+    })    
   }
 }
 

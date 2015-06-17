@@ -1,5 +1,6 @@
 "use babel"
 
+var _ = require('lodash')
 var assign = require('object-assign')
 var groove = require('groove')
 var uid = require('uid')
@@ -105,7 +106,16 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
             console.error(err.stack)
           })          
         }
-        break        
+        break
+      case PlaylistConstants.UPDATE_UI:
+        var playlist = _.findWhere(_playlists, { id: action.id })
+        if(playlist){
+          _.forEach(action.ui, (value, key)=>{
+            playlist[key] = value
+          })
+          PlaylistStore.emitChange()
+        }
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.

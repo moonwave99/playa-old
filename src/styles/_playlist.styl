@@ -23,3 +23,22 @@
       font-size size($playlistFontSize)
       vertical-align middle
       user-select none
+  
+  .albums
+    .album
+      height size($albumItemClosedHeight)
+      vertical-align middle
+      box-shadow inset 0 -1px rgba($mainColor, .1)
+      padding-top .5rem
+      &:first-child
+        box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .1)
+      .artist
+        font-size .9rem
+        vertical-align middle
+      .title
+        font-size 1.5rem
+        vertical-align middle
+      .date
+        float right
+        vertical-align middle
+        margin-right 1rem
