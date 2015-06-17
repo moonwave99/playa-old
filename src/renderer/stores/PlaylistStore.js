@@ -69,7 +69,9 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
         if (action.folder && _playlists[_selectedIndex]) {
           _playlists[_selectedIndex].add(action.folder).then(()=>{
             PlaylistStore.emitChange()  
-          })
+          }).catch((err)=>{
+            console.error(err.stack)
+          })  
         }        
         break
       case PlaylistConstants.PLAY_FILE:
@@ -88,7 +90,7 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
           _playlists[_selectedIndex].clear().then(function(){
             PlaylistStore.emitChange()  
           }).catch((err)=>{
-
+            console.error(err.stack)
           })          
         }
         break
@@ -100,7 +102,7 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
             })
             PlaylistStore.emitChange()  
           }).catch((err)=>{
-
+            console.error(err.stack)
           })          
         }
         break        
