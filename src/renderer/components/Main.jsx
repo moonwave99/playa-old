@@ -96,11 +96,11 @@ module.exports = React.createClass({
     var classes = cx({
       'playa-main' : true,
       'sidebar-open' : this.state.showSidebar
-    })    
+    })
     return (
       <div className={classes}>
         <PlaybackBar playbackInfo={this.state.playbackInfo}/>
-        <Sidebar isOpen={this.state.showSidebar} handleViewSwitchClick={this.handleViewSwitchClick}/>
+        <Sidebar isOpen={this.state.showSidebar} handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.playlists[this.state.selectedPlaylist] || {} }/>
         <div className="playa-main-wrapper">
           <Tabs
             tabActive={this.state.selectedPlaylist+1}
