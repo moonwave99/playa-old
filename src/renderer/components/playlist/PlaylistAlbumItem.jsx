@@ -19,7 +19,7 @@ var PlaylistItem = React.createClass({
       'isPlaying' : this.props.isPlaying
     })
     return (
-      <div className={classes}>
+      <div className={classes} onDoubleClick={this.onDoubleClick}>
         <span className="artist">{this.props.metadata.artist}</span><br/>
         <span className="title">{this.props.metadata.title}</span>
         <span className="date">{this.props.metadata.date}</span>

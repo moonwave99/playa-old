@@ -31,8 +31,8 @@ var PlaylistAlbums = React.createClass({
     this.props.onClick(item)
   },
   handleDoubleClick: function(item){
-    PlaylistActions.playFile(item.props.itemKey, this.props.playlist)
-    PlayerActions.play()    
+    PlaylistActions.playFile(item.props.album[0].id, this.props.playlist)
+    PlayerActions.play()
   }
 })
 
