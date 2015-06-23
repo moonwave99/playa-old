@@ -44,6 +44,7 @@
   {
     label: 'View'
     submenu: [
+      { label: 'Toggle View Mode', command: 'window:toggleViewMode', accelerator: 'Command+Shift+2' }
       { label: 'Toggle Sidebar', command: 'window:toggleSidebar', accelerator: 'Command+Shift+1' }
       { label: 'Reload', command: 'window:reload', accelerator: 'Command+R' }
       { label: 'Toggle Full Screen', command: 'window:toggle-full-screen', accelerator: 'Command+Control+F' }

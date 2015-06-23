@@ -32,6 +32,10 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
     return _selectedIndex;
   },
   
+  getSelectedPlaylist: function(){
+    return _playlists[_selectedIndex];
+  },  
+  
   getActiveIndex: function(){
     return _activeIndex;
   },

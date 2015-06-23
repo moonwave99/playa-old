@@ -1,28 +1,31 @@
 .playlist
-  height 100vh
+  height "calc(100vh - %s - %s)" % ($tabsBarHeight $playbackBarHeight)
   overflow-y auto
+  padding-bottom $footerHeight
   .playlist-column-xs
     width 3rem
   .playlist-column-sm
     width 6rem
   .playlist-column-md
     width auto
-  .table > tbody > tr
-    &:nth-child(odd)
-      background-color rgba(white, .05)
-    &:nth-child(even)
-      background-color rgba(white, .1)
-    &:hover
-      background-color rgba(white, .15)
-    &.playing
-      background-color rgba(white, .35)
-    > td
-      border 0
-      padding 0 .5rem
-      line-height size($playlistItemHeight)
-      font-size size($playlistFontSize)
-      vertical-align middle
-      user-select none
+  .table
+    margin 0
+    > tbody > tr
+      &:nth-child(odd)
+        background-color rgba(white, .05)
+      &:nth-child(even)
+        background-color rgba(white, .1)
+      &:hover
+        background-color rgba(white, .15)
+      &.playing
+        background-color rgba(white, .35)
+      > td
+        border 0
+        padding 0 .5rem
+        line-height size($playlistItemHeight)
+        font-size size($playlistFontSize)
+        vertical-align middle
+        user-select none
   
   .albums
     .album

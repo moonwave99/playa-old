@@ -107,6 +107,9 @@ class Application
     @menu.on 'window:clearPlaylist', ->  
       appWindow.clearPlaylist()
       
+    @menu.on 'window:toggleViewMode', ->
+      appWindow.toggleViewMode()
+      
     @menu.on 'window:toggleSidebar', ->
       appWindow.toggleSidebar()
       

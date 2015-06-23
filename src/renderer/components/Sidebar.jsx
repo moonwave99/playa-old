@@ -16,22 +16,11 @@ var Sidebar = React.createClass({
       'sidebar-left' : true,
       'open' : this.props.isOpen
     })
-    var iconClasses = cx({
-      'fa' : true,
-      'fa-fw' : true,
-      'fa-list': this.props.selectedPlaylist.displayMode == 'albums',
-      'fa-th-list' : this.props.selectedPlaylist.displayMode != 'albums'
-    })
     return (
       <div className={classes}>
-        <ul className="icons list-unstyled">
-          <li><a href="#" onClick={this.handleViewSwitchClick}><i className={iconClasses}></i></a></li>
-        </ul>
+        <ul className="icons list-unstyled"></ul>
       </div>
     )
-  },
-  handleViewSwitchClick: function(event){
-    this.props.handleViewSwitchClick(this)
   }
 })
 

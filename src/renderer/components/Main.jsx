@@ -9,6 +9,7 @@ var Tabs = require('react-simpletabs')
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
 var Sidebar = require('./Sidebar.jsx')
+var Footer = require('./Footer.jsx')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 
@@ -18,6 +19,13 @@ var SidebarStore = require('../stores/SidebarStore')
 
 var PlaylistConstants = require('../constants/PlaylistConstants')
 var PlaylistActions = require('../actions/PlaylistActions')
+
+ipc.on('playlist:toggleViewMode', function(){
+  var selectedPlaylist = PlaylistStore.getSelectedPlaylist()
+  if(!selectedPlaylist)
+    return
+  PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
+})
 
 ipc.on('playlist:create', function(){
   PlaylistActions.create()
@@ -79,7 +87,7 @@ module.exports = React.createClass({
     var selectedPlaylist = this.state.playlists[this.state.selectedPlaylist]
     if(!selectedPlaylist)
       return
-    PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })    
+    PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
   },
   render: function() {   
     var openPlaylists = this.state.playlists.map((playlist)=>{
@@ -100,7 +108,7 @@ module.exports = React.createClass({
     return (
       <div className={classes}>
         <PlaybackBar playbackInfo={this.state.playbackInfo}/>
-        <Sidebar isOpen={this.state.showSidebar} handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.playlists[this.state.selectedPlaylist] || {} }/>
+        <Sidebar isOpen={this.state.showSidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
             tabActive={this.state.selectedPlaylist+1}
@@ -108,6 +116,7 @@ module.exports = React.createClass({
             {openPlaylists}
           </Tabs>
         </div>
+            <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.playlists[this.state.selectedPlaylist] || {} } />
       </div>
     )
   },

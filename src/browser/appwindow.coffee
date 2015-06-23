@@ -79,6 +79,12 @@ class AppWindow
   clearPlaylist: ->
     @window.webContents.send('playlist:clear')
 
+  toggleViewMode: ->
+    @window.webContents.send('playlist:toggleViewMode')
+
+  toggleSidebar: ->
+    @window.webContents.send('sidebar:toggle')
+
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
     
