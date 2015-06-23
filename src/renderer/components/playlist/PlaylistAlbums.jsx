@@ -19,7 +19,8 @@ var PlaylistAlbums = React.createClass({
     var albums = _(this.props.playlist.items).groupBy((item)=>{
       return item.metadata.album
     }).map((album, title)=>{
-      return <PlaylistAlbumItem key={title} album={album} metadata={album[0].metadata} onDoubleClick={this.handleDoubleClick}/>
+      var isPlaying = !!(album.filter((i)=>{ return i.id == this.props.currentItem.id }).length)
+      return <PlaylistAlbumItem key={title} album={album} metadata={album[0].metadata} onDoubleClick={this.handleDoubleClick} isPlaying={isPlaying}/>
     }).value()
     
     return (

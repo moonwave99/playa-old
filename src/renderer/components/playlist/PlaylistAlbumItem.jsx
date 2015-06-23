@@ -8,14 +8,15 @@ require("moment-duration-format")
 
 var PlaylistItem = React.createClass({
   propTypes: {
-    
+    isPlaying: ReactPropTypes.bool
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
   render: function() {
     var classes = cx({
-      'album' : true
+      'album' : true,
+      'isPlaying' : this.props.isPlaying
     })
     return (
       <div className={classes}>
