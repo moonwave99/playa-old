@@ -50,7 +50,8 @@ function getSidebarState(){
 function getPlaylistState(){
   return {
     playlists: PlaylistStore.getAll() || [],
-    selectedPlaylist: PlaylistStore.getSelectedIndex() || 0
+    selectedPlaylist: PlaylistStore.getSelectedPlaylist() || null,
+    selectedIndex: PlaylistStore.getSelectedIndex()
   }  
 }
 
@@ -84,10 +85,9 @@ module.exports = React.createClass({
     PlaylistActions.updateUI(item.props.playlist.id, { scrollBy: React.findDOMNode(item).scrollTop })
   },
   handleViewSwitchClick: function(){
-    var selectedPlaylist = this.state.playlists[this.state.selectedPlaylist]
-    if(!selectedPlaylist)
+    if(!this.state.selectedPlaylist)
       return
-    PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
+    PlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
   },
   render: function() {   
     var openPlaylists = this.state.playlists.map((playlist)=>{
@@ -111,12 +111,12 @@ module.exports = React.createClass({
         <Sidebar isOpen={this.state.showSidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
-            tabActive={this.state.selectedPlaylist+1}
+            tabActive={this.state.selectedIndex+1}
             onAfterChange={this.handleAfter}>
             {openPlaylists}
           </Tabs>
         </div>
-            <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.playlists[this.state.selectedPlaylist] || {} } />
+        <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.selectedPlaylist || {} } />
       </div>
     )
   },
