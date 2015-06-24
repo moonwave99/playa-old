@@ -26,7 +26,7 @@
     label: 'Controls'
     submenu: [
       { label: 'Play/Pause', command: 'window:togglePlayback', accelerator: 'MediaPlayPause' }
-      { label: 'Previous Track', command: 'window:prevTrack', accelerator: 'MediaPrevTrack' }
+      { label: 'Previous Track', command: 'window:prevTrack', accelerator: 'MediaPreviousTrack' }
       { label: 'Next Track', command: 'window:nextTrack', accelerator: 'MediaNextTrack' }
     ]
   }  
