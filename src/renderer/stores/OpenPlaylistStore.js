@@ -7,7 +7,7 @@ var uid = require('uid')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
-var PlaylistConstants = require('../constants/PlaylistConstants')
+var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
 
 var Playlist = require('../util/Playlist')
 
@@ -17,7 +17,7 @@ var _playlists = []
 var _selectedIndex = -1
 var _activeIndex = -1
 
-var PlaylistStore = assign({}, EventEmitter.prototype, {
+var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function(){
     return _playlists;
   },
@@ -58,26 +58,34 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
   
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
-      case PlaylistConstants.SELECT_PLAYLIST:
+      case OpenPlaylistConstants.SELECT_PLAYLIST:
         if(_playlists[action.selected]){
           _selectedIndex = action.selected
-          PlaylistStore.emitChange()
+          OpenPlaylistStore.emitChange()
         }
         break
-      case PlaylistConstants.CREATE:
+      case OpenPlaylistConstants.CREATE_PLAYLIST:
         _playlists.push( new Playlist({ title: uid(), id: uid() }) )
-        PlaylistStore.emitChange()
+        OpenPlaylistStore.emitChange()
         break
-      case PlaylistConstants.ADD_FOLDER:
+      case OpenPlaylistConstants.SAVE_PLAYLIST:
+        if(_playlists[_selectedIndex]){
+          playa.playlistLoader.save(_playlists[_selectedIndex]).then(()=>{
+            console.info('Saved ' + _playlists[_selectedIndex].id)
+            OpenPlaylistStore.emitChange()
+          })
+        }        
+        break
+      case OpenPlaylistConstants.ADD_FOLDER:
         if (action.folder && _playlists[_selectedIndex]) {
           _playlists[_selectedIndex].add(action.folder).then(()=>{
-            PlaylistStore.emitChange()  
+            OpenPlaylistStore.emitChange()  
           }).catch((err)=>{
             console.error(err.stack)
           })  
         }        
         break
-      case PlaylistConstants.PLAY_FILE:
+      case OpenPlaylistConstants.PLAY_FILE:
         if(action.playlist.id !== _activeIndex){
           playa.player.clearPlaylist()
           playa.player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
@@ -88,34 +96,34 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
           playa.player.goto(action.id)
         }
         break
-      case PlaylistConstants.CLEAR_PLAYLIST:
+      case OpenPlaylistConstants.CLEAR_PLAYLIST:
         if(_playlists[_selectedIndex]){
           _playlists[_selectedIndex].clear().then(function(){
-            PlaylistStore.emitChange()  
+            OpenPlaylistStore.emitChange()  
           }).catch((err)=>{
             console.error(err.stack)
           })          
         }
         break
-      case PlaylistConstants.CLOSE_PLAYLIST:
+      case OpenPlaylistConstants.CLOSE_PLAYLIST:
         if(_playlists[_selectedIndex]){
           _playlists[_selectedIndex].clear().then(function(){
             _playlists = _playlists.filter((playlist)=>{
               return playlist !== _playlists[_selectedIndex]
             })
-            PlaylistStore.emitChange()  
+            OpenPlaylistStore.emitChange()  
           }).catch((err)=>{
             console.error(err.stack)
           })          
         }
         break
-      case PlaylistConstants.UPDATE_UI:
+      case OpenPlaylistConstants.UPDATE_UI:
         var playlist = _.findWhere(_playlists, { id: action.id })
         if(playlist){
           _.forEach(action.ui, (value, key)=>{
             playlist[key] = value
           })
-          PlaylistStore.emitChange()
+          OpenPlaylistStore.emitChange()
         }
         break
     }
@@ -125,4 +133,4 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
     
 })
 
-module.exports = PlaylistStore
+module.exports = OpenPlaylistStore

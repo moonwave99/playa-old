@@ -102,6 +102,9 @@ class Application
       
     @menu.on 'window:createPlaylist', ->  
       appWindow.createPlaylist()
+      
+    @menu.on 'window:savePlaylist', ->  
+      appWindow.savePlaylist()      
                   
     @menu.on 'window:closePlaylist', ->  
       appWindow.closePlaylist()

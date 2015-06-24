@@ -72,6 +72,9 @@ class AppWindow
     
   createPlaylist: ->
     @window.webContents.send('playlist:create')
+    
+  savePlaylist: ->
+    @window.webContents.send('playlist:save')
         
   closePlaylist: ->
     @window.webContents.send('playlist:close')

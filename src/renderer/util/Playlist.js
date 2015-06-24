@@ -1,9 +1,9 @@
 "use babel"
 
 var groove = require('groove')
+var Promise = require('bluebird')
 var md5 = require('MD5')
 var Batch = require('batch')
-var Loader = require('./Loader')
 var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class Playlist{
@@ -18,7 +18,7 @@ module.exports = class Playlist{
     return !!this.path
   }
   add(folder){
-    return playa.loader.load(folder).then((items)=>{
+    return playa.fileLoader.load(folder).then((items)=>{
       this.items = this.items.concat(items);
     })
   }

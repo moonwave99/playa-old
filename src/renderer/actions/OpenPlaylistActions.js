@@ -1,56 +1,59 @@
 "use babel";
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
-var PlaylistConstants = require('../constants/PlaylistConstants')
+var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
 
-var PlaylistActions = {
+module.exports = {
   create: function(){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.CREATE
+      actionType: OpenPlaylistConstants.CREATE_PLAYLIST
     })    
+  },
+  savePlaylist: function(index){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.SAVE_PLAYLIST
+    })
   },
   clearPlaylist: function(){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.CLEAR_PLAYLIST,
+      actionType: OpenPlaylistConstants.CLEAR_PLAYLIST
     })
   },
   closePlaylist: function(){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.CLOSE_PLAYLIST,
+      actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
     })
   },  
   addFolder: function(folder){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.ADD_FOLDER,
+      actionType: OpenPlaylistConstants.ADD_FOLDER,
       folder: folder
     })
   },  
   playFile: function(id, playlist){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.PLAY_FILE,
+      actionType: OpenPlaylistConstants.PLAY_FILE,
       id: id,
       playlist: playlist
     })    
   },
   select: function(index){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.SELECT_PLAYLIST,
+      actionType: OpenPlaylistConstants.SELECT_PLAYLIST,
       selected: index
     })    
   },
   activate: function(index){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.ACTIVATE_PLAYLIST,
+      actionType: OpenPlaylistConstants.ACTIVATE_PLAYLIST,
       selected: index
     })
   },
   updateUI: function(id, ui){
     AppDispatcher.dispatch({
-      actionType: PlaylistConstants.UPDATE_UI,
+      actionType: OpenPlaylistConstants.UPDATE_UI,
       id: id,
       ui: ui
     })    
   }
 }
-
-module.exports = PlaylistActions;

@@ -92,7 +92,7 @@ module.exports = class Player extends EventEmitter{
     return {
       position: info.pos,
       playing: info.item && this.playlist.playing(),
-      item: info.item ? this.loader.getFromPool(info.item.file.filename) : {}
+      item: info.item ? this.fileLoader.getFromPool(info.item.file.filename) : {}
     }
   }
   play() {

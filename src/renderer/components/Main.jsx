@@ -8,26 +8,26 @@ var React = require('react')
 var Tabs = require('react-simpletabs')
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
-var Sidebar = require('./Sidebar.jsx')
+var Sidebar = require('./Sidebar/Sidebar.jsx')
 var Footer = require('./Footer.jsx')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 
-var PlaylistStore = require('../stores/PlaylistStore')
+var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
 var PlayerStore = require('../stores/PlayerStore')
 var SidebarStore = require('../stores/SidebarStore')
 
-var PlaylistActions = require('../actions/PlaylistActions')
+var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
 
 function getSidebarState(){
   return SidebarStore.getSidebarInfo()
 }
 
-function getPlaylistState(){
+function getOpenPlaylistState(){
   return {
-    playlists: PlaylistStore.getAll() || [],
-    selectedPlaylist: PlaylistStore.getSelectedPlaylist() || null,
-    selectedIndex: PlaylistStore.getSelectedIndex()
+    openPlaylists: OpenPlaylistStore.getAll() || [],
+    selectedPlaylist: OpenPlaylistStore.getSelectedPlaylist() || null,
+    selectedIndex: OpenPlaylistStore.getSelectedIndex()
   }  
 }
 
@@ -39,31 +39,31 @@ function getPlayerState(){
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return _.merge(getSidebarState() ,getPlayerState(), getPlaylistState())
+    return _.merge(getSidebarState() ,getPlayerState(), getOpenPlaylistState())
   },
   componentDidMount: function() {
-    PlaylistStore.addChangeListener(this._onPlaylistChange)
+    OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
     PlayerStore.addChangeListener(this._onPlayerChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
   },
   componentWillUnmount: function() {
-    PlaylistStore.removeChangeListener(this._onPlaylistChange)
+    OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     PlayerStore.removeChangeListener(this._onPlayerChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
   },  
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
-    PlaylistActions.select(selectedIndex-1)
+    OpenPlaylistActions.select(selectedIndex-1)
   },
   handleScroll: function(item, event){
-    PlaylistActions.updateUI(item.props.playlist.id, { scrollBy: React.findDOMNode(item).scrollTop })
+    OpenPlaylistActions.updateUI(item.props.playlist.id, { scrollBy: React.findDOMNode(item).scrollTop })
   },
   handleViewSwitchClick: function(){
     if(!this.state.selectedPlaylist)
       return
-    PlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
+    OpenPlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
   },
   render: function() {   
-    var openPlaylists = this.state.playlists.map((playlist)=>{
+    var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
           <Playlist
@@ -93,8 +93,8 @@ module.exports = React.createClass({
       </div>
     )
   },
-  _onPlaylistChange: function() {
-    this.setState(getPlaylistState())
+  _onOpenPlaylistChange: function() {
+    this.setState(getOpenPlaylistState())
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

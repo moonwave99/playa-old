@@ -1,21 +1,24 @@
-ipc               = require 'ipc'
-React             = require 'react'
-Main              = require './renderer/components/Main.jsx'
-Player            = require './renderer/util/Player'
-Loader            = require './renderer/util/Loader'
-AppDispatcher     = require './renderer/dispatcher/AppDispatcher'
-PlayerConstants   = require './renderer/constants/PlayerConstants'
-PlaylistConstants = require './renderer/constants/PlaylistConstants'
-PlayerStore       = require './renderer/stores/PlayerStore'
-PlaylistStore     = require './renderer/stores/PlaylistStore'
-SidebarStore      = require './renderer/stores/SidebarStore'
-PlaylistActions   = require './renderer/actions/PlaylistActions'
+ipc                   = require 'ipc'
+React                 = require 'react'
+Main                  = require './renderer/components/Main.jsx'
+Player                = require './renderer/util/Player'
+PlaylistLoader        = require './renderer/util/PlaylistLoader'
+FileLoader            = require './renderer/util/FileLoader'
+AppDispatcher         = require './renderer/dispatcher/AppDispatcher'
+PlayerConstants       = require './renderer/constants/PlayerConstants'
+OpenPlaylistConstants = require './renderer/constants/OpenPlaylistConstants'
+SidebarConstants      = require './renderer/constants/SidebarConstants'
+PlayerStore           = require './renderer/stores/PlayerStore'
+OpenPlaylistStore     = require './renderer/stores/OpenPlaylistStore'
+SidebarStore          = require './renderer/stores/SidebarStore'
+OpenPlaylistActions   = require './renderer/actions/OpenPlaylistActions'
 
 module.exports = class Playa
   constructor: () ->
-    @loader = new Loader()
+    @playlistLoader = new PlaylistLoader()
+    @fileLoader = new FileLoader()
     @player = new Player()
-    @player.loader = @loader
+    @player.fileLoader = @fileLoader
     
     @player.on 'nowplaying', ->
       PlayerStore.emitChange()
@@ -27,9 +30,9 @@ module.exports = class Playa
     @loadPlaylists()
 
   loadPlaylists: ->
-    PlaylistActions.create()
-    PlaylistActions.select(0)
-    PlaylistActions.activate(0)
+    OpenPlaylistActions.create()
+    OpenPlaylistActions.select(0)
+    OpenPlaylistActions.activate(0)
     
   initIPC: ->
     ipc.on 'playback:prev', ->
@@ -50,27 +53,31 @@ module.exports = class Playa
         
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
-        actionType: PlaylistConstants.CREATE
+        actionType: OpenPlaylistConstants.CREATE_PLAYLIST
+        
+    ipc.on 'playlist:save', ->
+      AppDispatcher.dispatch
+        actionType: OpenPlaylistConstants.SAVE_PLAYLIST        
         
     ipc.on 'playlist:clear', ->
       AppDispatcher.dispatch
-        actionType: PlaylistConstants.CLEAR_PLAYLIST        
+        actionType: OpenPlaylistConstants.CLEAR_PLAYLIST        
         
     ipc.on 'playlist:close', ->
       AppDispatcher.dispatch
-        actionType: PlaylistConstants.CLOSE_PLAYLIST
+        actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
         
     ipc.on 'open:folder', (folder)->
       AppDispatcher.dispatch
-        actionType: PlaylistConstants.ADD_FOLDER
+        actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
         
     ipc.on 'playlist:toggleViewMode', ->
-      selectedPlaylist = PlaylistStore.getSelectedPlaylist()
+      selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
       if !selectedPlaylist then return
         
       AppDispatcher.dispatch
-        actionType: PlaylistConstants.UPDATE_UI,
+        actionType: OpenPlaylistConstants.UPDATE_UI,
         id: selectedPlaylist.id,
         ui:
           displayMode: if selectedPlaylist.displayMode == 'table' then 'albums' else 'table'

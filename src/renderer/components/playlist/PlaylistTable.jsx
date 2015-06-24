@@ -5,7 +5,7 @@ var React = require('react')
 var ReactPropTypes = React.PropTypes
 var PlaylistTableItem = require('./PlaylistTableItem.jsx')
 
-var PlaylistActions = require('../../actions/PlaylistActions')
+var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 
 var PlaylistTable = React.createClass({
@@ -38,7 +38,7 @@ var PlaylistTable = React.createClass({
     this.props.onClick(item)
   },
   handleDoubleClick: function(item){
-    PlaylistActions.playFile(item.props.itemKey, this.props.playlist)
+    OpenPlaylistActions.playFile(item.props.itemKey, this.props.playlist)
     PlayerActions.play()    
   }
 })

@@ -2,6 +2,7 @@
 
 var React = require('react')
 var ReactPropTypes = React.PropTypes
+var PlaylistBrowser = require('./PlaylistBrowser.jsx')
 var cx = require('classnames')
 
 var Sidebar = React.createClass({
@@ -19,6 +20,7 @@ var Sidebar = React.createClass({
     return (
       <div className={classes}>
         <ul className="icons list-unstyled"></ul>
+        <PlaylistBrowser/>
       </div>
     )
   }

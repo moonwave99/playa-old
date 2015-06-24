@@ -6,11 +6,11 @@ var path = require('path')
 var groove = require('groove')
 var assert = require('assert')
 var glob = require('glob')
-var MetaDoctor = require('../util/MetaDoctor')
 
-var PlaylistItem = require('../util/PlaylistItem')
+var MetaDoctor = require('./MetaDoctor')
+var PlaylistItem = require('./PlaylistItem')
 
-module.exports = class Loader {
+module.exports = class FileLoader {
   constructor(options) {
     this.cache = {}
   }
