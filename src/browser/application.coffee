@@ -22,6 +22,8 @@ class Application
   constructor: (options) ->
     {@resourcePath, @devMode } = options
 
+    global.application = this
+
     @pkgJson = require '../../package.json'
     @windows = []
 

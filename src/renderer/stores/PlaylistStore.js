@@ -10,8 +10,6 @@ var EventEmitter = require('events').EventEmitter
 var PlaylistConstants = require('../constants/PlaylistConstants')
 
 var Playlist = require('../util/Playlist')
-var Playa = require('../../playa')
-var _player = Playa.player
 
 var CHANGE_EVENT = 'change'
 
@@ -81,13 +79,13 @@ var PlaylistStore = assign({}, EventEmitter.prototype, {
         break
       case PlaylistConstants.PLAY_FILE:
         if(action.playlist.id !== _activeIndex){
-          _player.clearPlaylist()
-          _player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
-          _player.goto(action.id)
+          playa.player.clearPlaylist()
+          playa.player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
+          playa.player.goto(action.id)
           _activeIndex = action.playlist.id          
         }else if (action.id) {
           _activeIndex = action.playlist.id
-          _player.goto(action.id)
+          playa.player.goto(action.id)
         }
         break
       case PlaylistConstants.CLEAR_PLAYLIST:

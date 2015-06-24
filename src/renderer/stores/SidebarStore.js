@@ -52,10 +52,4 @@ var SidebarStore = assign({}, EventEmitter.prototype, {
     
 })
 
-ipc.on('sidebar:toggle', function(){
-  AppDispatcher.dispatch({
-    actionType: SidebarConstants.TOGGLE
-  })
-})
-
 module.exports = SidebarStore

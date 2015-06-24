@@ -4,7 +4,6 @@ var groove = require('groove')
 var md5 = require('MD5')
 var Batch = require('batch')
 var Loader = require('./Loader')
-var Playa = require('../../playa')
 var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class Playlist{
@@ -19,7 +18,7 @@ module.exports = class Playlist{
     return !!this.path
   }
   add(folder){
-    return Playa.loader.load(folder).then((items)=>{
+    return playa.loader.load(folder).then((items)=>{
       this.items = this.items.concat(items);
     })
   }

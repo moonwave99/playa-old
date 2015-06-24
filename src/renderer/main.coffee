@@ -1,4 +1,4 @@
-React = require 'react'
-Main = require './components/Main.jsx'
+Playa = require '../playa'
 
-React.render React.createElement(Main), document.getElementById('main')
+window.playa = new Playa()
+playa.render()

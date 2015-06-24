@@ -3,7 +3,6 @@ var keyMirror = require('keymirror');
 module.exports = keyMirror({
   CREATE: null,
   DELETE: null,
-  CLOSE: null,
   CLEAR_PLAYLIST: null,    
   CLOSE_PLAYLIST: null,    
   SELECT_PLAYLIST: null,

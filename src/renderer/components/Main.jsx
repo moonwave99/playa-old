@@ -17,31 +17,7 @@ var PlaylistStore = require('../stores/PlaylistStore')
 var PlayerStore = require('../stores/PlayerStore')
 var SidebarStore = require('../stores/SidebarStore')
 
-var PlaylistConstants = require('../constants/PlaylistConstants')
 var PlaylistActions = require('../actions/PlaylistActions')
-
-ipc.on('playlist:toggleViewMode', function(){
-  var selectedPlaylist = PlaylistStore.getSelectedPlaylist()
-  if(!selectedPlaylist)
-    return
-  PlaylistActions.updateUI(selectedPlaylist.id, { displayMode: selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
-})
-
-ipc.on('playlist:create', function(){
-  PlaylistActions.create()
-})
-
-ipc.on('playlist:clear', function(){
-  PlaylistActions.clearPlaylist()
-})
-
-ipc.on('playlist:close', function(){
-  PlaylistActions.closePlaylist()
-})
-
-ipc.on('open:folder', function(folder){
-  PlaylistActions.addFolder(folder)
-})
 
 function getSidebarState(){
   return SidebarStore.getSidebarInfo()
@@ -69,9 +45,6 @@ module.exports = React.createClass({
     PlaylistStore.addChangeListener(this._onPlaylistChange)
     PlayerStore.addChangeListener(this._onPlayerChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
-    PlaylistActions.create()
-    PlaylistActions.select(0)
-    PlaylistActions.activate(0)
   },
   componentWillUnmount: function() {
     PlaylistStore.removeChangeListener(this._onPlaylistChange)
