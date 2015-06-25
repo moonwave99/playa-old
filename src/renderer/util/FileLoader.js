@@ -6,6 +6,7 @@ var path = require('path')
 var groove = require('groove')
 var assert = require('assert')
 var glob = require('glob')
+var Promise = require('bluebird')
 
 var MetaDoctor = require('./MetaDoctor')
 var PlaylistItem = require('./PlaylistItem')
@@ -14,7 +15,13 @@ module.exports = class FileLoader {
   constructor(options) {
     this.cache = {}
   }
-  load(folder) {
+  loadFiles(files) {
+    var loads = files.map((f)=>{
+      return this.openFile(f)
+    })
+    return Promise.all(loads)
+  }
+  loadFolder(folder) {
     return new Promise((resolve, reject)=>{
       glob("**/*.{mp3,flac}", { cwd: folder }, (er, files)=> {
         Promise.all(

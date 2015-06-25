@@ -61,11 +61,22 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.SELECT_PLAYLIST:
         if(_playlists[action.selected]){
           _selectedIndex = action.selected
-          OpenPlaylistStore.emitChange()
+          _playlists[action.selected].load().then((playlist)=>{
+            console.info('Selected ' + playlist.id)
+            OpenPlaylistStore.emitChange()  
+          })
         }
         break
-      case OpenPlaylistConstants.CREATE_PLAYLIST:
-        _playlists.push( new Playlist({ title: uid(), id: uid() }) )
+      case OpenPlaylistConstants.LOAD_PLAYLIST:
+        if(_playlists[action.index]){
+          _playlists[action.index].load().then(()=>{
+            OpenPlaylistStore.emitChange()
+          })
+        }
+        
+        break        
+      case OpenPlaylistConstants.ADD_PLAYLIST:
+        _playlists = _playlists.concat(action.playlists)
         OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
@@ -78,7 +89,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         break
       case OpenPlaylistConstants.ADD_FOLDER:
         if (action.folder && _playlists[_selectedIndex]) {
-          _playlists[_selectedIndex].add(action.folder).then(()=>{
+          _playlists[_selectedIndex].addFolder(action.folder).then(()=>{
             OpenPlaylistStore.emitChange()  
           }).catch((err)=>{
             console.error(err.stack)

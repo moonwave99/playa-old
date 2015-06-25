@@ -1,6 +1,7 @@
 ipc                   = require 'ipc'
 React                 = require 'react'
 Main                  = require './renderer/components/Main.jsx'
+Playlist              = require './renderer/util/Playlist'
 Player                = require './renderer/util/Player'
 PlaylistLoader        = require './renderer/util/PlaylistLoader'
 FileLoader            = require './renderer/util/FileLoader'
@@ -25,14 +26,25 @@ module.exports = class Playa
 
     @player.on 'playerTick', ->
       PlayerStore.emitChange()
-
+    
+  init: ->
     @initIPC()
-    @loadPlaylists()
+    @loadPlaylists()    
 
   loadPlaylists: ->
-    OpenPlaylistActions.create()
+    OpenPlaylistActions.add([
+      new Playlist({
+        path: '/Users/moonwave99/Desktop/nu 2014.m3u',
+        title: 'Nu [2014]',
+        id: '6stixed'
+      }),
+      new Playlist({
+        path: '/Users/moonwave99/Desktop/nu 2015.m3u',
+        title: 'Nu [2015]',
+        id: '5s4igld'
+      })      
+    ])
     OpenPlaylistActions.select(0)
-    OpenPlaylistActions.activate(0)
     
   initIPC: ->
     ipc.on 'playback:prev', ->
@@ -53,7 +65,8 @@ module.exports = class Playa
         
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
-        actionType: OpenPlaylistConstants.CREATE_PLAYLIST
+        actionType: OpenPlaylistConstants.ADD_PLAYLIST
+        playlists: [ new Playlist({ title: 'Untitled' })]
         
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
