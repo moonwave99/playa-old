@@ -15,8 +15,17 @@ module.exports = class PlaylistLoader {
   constructor(options) {
 
   }
-  load(folder) {
-    
+  parseM3U(m3UPath){
+    return fs.readFileAsync(m3UPath, 'utf8').bind(this).then((data)=>{
+      return data.split('\n')
+    }).catch((err)=>{
+      console.error(err.stack)
+    })
+  }  
+  load(playlist) {
+    return this.parseM3U(playlist.path).then((files)=>{
+      return playlist.load(files)
+    })
   }
   save(playlist){
     return fs.outputFileAsync(path.join(process.env.HOME, 'Desktop', playlist.id + '.m3u'), playlist.items.map((i)=>{ return i.filename }).join("\n"))

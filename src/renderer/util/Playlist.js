@@ -20,23 +20,13 @@ module.exports = class Playlist{
   isNew(){
     return !this.path
   }
-  parseM3U(){
-    if(this.isNew()){
-      return
-    }
-    return fs.readFileAsync(this.path, 'utf8').bind(this).then((data)=>{
-      return data.split('\n')
-    }).catch((err)=>{
-      console.error(err.stack)
-    })
-  }
-  load(){
+  load(files){
     return new Promise((resolve, reject)=>{
       if(this.loaded || this.isNew()){
         resolve(this)
       }else{
-        this.parseM3U().then(playa.fileLoader.loadFiles.bind(playa.fileLoader)).then((items)=>{
-          this.items = this.items.concat(items);
+        playa.fileLoader.loadFiles(files).bind(playa.fileLoader).then((items)=>{
+          this.items = this.items.concat(items)
           this.loaded = true
           resolve(this)
         })            
@@ -45,7 +35,7 @@ module.exports = class Playlist{
   }
   addFolder(folder){
     return playa.fileLoader.loadFolder(folder).then((items)=>{
-      this.items = this.items.concat(items);
+      this.items = this.items.concat(items)
     })
   }
   closeFiles(){

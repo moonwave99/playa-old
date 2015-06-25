@@ -61,7 +61,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.SELECT_PLAYLIST:
         if(_playlists[action.selected]){
           _selectedIndex = action.selected
-          _playlists[action.selected].load().then((playlist)=>{
+          playa.playlistLoader.load(_playlists[action.selected]).then((playlist)=>{
             console.info('Selected ' + playlist.id)
             OpenPlaylistStore.emitChange()  
           })
