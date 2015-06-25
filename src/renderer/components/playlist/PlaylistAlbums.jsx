@@ -65,7 +65,7 @@ var PlaylistAlbums = React.createClass({
     }
   },
   handleDoubleClick: function(item){
-    OpenPlaylistActions.playFile(item.props.album[0].id, this.props.playlist)
+    OpenPlaylistActions.playFile(item.props.album.tracks[0].id, this.props.playlist)
     PlayerActions.play()
   },
   handleDelKeyPress: function(event){
