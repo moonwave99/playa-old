@@ -13,8 +13,6 @@ var Playlist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
     currentItem: ReactPropTypes.object,
-    handleClick: ReactPropTypes.func,
-    handleDoubleClick: ReactPropTypes.func,
     handleScroll: ReactPropTypes.func    
   },
   componentDidMount: function(){
@@ -30,14 +28,14 @@ var Playlist = React.createClass({
       case 'albums':
         return (
           <div className="playlist">
-            <PlaylistAlbums playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} currentItem={this.props.currentItem}/>  
+            <PlaylistAlbums albums={this.groupByAlbum()} playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} currentItem={this.props.currentItem}/>  
           </div>
         )
         break
       default:
         return (
           <div className="playlist">
-            <PlaylistTable playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} currentItem={this.props.currentItem}/>        
+            <PlaylistTable playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} currentItem={this.props.currentItem}/>        
           </div>
         )        
         break;
@@ -46,12 +44,23 @@ var Playlist = React.createClass({
   handleScroll: function(event){
     this.props.handleScroll(this, event)
   },
-  handleClick: function(item){
-    
-  },
   handleDoubleClick: function(item){
     OpenPlaylistActions.playFile(item.props.itemKey, this.props.playlist)
     PlayerActions.play()    
+  },
+  groupByAlbum: function(){
+    return _.reduce(this.props.playlist.items, (memo, item)=>{
+      var album = _.find(memo, (i)=>{ return i.title == item.metadata.album  })
+      if(!album){
+        album = {
+          title: item.metadata.album,
+          tracks: []
+        }
+        memo.push(album)
+      }
+      album.tracks.push(item)
+      return memo
+    }, [])    
   }
 })
 

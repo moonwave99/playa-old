@@ -16,10 +16,11 @@ var PlaylistItem = React.createClass({
   render: function() {
     var classes = cx({
       'album' : true,
-      'isPlaying' : this.props.isPlaying
+      'playing' : this.props.isPlaying,
+      'selected'  : this.props.isSelected      
     })
     return (
-      <div className={classes} onDoubleClick={this.onDoubleClick}>
+      <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick}>
         <span className="artist">{this.props.metadata.artist}</span><br/>
         <span className="title">{this.props.metadata.title}</span>
         <span className="date">{this.props.metadata.date}</span>
@@ -29,8 +30,8 @@ var PlaylistItem = React.createClass({
   onDoubleClick: function(){
     this.props.onDoubleClick(this)
   },
-  onClick: function(){
-    this.props.onClick(this)
+  onClick: function(event){
+    this.props.onClick(event, this)
   }
 })
 

@@ -1,11 +1,11 @@
 "use babel"
 
+var _ = require('lodash')
 var groove = require('groove')
 var Promise = require('bluebird')
 var fs = Promise.promisifyAll(require('fs-extra'))
 var md5 = require('MD5')
 var uid = require('uid')
-var Batch = require('batch')
 var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class Playlist{
@@ -38,26 +38,35 @@ module.exports = class Playlist{
       this.items = this.items.concat(items)
     })
   }
-  closeFiles(){
-    var batch = new Batch()
-    return new Promise((resolve, reject)=>{
-      this.items.forEach((item)=> {
-        batch.push((cb)=> {
-          item.grooveFile.close(cb)
+  closeFiles(files){
+    files = files || this.items
+    
+    return Promise.all(files.map((item)=>{
+      return new Promise((resolve, reject)=>{
+        item.grooveFile.close((err)=>{
+          if(err){
+            reject(err)
+          }else{
+            resolve(item)
+          }
         })
-      })     
-      batch.end((err)=> {
-        if(err){
-          reject(err)
-        }else{
-          resolve()
-        }
       })
-    })        
+    }))     
+  }
+  removeFiles(from, to){
+    return this.closeFiles(this.items.slice(from, to+1)).then((removedItems)=>{
+      var removedIds = removedItems.map((i)=>{ return i.id })
+      _.remove(this.items, (item)=>{
+        return removedIds.indexOf(item.id) > -1
+      })
+    })
   }
   clear(){
     return this.closeFiles().then(()=>{
       this.items = []
     })
+  }
+  indexOf(id){
+    return _.findIndex(this.items, { id: id })
   }
 }

@@ -4,7 +4,6 @@ var EventEmitter = require('events').EventEmitter
 var assert = require('assert')
 var groove = require('groove')
 var md5 = require('MD5')
-var Batch = require('batch')
 var _ = require('lodash')
 
 groove.setLogging(groove.LOG_ERROR)
@@ -153,6 +152,9 @@ module.exports = class Player extends EventEmitter{
     if(this.playing() && !this.attached){
       this.playlist.pause()
     }
+  }
+  remove(file){
+    this.playlist.remove(file)
   }
   clearPlaylist() {
     this.playlist.clear()      

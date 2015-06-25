@@ -21,6 +21,14 @@ module.exports = {
       actionType: OpenPlaylistConstants.SAVE_PLAYLIST
     })
   },
+  removeFiles: function(from, to, playlist){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.REMOVE_FILES,
+      from: from,
+      to: to,
+      playlist: playlist
+    })    
+  },
   clearPlaylist: function(){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.CLEAR_PLAYLIST

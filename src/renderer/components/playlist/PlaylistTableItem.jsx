@@ -8,14 +8,16 @@ require("moment-duration-format")
 
 var PlaylistItem = React.createClass({
   propTypes: {
-    metadata: ReactPropTypes.object.isRequired
+    metadata: ReactPropTypes.object.isRequired,
+    duration: ReactPropTypes.number.isRequired
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
   render: function() {
     var itemClasses = cx({
-      'playing' : this.props.isPlaying
+      'playing'   : this.props.isPlaying,
+      'selected'  : this.props.isSelected
     })
     return (
       <tr onDoubleClick={this.onDoubleClick} onClick={this.onClick} className={itemClasses}>
@@ -32,8 +34,8 @@ var PlaylistItem = React.createClass({
   onDoubleClick: function(){
     this.props.onDoubleClick(this)
   },
-  onClick: function(){
-    this.props.onClick(this)
+  onClick: function(event){
+    this.props.onClick(event, this)
   }
 })
 

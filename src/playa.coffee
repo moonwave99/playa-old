@@ -36,12 +36,12 @@ module.exports = class Playa
       new Playlist({
         path: '/Users/moonwave99/Desktop/nu 2014.m3u',
         title: 'Nu [2014]',
-        id: '6stixed'
+        id: 'nu 2014'
       }),
       new Playlist({
         path: '/Users/moonwave99/Desktop/nu 2015.m3u',
         title: 'Nu [2015]',
-        id: '5s4igld'
+        id: 'nu 2015'
       })      
     ])
     OpenPlaylistActions.select(0)
