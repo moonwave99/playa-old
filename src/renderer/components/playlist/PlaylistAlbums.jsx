@@ -1,7 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
-var keymaster = require('keymaster')
+var key = require('keymaster')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var PlaylistAlbumItem = require('./PlaylistAlbumItem.jsx')
@@ -17,15 +17,22 @@ var PlaylistAlbums = React.createClass({
   },
   getInitialState: function(){
     return {
-      selectionStart: 0,
-      selectionEnd: 0
+      selectionStart: -1,
+      selectionEnd: -1
     }
   },    
   componentDidMount: function() {
-    keymaster('del', this.handleDelKeyPress)
+    key('del', this.handleDelKeyPress)
+    key('enter', this.handleEnterKeyPress)    
+    key('up, down, shift+up, shift+down', this.handleArrowKeyPress)    
   },
   componentWillUnmount: function() {
-    keymaster.unbind('del')
+    key.unbind('del')
+    key.unbind('enter')
+    key.unbind('up')
+    key.unbind('down')    
+    key.unbind('shift+up')
+    key.unbind('shift+down')        
   },
   render: function() {
     var albums = this.props.albums.map((album, index)=>{
@@ -74,8 +81,44 @@ var PlaylistAlbums = React.createClass({
     })
     var to = _.findIndex(this.props.playlist.items, (item)=>{
       return item.id == this.props.albums[this.state.selectionEnd].tracks[this.props.albums[this.state.selectionEnd].tracks.length-1].id
-    })    
+    })
     OpenPlaylistActions.removeFiles(from, to, this.props.playlist)
+    this.setState({
+      selectionStart: -1,
+      selectionEnd: -1
+    })
+  },
+  handleArrowKeyPress: function(event){
+    var newStartIndex = this.state.selectionStart
+    var newEndIndex = this.state.selectionEnd
+    switch(event.which){
+      case 38: // up
+        if(event.shiftKey){
+          newStartIndex = Math.max(0, this.state.selectionStart-1)
+        }else{
+          newStartIndex = Math.max(0, this.state.selectionStart-1)  
+          newEndIndex = newStartIndex
+        }
+        break
+      case 40: // down
+        if(event.shiftKey){
+          newEndIndex = Math.min(this.props.albums.length-1, this.state.selectionEnd+1)
+        }else{
+          newStartIndex = Math.min(this.props.albums.length-1, this.state.selectionStart+1)
+          newEndIndex = newStartIndex
+        }        
+        break        
+    }
+    this.setState({
+      selectionStart: newStartIndex,
+      selectionEnd: newEndIndex
+    })
+  },
+  handleEnterKeyPress: function(event){
+    if((this.state.selectionEnd - this.state.selectionStart) == 0){
+      OpenPlaylistActions.playFile(this.props.albums[this.state.selectionStart].tracks[0].id, this.props.playlist)
+      PlayerActions.play()
+    }
   }  
 })
 
