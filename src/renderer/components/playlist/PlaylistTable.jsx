@@ -26,7 +26,7 @@ var PlaylistTable = React.createClass({
     key('del', this.handleDelKeyPress)
     key('enter', this.handleEnterKeyPress)
     key('command+a', this.handleSelectAllKeyPress)
-    key('up, down, shift+up, shift+down', this.handleArrowKeyPress)
+    key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
   },
   componentWillUnmount: function() {
     key.unbind('del')
@@ -36,6 +36,10 @@ var PlaylistTable = React.createClass({
     key.unbind('down')
     key.unbind('shift+up')
     key.unbind('shift+down')
+    key.unbind('alt+up')
+    key.unbind('alt+down')
+    key.unbind('shift+alt+up')
+    key.unbind('shift+alt+down')    
   },
   render: function() {
     var items = _.map(this.props.playlist.items, (item, index)=>{
@@ -92,22 +96,32 @@ var PlaylistTable = React.createClass({
     })    
   },
   handleArrowKeyPress: function(event){
+    var items = this.props.playlist.items    
     var newStartIndex = this.state.selectionStart
     var newEndIndex = this.state.selectionEnd
+    
     switch(event.which){
       case 38: // up
-        if(event.shiftKey){
+        if(event.shiftKey && event.altKey){
+          newStartIndex = 0
+        }else if(event.shiftKey){
           newStartIndex = Math.max(0, this.state.selectionStart-1)
+        }else if(event.altKey){
+          newStartIndex = newEndIndex = 0
         }else{
           newStartIndex = Math.max(0, this.state.selectionStart-1)  
           newEndIndex = newStartIndex
         }
         break
       case 40: // down
-        if(event.shiftKey){
-          newEndIndex = Math.min(this.props.playlist.items.length-1, this.state.selectionEnd+1)
+        if(event.shiftKey && event.altKey){
+          newEndIndex = items.length-1
+        }else if(event.shiftKey){
+          newEndIndex = Math.min(items.length-1, this.state.selectionEnd+1)
+        }else if(event.altKey){
+          newStartIndex = newEndIndex = items.length-1
         }else{
-          newStartIndex = Math.min(this.props.playlist.items.length-1, this.state.selectionStart+1)
+          newStartIndex = Math.min(items.length-1, this.state.selectionStart+1)
           newEndIndex = newStartIndex
         }        
         break        

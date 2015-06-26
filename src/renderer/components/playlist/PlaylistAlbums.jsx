@@ -25,16 +25,20 @@ var PlaylistAlbums = React.createClass({
     key('del', this.handleDelKeyPress)
     key('enter', this.handleEnterKeyPress)    
     key('command+a', this.handleSelectAllKeyPress)
-    key('up, down, shift+up, shift+down', this.handleArrowKeyPress)    
+    key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
   },
   componentWillUnmount: function() {
     key.unbind('del')
     key.unbind('enter')
     key.unbind('command+a')
     key.unbind('up')
-    key.unbind('down')    
+    key.unbind('down')
     key.unbind('shift+up')
-    key.unbind('shift+down')        
+    key.unbind('shift+down')
+    key.unbind('alt+up')
+    key.unbind('alt+down')
+    key.unbind('shift+alt+up')
+    key.unbind('shift+alt+down')     
   },
   render: function() {
     var albums = this.props.albums.map((album, index)=>{
@@ -91,22 +95,31 @@ var PlaylistAlbums = React.createClass({
     })
   },
   handleArrowKeyPress: function(event){
+    var items = this.props.albums    
     var newStartIndex = this.state.selectionStart
-    var newEndIndex = this.state.selectionEnd
+    var newEndIndex = this.state.selectionEnd 
     switch(event.which){
       case 38: // up
-        if(event.shiftKey){
+        if(event.shiftKey && event.altKey){
+          newStartIndex = 0
+        }else if(event.shiftKey){
           newStartIndex = Math.max(0, this.state.selectionStart-1)
+        }else if(event.altKey){
+          newStartIndex = newEndIndex = 0
         }else{
           newStartIndex = Math.max(0, this.state.selectionStart-1)  
           newEndIndex = newStartIndex
         }
         break
       case 40: // down
-        if(event.shiftKey){
-          newEndIndex = Math.min(this.props.albums.length-1, this.state.selectionEnd+1)
+        if(event.shiftKey && event.altKey){
+          newEndIndex = items.length-1
+        }else if(event.shiftKey){
+          newEndIndex = Math.min(items.length-1, this.state.selectionEnd+1)
+        }else if(event.altKey){
+          newStartIndex = newEndIndex = items.length-1
         }else{
-          newStartIndex = Math.min(this.props.albums.length-1, this.state.selectionStart+1)
+          newStartIndex = Math.min(items.length-1, this.state.selectionStart+1)
           newEndIndex = newStartIndex
         }        
         break        
@@ -114,7 +127,7 @@ var PlaylistAlbums = React.createClass({
     this.setState({
       selectionStart: newStartIndex,
       selectionEnd: newEndIndex
-    })
+    })    
   },
   handleEnterKeyPress: function(event){
     if((this.state.selectionEnd - this.state.selectionStart) == 0){
