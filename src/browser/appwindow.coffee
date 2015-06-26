@@ -78,9 +78,6 @@ class AppWindow
         
   closePlaylist: ->
     @window.webContents.send('playlist:close')
-    
-  clearPlaylist: ->
-    @window.webContents.send('playlist:clear')
 
   toggleViewMode: ->
     @window.webContents.send('playlist:toggleViewMode')

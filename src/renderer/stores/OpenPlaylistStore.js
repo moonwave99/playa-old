@@ -107,15 +107,6 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           playa.player.goto(action.id)
         }
         break
-      case OpenPlaylistConstants.CLEAR_PLAYLIST:
-        if(_playlists[_selectedIndex]){
-          _playlists[_selectedIndex].clear().then(function(){
-            OpenPlaylistStore.emitChange()  
-          }).catch((err)=>{
-            console.error(err.stack)
-          })          
-        }
-        break
       case OpenPlaylistConstants.REMOVE_FILES:
         if(_playlists[_selectedIndex]){
           _playlists[_selectedIndex].removeFiles(action.from, action.to).then(function(){

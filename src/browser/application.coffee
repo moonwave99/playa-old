@@ -108,10 +108,7 @@ class Application
                   
     @menu.on 'window:closePlaylist', ->  
       appWindow.closePlaylist()
-            
-    @menu.on 'window:clearPlaylist', ->  
-      appWindow.clearPlaylist()
-      
+
     @menu.on 'window:toggleViewMode', ->
       appWindow.toggleViewMode()
       

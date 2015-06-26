@@ -29,11 +29,6 @@ module.exports = {
       playlist: playlist
     })    
   },
-  clearPlaylist: function(){
-    AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.CLEAR_PLAYLIST
-    })
-  },
   closePlaylist: function(){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.CLOSE_PLAYLIST

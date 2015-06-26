@@ -24,11 +24,13 @@ var PlaylistAlbums = React.createClass({
   componentDidMount: function() {
     key('del', this.handleDelKeyPress)
     key('enter', this.handleEnterKeyPress)    
+    key('command+a', this.handleSelectAllKeyPress)
     key('up, down, shift+up, shift+down', this.handleArrowKeyPress)    
   },
   componentWillUnmount: function() {
     key.unbind('del')
     key.unbind('enter')
+    key.unbind('command+a')
     key.unbind('up')
     key.unbind('down')    
     key.unbind('shift+up')
@@ -119,6 +121,12 @@ var PlaylistAlbums = React.createClass({
       OpenPlaylistActions.playFile(this.props.albums[this.state.selectionStart].tracks[0].id, this.props.playlist)
       PlayerActions.play()
     }
+  },
+  handleSelectAllKeyPress: function(event){
+    this.setState({
+      selectionStart: 0,
+      selectionEnd: this.props.albums.length-1
+    })
   }  
 })
 
