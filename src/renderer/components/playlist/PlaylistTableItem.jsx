@@ -21,7 +21,7 @@ var PlaylistItem = React.createClass({
     })
     return (
       <tr onDoubleClick={this.onDoubleClick} onClick={this.onClick} className={itemClasses}>
-        <td className="text-center">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null}</td>
+        <td className="text-center">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</td>
         <td className="text-center">{ this.props.metadata.track }</td>
         <td className="text-nowrap">{ this.props.metadata.artist }</td>
         <td className="text-nowrap">{ this.props.metadata.album }</td>

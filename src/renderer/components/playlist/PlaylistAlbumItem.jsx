@@ -13,6 +13,21 @@ var PlaylistItem = React.createClass({
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
+  renderTracklist: function(){
+    return (
+      <ul className="list-unstyled tracklist">
+      { this.props.album.tracks.map( (track, index) => this.renderTrack(track, index) )}
+      </ul>
+    )
+  },
+  renderTrack: function(track, index){
+    return (
+      <li className="track" key={track.id}>
+        <span className="track-number">{ track.metadata.track }.</span>
+        <span className="track-title">{ track.metadata.title }</span>
+      </li>
+    )
+  },
   render: function() {
     var classes = cx({
       'album' : true,
@@ -22,9 +37,12 @@ var PlaylistItem = React.createClass({
     })
     return (
       <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick}>
-        <span className="artist">{this.props.metadata.artist}</span><br/>
-        <span className="title">{this.props.album.title}</span>
-        <span className="date">{this.props.metadata.date}</span>
+        <header>
+          <span className="artist">{this.props.metadata.artist}</span><br/>
+          <span className="title">{this.props.album.title} { this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
+          <span className="date">{this.props.metadata.date}</span>
+        </header>
+        { this.props.isOpened ? this.renderTracklist() : null }
       </div>
     )
   },

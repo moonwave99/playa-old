@@ -79,9 +79,7 @@ var PlaylistAlbums = React.createClass({
       })
     }else if(event.shiftKey){
       this.setState({
-        selection: albumIDs.slice(
-          Math.min(low, index), Math.max(hi, index)+1
-        )
+        selection: albumIDs.slice(Math.min(low, index), Math.max(hi, index)+1)
       })
     }else{
       this.setState({
@@ -155,7 +153,6 @@ var PlaylistAlbums = React.createClass({
     })
   },
   handleLeftRightKeyPress: function(event){
-    console.log(_.uniq(this.state.openAlbums.concat(this.state.selection)))
     switch(event.which){
       case 39: // right
         this.setState({

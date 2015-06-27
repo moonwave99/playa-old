@@ -15,7 +15,7 @@ module.exports = class Playlist{
     this.title = options.title
     this.path = options.path
     this.loaded = false
-    this.displayMode = 'table'
+    this.displayMode = 'albums'
   }
   groupByAlbum(){
     return _.reduce(this.items, (memo, item)=>{
