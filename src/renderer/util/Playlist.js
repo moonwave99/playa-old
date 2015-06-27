@@ -17,6 +17,21 @@ module.exports = class Playlist{
     this.loaded = false
     this.displayMode = 'table'
   }
+  groupByAlbum(){
+    return _.reduce(this.items, (memo, item)=>{
+      var album = _.find(memo, (i)=>{ return i.title == item.metadata.album  })
+      if(!album){
+        album = {
+          id: md5(item.metadata.artist + item.metadata.album),
+          title: item.metadata.album,
+          tracks: []
+        }
+        memo.push(album)
+      }
+      album.tracks.push(item)
+      return memo
+    }, [])    
+  }
   isNew(){
     return !this.path
   }
@@ -53,8 +68,8 @@ module.exports = class Playlist{
       })
     }))     
   }
-  removeFiles(from, to){
-    return this.closeFiles(this.items.slice(from, to+1)).then((removedItems)=>{
+  removeFiles(ids){
+    return this.closeFiles(this.items.filter( i => ids.indexOf(i.id) > -1)).then((removedItems)=>{
       var removedIds = removedItems.map((i)=>{ return i.id })
       _.remove(this.items, (item)=>{
         return removedIds.indexOf(item.id) > -1

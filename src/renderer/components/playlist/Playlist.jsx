@@ -28,7 +28,7 @@ var Playlist = React.createClass({
       case 'albums':
         return (
           <div className="playlist">
-            <PlaylistAlbums albums={this.groupByAlbum()} playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} currentItem={this.props.currentItem}/>  
+            <PlaylistAlbums albums={this.props.playlist.groupByAlbum()} playlist={this.props.playlist} onDoubleClick={this.handleDoubleClick} currentItem={this.props.currentItem}/>  
           </div>
         )
         break
@@ -47,20 +47,6 @@ var Playlist = React.createClass({
   handleDoubleClick: function(item){
     OpenPlaylistActions.playFile(item.props.itemKey, this.props.playlist)
     PlayerActions.play()    
-  },
-  groupByAlbum: function(){
-    return _.reduce(this.props.playlist.items, (memo, item)=>{
-      var album = _.find(memo, (i)=>{ return i.title == item.metadata.album  })
-      if(!album){
-        album = {
-          title: item.metadata.album,
-          tracks: []
-        }
-        memo.push(album)
-      }
-      album.tracks.push(item)
-      return memo
-    }, [])    
   }
 })
 

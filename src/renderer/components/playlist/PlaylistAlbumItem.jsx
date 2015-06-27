@@ -17,7 +17,8 @@ var PlaylistItem = React.createClass({
     var classes = cx({
       'album' : true,
       'playing' : this.props.isPlaying,
-      'selected'  : this.props.isSelected      
+      'selected'  : this.props.isSelected,
+      'open': this.props.isOpen
     })
     return (
       <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick}>

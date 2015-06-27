@@ -17,8 +17,7 @@ var PlaylistAlbums = React.createClass({
   },
   getInitialState: function(){
     return {
-      selectionStart: -1,
-      selectionEnd: -1
+      selection: []
     }
   },    
   componentDidMount: function() {
@@ -26,6 +25,7 @@ var PlaylistAlbums = React.createClass({
     key('enter', this.handleEnterKeyPress)    
     key('command+a', this.handleSelectAllKeyPress)
     key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
+    key('left, right', this.handleLeftRightKeyPress)
   },
   componentWillUnmount: function() {
     key.unbind('del')
@@ -39,6 +39,8 @@ var PlaylistAlbums = React.createClass({
     key.unbind('alt+down')
     key.unbind('shift+alt+up')
     key.unbind('shift+alt+down')     
+    key.unbind('left')
+    key.unbind('right')
   },
   render: function() {
     var albums = this.props.albums.map((album, index)=>{
@@ -46,13 +48,14 @@ var PlaylistAlbums = React.createClass({
       var output = (
         <PlaylistAlbumItem
           key={album.title}
-          itemKey={album.title}
+          itemKey={album.id}
           album={album}
           metadata={album.tracks[0].metadata}
           onClick={this.handleClick}
           onDoubleClick={this.handleDoubleClick}
           isPlaying={isPlaying}
-          isSelected={index >= this.state.selectionStart && index <= this.state.selectionEnd} />
+          isOpened={album.open}
+          isSelected={this.state.selection.indexOf(album.id) > -1} />
       )
       return output
     })
@@ -62,19 +65,27 @@ var PlaylistAlbums = React.createClass({
     )
   },
   handleClick: function(event, item){
-    index = _.findIndex(this.props.albums, (album)=>{
-      return album.title == item.props.itemKey
-    })
-    if(event.shiftKey){
+    var albumIDs = this.props.albums.map( i => i.id )
+    var index = albumIDs.indexOf(item.props.itemKey)
+    
+    var [low, hi] = [
+      albumIDs.indexOf(this.state.selection[0]),
+      albumIDs.indexOf(this.state.selection[this.state.selection.length-1])
+    ]
+    if(event.metaKey){
       this.setState({
-        selectionStart: Math.min(this.state.selectionStart, index),
-        selectionEnd: Math.max(this.state.selectionStart, index)
-      })      
+        selection: item.props.isSelected ? _.without(this.state.selection, item.props.itemKey) : this.state.selection.concat([item.props.itemKey])
+      })
+    }else if(event.shiftKey){
+      this.setState({
+        selection: albumIDs.slice(
+          Math.min(low, index), Math.max(hi, index)+1
+        )
+      })
     }else{
       this.setState({
-        selectionStart: index,
-        selectionEnd: index
-      })      
+        selection: [item.props.itemKey]
+      })
     }
   },
   handleDoubleClick: function(item){
@@ -82,65 +93,79 @@ var PlaylistAlbums = React.createClass({
     PlayerActions.play()
   },
   handleDelKeyPress: function(event){
-    var from = _.findIndex(this.props.playlist.items, (item)=>{
-      return item.id == this.props.albums[this.state.selectionStart].tracks[0].id
-    })
-    var to = _.findIndex(this.props.playlist.items, (item)=>{
-      return item.id == this.props.albums[this.state.selectionEnd].tracks[this.props.albums[this.state.selectionEnd].tracks.length-1].id
-    })
-    OpenPlaylistActions.removeFiles(from, to, this.props.playlist)
+    var ids = _.reduce(this.state.selection, (memo, id)=>{
+      memo = memo.concat(_.findWhere(this.props.albums, { id: id }).tracks.map( i => i.id ))
+      return memo
+    }, [])
+    OpenPlaylistActions.removeFiles(ids, this.props.playlist)
     this.setState({
-      selectionStart: -1,
-      selectionEnd: -1
+      selection: []
     })
   },
   handleArrowKeyPress: function(event){
-    var items = this.props.albums    
-    var newStartIndex = this.state.selectionStart
-    var newEndIndex = this.state.selectionEnd 
+    var items = this.props.albums.map( i => i.id )
+    var [low, hi] = [
+      items.indexOf(this.state.selection[0]),
+      items.indexOf(this.state.selection[this.state.selection.length-1])
+    ]
+    var newLow = low
+    var newHi = hi
+    
     switch(event.which){
       case 38: // up
         if(event.shiftKey && event.altKey){
-          newStartIndex = 0
+          newLow = 0
         }else if(event.shiftKey){
-          newStartIndex = Math.max(0, this.state.selectionStart-1)
+          newLow = Math.max(0, low-1)
         }else if(event.altKey){
-          newStartIndex = newEndIndex = 0
+          newLow = newHi = 0
         }else{
-          newStartIndex = Math.max(0, this.state.selectionStart-1)  
-          newEndIndex = newStartIndex
+          newLow = Math.max(0, low-1)  
+          newHi = newLow
         }
         break
       case 40: // down
         if(event.shiftKey && event.altKey){
-          newEndIndex = items.length-1
+          newHi = items.length-1
         }else if(event.shiftKey){
-          newEndIndex = Math.min(items.length-1, this.state.selectionEnd+1)
+          newHi = Math.min(items.length-1, hi+1)
         }else if(event.altKey){
-          newStartIndex = newEndIndex = items.length-1
+          newLow = newHi = items.length-1
         }else{
-          newStartIndex = Math.min(items.length-1, this.state.selectionStart+1)
-          newEndIndex = newStartIndex
+          newLow = Math.min(items.length-1, low+1)
+          newHi = newLow
         }        
         break        
     }
     this.setState({
-      selectionStart: newStartIndex,
-      selectionEnd: newEndIndex
+      selection: items.slice(newLow, newHi+1)
     })    
   },
   handleEnterKeyPress: function(event){
-    if((this.state.selectionEnd - this.state.selectionStart) == 0){
-      OpenPlaylistActions.playFile(this.props.albums[this.state.selectionStart].tracks[0].id, this.props.playlist)
+    if(this.state.selection.length == 1){
+      var albumToPlay = _.findWhere(this.props.albums, { id: this.state.selection[0] })
+      OpenPlaylistActions.playFile(albumToPlay.tracks[0].id, this.props.playlist)
       PlayerActions.play()
     }
   },
   handleSelectAllKeyPress: function(event){
     this.setState({
-      selectionStart: 0,
-      selectionEnd: this.props.albums.length-1
+      selection: this.props.albums.map( i => i.id )
     })
-  }  
+  },
+  handleLeftRightKeyPress: function(event){
+    if((this.state.selectionEnd - this.state.selectionStart) != 0){
+      return
+    }
+    switch(event.which){
+      case 39: // right
+        this.props.albums[this.state.selectionStart].open = true
+        break
+      case 37: // left
+        this.props.albums[this.state.selectionStart].open = false
+        break        
+    }
+  }
 })
 
 module.exports = PlaylistAlbums
