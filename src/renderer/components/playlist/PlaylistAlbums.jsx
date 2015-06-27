@@ -17,7 +17,8 @@ var PlaylistAlbums = React.createClass({
   },
   getInitialState: function(){
     return {
-      selection: []
+      selection: [],
+      openAlbums: []
     }
   },    
   componentDidMount: function() {
@@ -54,7 +55,7 @@ var PlaylistAlbums = React.createClass({
           onClick={this.handleClick}
           onDoubleClick={this.handleDoubleClick}
           isPlaying={isPlaying}
-          isOpened={album.open}
+          isOpened={this.state.openAlbums.indexOf(album.id) > -1}
           isSelected={this.state.selection.indexOf(album.id) > -1} />
       )
       return output
@@ -154,15 +155,17 @@ var PlaylistAlbums = React.createClass({
     })
   },
   handleLeftRightKeyPress: function(event){
-    if((this.state.selectionEnd - this.state.selectionStart) != 0){
-      return
-    }
+    console.log(_.uniq(this.state.openAlbums.concat(this.state.selection)))
     switch(event.which){
       case 39: // right
-        this.props.albums[this.state.selectionStart].open = true
+        this.setState({
+          openAlbums: _.uniq(this.state.openAlbums.concat(this.state.selection))
+        })
         break
       case 37: // left
-        this.props.albums[this.state.selectionStart].open = false
+        this.setState({
+          openAlbums: _.difference(this.state.openAlbums, this.state.selection)
+        })
         break        
     }
   }
