@@ -23,7 +23,7 @@ var PlaylistItem = React.createClass({
     return (
       <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick}>
         <span className="artist">{this.props.metadata.artist}</span><br/>
-        <span className="title">{this.props.metadata.title}</span>
+        <span className="title">{this.props.album.title}</span>
         <span className="date">{this.props.metadata.date}</span>
       </div>
     )
