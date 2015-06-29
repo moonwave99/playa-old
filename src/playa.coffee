@@ -73,7 +73,7 @@ module.exports = class Playa
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new Playlist({ title: 'Untitled' })]
+        playlists: [ new Playlist({ title: 'Untitled', id: md5('Untitled') })]
         
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch

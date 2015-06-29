@@ -40,11 +40,23 @@ module.exports = class PlaylistLoader {
     })
   }
   load(playlist) {
-    return this.parseM3U(playlist.path).then((files)=>{
-      return playlist.load(files)
+    return new Promise((resolve, reject)=>{
+      if(playlist.isNew()){
+        resolve(playlist)
+      }else{
+        resolve(this.parseM3U(playlist.path).then((files)=>{
+          return playlist.load(files)
+        }))   
+      }
     })
   }
   save(playlist){
-    return fs.outputFileAsync(path.join(process.env.HOME, 'Desktop', playlist.id + '.m3u'), playlist.items.map((i)=>{ return i.filename }).join("\n"))
+    var targetPath = path.join(process.env.HOME, 'Desktop', '_playlists', playlist.title + '.m3u')
+    return fs.outputFileAsync(
+      targetPath,
+      playlist.items.map((i)=>{ return i.filename }).join("\n")
+    ).then(()=>{
+      playlist.path = targetPath
+    })
   }
 }

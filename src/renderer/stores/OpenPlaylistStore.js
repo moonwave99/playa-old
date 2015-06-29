@@ -97,7 +97,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.SAVE_PLAYLIST:
         var playlist
         if(playlist = _playlists[_selectedIndex]){
-          playa.playlistLoader.save(playlist).then(()=>{
+          playa.playlistLoader.save(playlist).then((file)=>{
             console.info('Saved ' + playlist.id)
             OpenPlaylistStore.emitChange()
           })
