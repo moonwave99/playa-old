@@ -24,12 +24,13 @@ var PlaylistTable = React.createClass({
     }
   },
   componentDidMount: function() {
-    key('del', this.handleDelKeyPress)
+    key('backspace, del', this.handleDelKeyPress)
     key('enter', this.handleEnterKeyPress)
     key('command+a', this.handleSelectAllKeyPress)
     key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
   },
   componentWillUnmount: function() {
+    key.unbind('backspace')
     key.unbind('del')
     key.unbind('enter')
     key.unbind('command+a')

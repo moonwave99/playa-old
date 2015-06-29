@@ -7,9 +7,6 @@ var cx = require('classnames')
 require("moment-duration-format")
 
 var PlaylistItem = React.createClass({
-  propTypes: {
-    isPlaying: ReactPropTypes.bool
-  },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
@@ -21,33 +18,45 @@ var PlaylistItem = React.createClass({
     )
   },
   renderTrack: function(track, index){
+    var isPlaying = track.id == this.props.currentItem.id
+    var classes = cx({
+      'track' : true,
+      'playing' : isPlaying
+    })    
     return (
-      <li className="track" key={track.id}>
+      <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
+        <span className="track-playing-indicator">{ isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
         <span className="track-number">{ track.metadata.track }.</span>
         <span className="track-title">{ track.metadata.title }</span>
+        <span className="track-duration">{ this.formatTime(track.duration) }</span>
       </li>
     )
   },
   render: function() {
+    var isPlaying = !!(this.props.album.tracks.filter((i)=>{ return i.id == this.props.currentItem.id }).length)    
     var classes = cx({
       'album' : true,
-      'playing' : this.props.isPlaying,
+      'playing' : isPlaying,
       'selected'  : this.props.isSelected,
       'open': this.props.isOpened
     })
     return (
-      <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick}>
+      <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick} data-id={this.props.album.id}>
         <header>
           <span className="artist">{this.props.metadata.artist}</span><br/>
-          <span className="title">{this.props.album.title} { this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
+          <span className="title">{this.props.album.title} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
           <span className="date">{this.props.metadata.date}</span>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </div>
     )
   },
-  onDoubleClick: function(){
-    this.props.onDoubleClick(this)
+  handleTracklistDoubleClick: function(event){
+    event.stopPropagation()
+    this.props.onDoubleClick(event.target.dataset.id)
+  },
+  onDoubleClick: function(event){
+    this.props.onDoubleClick(this.props.album.tracks[0].id)
   },
   onClick: function(event){
     this.props.onClick(event, this)

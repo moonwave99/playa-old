@@ -54,6 +54,7 @@
         position relative
         padding-top size($albumHeaderTopPadding)
         .artist
+          color $albumArtistColor
           font-size size($albumArtistFontSize)
           vertical-align middle
           padding-left 1rem
@@ -61,7 +62,6 @@
           font-size size($albumTitleFontSize)
           vertical-align middle
           padding-left 1rem
-          font-weight 300
         .date
           font-size size($albumDateFontSize)
           vertical-align middle
@@ -74,14 +74,25 @@
         margin 0
         line-height size($albumTracklistLineHeight)
         font-size size($albumTracklistFontSize)
-        font-weight 300
         .track
           &:nth-child(odd)
             background-color rgba(white, .03)
           &:nth-child(even)
             background-color rgba(white, .07)
+          &:hover
+            background-color rgba(white, .08)
+          &.playing
+            background-color rgba(white, .1)
+          .track-playing-indicator
+            width 1.2rem
+            text-align center
+            display inline-block
+            margin-left .5rem
           .track-number
-            width 2rem
+            width 1.2rem
             text-align right
             margin 0 1rem 0 0
             display inline-block
+          .track-duration
+            float right
+            margin-right 1rem

@@ -1,22 +1,24 @@
-ipc                   = require 'ipc'
-React                 = require 'react'
-Main                  = require './renderer/components/Main.jsx'
-Playlist              = require './renderer/util/Playlist'
-Player                = require './renderer/util/Player'
-PlaylistLoader        = require './renderer/util/PlaylistLoader'
-FileLoader            = require './renderer/util/FileLoader'
-AppDispatcher         = require './renderer/dispatcher/AppDispatcher'
-PlayerConstants       = require './renderer/constants/PlayerConstants'
-OpenPlaylistConstants = require './renderer/constants/OpenPlaylistConstants'
-SidebarConstants      = require './renderer/constants/SidebarConstants'
-PlayerStore           = require './renderer/stores/PlayerStore'
-OpenPlaylistStore     = require './renderer/stores/OpenPlaylistStore'
-SidebarStore          = require './renderer/stores/SidebarStore'
-OpenPlaylistActions   = require './renderer/actions/OpenPlaylistActions'
+md5                       = require 'md5'
+ipc                       = require 'ipc'
+React                     = require 'react'
+Main                      = require './renderer/components/Main.jsx'
+Playlist                  = require './renderer/util/Playlist'
+Player                    = require './renderer/util/Player'
+PlaylistLoader            = require './renderer/util/PlaylistLoader'
+FileLoader                = require './renderer/util/FileLoader'
+AppDispatcher             = require './renderer/dispatcher/AppDispatcher'
+PlayerConstants           = require './renderer/constants/PlayerConstants'
+PlaylistBrowserConstants  = require './renderer/constants/PlaylistBrowserConstants'
+OpenPlaylistConstants     = require './renderer/constants/OpenPlaylistConstants'
+SidebarConstants          = require './renderer/constants/SidebarConstants'
+PlayerStore               = require './renderer/stores/PlayerStore'
+OpenPlaylistStore         = require './renderer/stores/OpenPlaylistStore'
+SidebarStore              = require './renderer/stores/SidebarStore'
+OpenPlaylistActions       = require './renderer/actions/OpenPlaylistActions'
 
 module.exports = class Playa
   constructor: () ->
-    @playlistLoader = new PlaylistLoader()
+    @playlistLoader = new PlaylistLoader({ root: '/Users/moonwave99/Desktop/_playlists' })
     @fileLoader = new FileLoader()
     @player = new Player()
     @player.fileLoader = @fileLoader
@@ -29,22 +31,27 @@ module.exports = class Playa
     
   init: ->
     @initIPC()
-    @loadPlaylists()    
+    @loadPlaylists()
 
   loadPlaylists: ->
-    OpenPlaylistActions.add([
-      new Playlist({
-        path: '/Users/moonwave99/Desktop/nu 2014.m3u',
-        title: 'Nu [2014]',
-        id: 'nu 2014'
-      }),
-      new Playlist({
-        path: '/Users/moonwave99/Desktop/nu 2015.m3u',
-        title: 'Nu [2015]',
-        id: 'nu 2015'
-      })      
-    ])
-    OpenPlaylistActions.select(0)
+    @playlistLoader.loadTree().then (tree)=>
+      AppDispatcher.dispatch
+        actionType: PlaylistBrowserConstants.LOAD_TREE
+        tree: tree
+
+    AppDispatcher.dispatch
+      actionType: OpenPlaylistConstants.ADD_PLAYLIST
+      playlists: [
+        new Playlist({
+          id: md5('/Users/moonwave99/Desktop/_playlists/slsk.m3u')
+          path: '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
+          title: 'slsk'
+        })
+      ]
+
+    AppDispatcher.dispatch
+      actionType: OpenPlaylistConstants.SELECT_PLAYLIST
+      selected: 0
     
   initIPC: ->
     ipc.on 'playback:prev', ->

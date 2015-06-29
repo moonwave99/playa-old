@@ -7,6 +7,7 @@ module.exports = keyMirror({
   REMOVE_FILES: null,
   CLOSE_PLAYLIST: null,    
   SELECT_PLAYLIST: null,
+  SELECT_PLAYLIST_BY_ID: null,  
   PLAY_PLAYLIST: null,
   PLAY_FILE: null,
   ADD_FOLDER: null,

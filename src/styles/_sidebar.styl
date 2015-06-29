@@ -8,7 +8,7 @@
   transition transform .2s ease-in-out
   margin-top size($tabsBarHeight)
   &.sidebar-left
-    transform s('translateX(calc(%s - %s))', $sidebarClosedWidth, $sidebarWidth)
+    transform 'translateX(calc(%s - %s))' % ($sidebarClosedWidth $sidebarWidth)
     left 0
   &.open
     transform translateX(0)
@@ -26,3 +26,13 @@
         .fa
           color $sidebarIconColor
           font-size size($sidebarIconSize)
+          
+  .playlist-browser
+    margin 0
+    li
+      line-height size($playlistBrowserLineHeight)
+      font-size size($playlistBrowserFontSize)
+      &:hover
+        background-color rgba(white, .1)
+      .fa
+        margin-right .5rem

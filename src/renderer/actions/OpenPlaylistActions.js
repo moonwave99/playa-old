@@ -52,6 +52,12 @@ module.exports = {
       selected: index
     })    
   },
+  selectById: function(id){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID,
+      id: id
+    })        
+  },  
   updateUI: function(id, ui){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.UPDATE_UI,

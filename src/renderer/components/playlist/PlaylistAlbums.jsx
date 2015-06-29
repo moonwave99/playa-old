@@ -22,13 +22,15 @@ var PlaylistAlbums = React.createClass({
     }
   },    
   componentDidMount: function() {
-    key('del', this.handleDelKeyPress)
-    key('enter', this.handleEnterKeyPress)    
-    key('command+a', this.handleSelectAllKeyPress)
-    key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
-    key('left, right', this.handleLeftRightKeyPress)
+    key('backspace, del', 'albumList', this.handleDelKeyPress)
+    key('enter', 'albumList', this.handleEnterKeyPress)    
+    key('command+a', 'albumList', this.handleSelectAllKeyPress)
+    key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', 'albumList', this.handleArrowKeyPress)
+    key('left, right', 'albumList', this.handleLeftRightKeyPress)
+    key.setScope('albumList')
   },
   componentWillUnmount: function() {
+    key.unbind('backspace')
     key.unbind('del')
     key.unbind('enter')
     key.unbind('command+a')
@@ -45,7 +47,6 @@ var PlaylistAlbums = React.createClass({
   },
   render: function() {
     var albums = this.props.albums.map((album, index)=>{
-      var isPlaying = !!(album.tracks.filter((i)=>{ return i.id == this.props.currentItem.id }).length)
       var output = (
         <PlaylistAlbumItem
           key={album.title}
@@ -54,7 +55,7 @@ var PlaylistAlbums = React.createClass({
           metadata={album.tracks[0].metadata}
           onClick={this.handleClick}
           onDoubleClick={this.handleDoubleClick}
-          isPlaying={isPlaying}
+          currentItem={this.props.currentItem}
           isOpened={this.state.openAlbums.indexOf(album.id) > -1}
           isSelected={this.state.selection.indexOf(album.id) > -1} />
       )
@@ -87,8 +88,8 @@ var PlaylistAlbums = React.createClass({
       })
     }
   },
-  handleDoubleClick: function(item){
-    OpenPlaylistActions.playFile(item.props.album.tracks[0].id, this.props.playlist)
+  handleDoubleClick: function(id){
+    OpenPlaylistActions.playFile(id, this.props.playlist)
     PlayerActions.play()
   },
   handleDelKeyPress: function(event){

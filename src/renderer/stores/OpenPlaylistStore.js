@@ -17,6 +17,14 @@ var _playlists = []
 var _selectedIndex = -1
 var _activeIndex = -1
 
+var _selectPlaylist = function(playlist, index){
+  _selectedIndex = index
+  playa.playlistLoader.load(playlist).then((playlist)=>{
+    console.info('Selected ' + playlist.id)
+    OpenPlaylistStore.emitChange()  
+  })  
+}
+
 var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function(){
     return _playlists;
@@ -59,30 +67,38 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
       case OpenPlaylistConstants.SELECT_PLAYLIST:
-        if(_playlists[action.selected]){
-          _selectedIndex = action.selected
-          playa.playlistLoader.load(_playlists[action.selected]).then((playlist)=>{
-            console.info('Selected ' + playlist.id)
-            OpenPlaylistStore.emitChange()  
-          })
+        var index = action.selected
+        var playlist
+        if(playlist = _playlists[index]){
+          _selectPlaylist(playlist, index)
         }
         break
+      case OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID:
+        var index = _.findIndex(_playlists, { id: action.id })
+        var playlist
+        if(playlist = _playlists[index]){
+          _selectPlaylist(playlist, index)
+        }
+        break        
       case OpenPlaylistConstants.LOAD_PLAYLIST:
         if(_playlists[action.index]){
           _playlists[action.index].load().then(()=>{
             OpenPlaylistStore.emitChange()
           })
         }
-        
         break        
       case OpenPlaylistConstants.ADD_PLAYLIST:
-        _playlists = _playlists.concat(action.playlists)
+        var newPlaylists = _.difference(action.playlists.map( i => i.id), _playlists.map(i => i.id))
+        _playlists = _playlists.concat(action.playlists.filter((p)=>{
+          return newPlaylists.indexOf(p.id) > -1
+        }))
         OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
-        if(_playlists[_selectedIndex]){
-          playa.playlistLoader.save(_playlists[_selectedIndex]).then(()=>{
-            console.info('Saved ' + _playlists[_selectedIndex].id)
+        var playlist
+        if(playlist = _playlists[_selectedIndex]){
+          playa.playlistLoader.save(playlist).then(()=>{
+            console.info('Saved ' + playlist.id)
             OpenPlaylistStore.emitChange()
           })
         }        
