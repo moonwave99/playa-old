@@ -11,20 +11,25 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlaylistBrowser = React.createClass({
   render: function() {
     var classes = cx({
-      'playlist-browser'  : true,
-      'list-unstyled'     : true
+      'playlist-browser'  : true
     })
     return (
-      <ul className={classes}>{
-        this.props.tree.map((playlist)=>{
-          return (
-            <li key={playlist.id} onDoubleClick={this.handlePlaylistDoubleClick} data-playlist={playlist.id}>
-              <i className="fa fa-fw fa-file-audio-o"></i>
-              {playlist.title}
-            </li>            
-          )
-        })
-      }</ul>
+      <div className={classes}>
+        <TreeView key="root" nodeLabel="Playlists" defaultCollapsed={false}>
+          <ul className="list-unstyled">
+            {
+              this.props.tree.map((playlist)=>{
+                return (
+                  <li key={playlist.id} onDoubleClick={this.handlePlaylistDoubleClick} data-playlist={playlist.id}>
+                    <i className="fa fa-fw fa-file-audio-o"></i>
+                    {playlist.title}
+                  </li>            
+                )
+              })
+            }
+            </ul>
+        </TreeView>
+      </div>
     )
   },
   handlePlaylistDoubleClick: function(event){

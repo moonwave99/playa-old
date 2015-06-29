@@ -28,7 +28,7 @@
           font-size size($sidebarIconSize)
           
   .playlist-browser
-    margin 0
+    margin .5rem 0 0 0
     li
       line-height size($playlistBrowserLineHeight)
       font-size size($playlistBrowserFontSize)
@@ -36,3 +36,22 @@
         background-color rgba(white, .1)
       .fa
         margin-right .5rem
+        
+    .tree-view 
+      overflow-y hidden
+
+    .tree-view_children 
+      margin-left 1rem
+    
+    .tree-view_children-collapsed 
+      height 0
+    
+    .tree-view_arrow 
+      line-height size($playlistBrowserLineHeight)
+      cursor pointer
+      margin-right .5rem
+      display inline-block
+      user-select none
+    
+    .tree-view_arrow-collapsed 
+      transform rotate(-90deg)
