@@ -70,7 +70,7 @@ var Playlist = React.createClass({
     }
   },
   handleScroll: function(event){
-    // this.props.handleScroll(this, event)
+    this.props.handleScroll(this, event)
   },
   handleDoubleClick: function(id){
     OpenPlaylistActions.playFile(id, this.props.playlist)
