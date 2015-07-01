@@ -8,41 +8,30 @@ var PlaylistTableItem = require('./PlaylistTableItem.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
+var PlayerStore = require('../../stores/PlayerStore')
+
+function getPlayerState(){
+  var playerState = PlayerStore.getPlaybackInfo()
+  return {
+    currentItem: playerState.item
+  }  
+}
 
 var PlaylistTable = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
-    currentItem: ReactPropTypes.object,    
     handleClick: ReactPropTypes.func,
     handleDoubleClick: ReactPropTypes.func
   },
   getInitialState: function(){
-    return {
-      selectionStart: -1,
-      selectionEnd: -1,
-      selection: []
-    }
+    return getPlayerState()
   },
-  componentDidMount: function() {
-    key('backspace, del', this.handleDelKeyPress)
-    key('enter', this.handleEnterKeyPress)
-    key('command+a', this.handleSelectAllKeyPress)
-    key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', this.handleArrowKeyPress)
+  componentDidMount: function(){
+    PlayerStore.addChangeListener(this._onPlayerChange)
   },
-  componentWillUnmount: function() {
-    key.unbind('backspace')
-    key.unbind('del')
-    key.unbind('enter')
-    key.unbind('command+a')
-    key.unbind('up')
-    key.unbind('down')
-    key.unbind('shift+up')
-    key.unbind('shift+down')
-    key.unbind('alt+up')
-    key.unbind('alt+down')
-    key.unbind('shift+alt+up')
-    key.unbind('shift+alt+down')    
-  },
+  componentWillUnmount: function(){
+    PlayerStore.removeChangeListener(this._onPlayerChange)
+  },  
   render: function() {
     var items = _.map(this.props.playlist.items, (item, index)=>{
       return (
@@ -51,10 +40,10 @@ var PlaylistTable = React.createClass({
           itemKey={item.id}
           metadata={item.metadata}
           duration={item.duration}
-          onDoubleClick={this.handleDoubleClick}
-          onClick={this.handleClick}
-          isPlaying={item.id==this.props.currentItem.id}
-          isSelected={this.state.selection.indexOf(item.id) > -1} />
+          handleDoubleClick={this.handleDoubleClick}
+          handleClick={this.handleClick}
+          isPlaying={item.id==this.state.currentItem.id}
+          isSelected={this.props.selection.indexOf(item.id) > -1} />
       )
     })
     return (      
@@ -73,90 +62,14 @@ var PlaylistTable = React.createClass({
     )
   },
   handleClick: function(event, item){
-    var index = this.props.playlist.indexOf(item.props.itemKey)
-    
-    var [low, hi] = [
-      this.props.playlist.indexOf(this.state.selection[0]),
-      this.props.playlist.indexOf(this.state.selection[this.state.selection.length-1])
-    ]
-
-    if(event.metaKey){
-      this.setState({
-        selection: item.props.isSelected ? _.without(this.state.selection, item.props.itemKey) : this.state.selection.concat([item.props.itemKey])
-      })
-    }else if(event.shiftKey){
-      this.setState({
-        selection: this.props.playlist.items.map( i => i.id ).slice(
-          Math.min(low, index), Math.max(hi, index)+1
-        )
-      })
-    }else{
-      this.setState({
-        selection: [item.props.itemKey]
-      })
-    }
+    this.props.handleClick(event, item)
   },
   handleDoubleClick: function(item){
-    OpenPlaylistActions.playFile(item.props.itemKey, this.props.playlist)
-    PlayerActions.play()    
+    this.props.handleDoubleClick(item.props.itemKey);
   },
-  handleDelKeyPress: function(event){
-    OpenPlaylistActions.removeFiles(this.state.selection, this.props.playlist)
-    this.setState({
-      selection: []
-    })    
-  },
-  handleArrowKeyPress: function(event){
-    var items = this.props.playlist.items    
-    var [low, hi] = [
-      this.props.playlist.indexOf(this.state.selection[0]),
-      this.props.playlist.indexOf(this.state.selection[this.state.selection.length-1])
-    ]
-    var newLow = low
-    var newHi = hi
-    
-    switch(event.which){
-      case 38: // up
-        if(event.shiftKey && event.altKey){
-          newLow = 0
-        }else if(event.shiftKey){
-          newLow = Math.max(0, low-1)
-        }else if(event.altKey){
-          newLow = newHi = 0
-        }else{
-          newLow = Math.max(0, low-1)  
-          newHi = newLow
-        }
-        break
-      case 40: // down
-        if(event.shiftKey && event.altKey){
-          newHi = items.length-1
-        }else if(event.shiftKey){
-          newHi = Math.min(items.length-1, hi+1)
-        }else if(event.altKey){
-          newLow = newHi = items.length-1
-        }else{
-          newLow = Math.min(items.length-1, low+1)
-          newHi = newLow
-        }        
-        break        
-    }
-    this.setState({
-      selection: items.map( i => i.id ).slice(newLow, newHi+1)
-    })
-  },
-  handleEnterKeyPress: function(event){
-    if(this.state.selection.length == 1){
-      var fileToPlay = _.findWhere(this.props.playlist.items, { id: this.state.selection[0] })
-      OpenPlaylistActions.playFile(fileToPlay.id, this.props.playlist)
-      PlayerActions.play()
-    }
-  },
-  handleSelectAllKeyPress: function(event){
-    this.setState({
-      selection: this.props.playlist.items.map(i => i.id)
-    })
-  }
+  _onPlayerChange: function(){
+    this.setState(getPlayerState())
+  }  
 })
 
 module.exports = PlaylistTable

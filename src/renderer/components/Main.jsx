@@ -14,7 +14,6 @@ var Footer = require('./Footer.jsx')
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 
 var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
-var PlayerStore = require('../stores/PlayerStore')
 var SidebarStore = require('../stores/SidebarStore')
 
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
@@ -31,24 +30,16 @@ function getOpenPlaylistState(){
   }  
 }
 
-function getPlayerState(){
-  return {
-    playbackInfo: PlayerStore.getPlaybackInfo() || {}
-  }
-}
-
 module.exports = React.createClass({
   getInitialState: function() {
-    return _.merge(getSidebarState() ,getPlayerState(), getOpenPlaylistState())
+    return _.merge(getSidebarState(), getOpenPlaylistState())
   },
   componentDidMount: function() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
-    PlayerStore.addChangeListener(this._onPlayerChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
-    PlayerStore.removeChangeListener(this._onPlayerChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
   },  
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
@@ -69,8 +60,7 @@ module.exports = React.createClass({
           <Playlist
             className="playa-playlist-main"
             playlist={playlist}
-            handleScroll={this.handleScroll}
-            currentItem={this.state.playbackInfo.item}/>
+            handleScroll={this.handleScroll}/>
         </Tabs.Panel>
       )
     })
@@ -80,7 +70,7 @@ module.exports = React.createClass({
     })
     return (
       <div className={classes}>
-        <PlaybackBar playbackInfo={this.state.playbackInfo}/>
+        <PlaybackBar/>
         <Sidebar isOpen={this.state.showSidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
@@ -95,9 +85,6 @@ module.exports = React.createClass({
   },
   _onOpenPlaylistChange: function() {
     this.setState(getOpenPlaylistState())
-  },
-  _onPlayerChange: function(){
-    this.setState(getPlayerState())
   },
   _onSidebarChange: function(){
     this.setState(getSidebarState())

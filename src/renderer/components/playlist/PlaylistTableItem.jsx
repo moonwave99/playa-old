@@ -32,10 +32,10 @@ var PlaylistItem = React.createClass({
     )
   },
   onDoubleClick: function(){
-    this.props.onDoubleClick(this)
+    this.props.handleDoubleClick(this)
   },
   onClick: function(event){
-    this.props.onClick(event, this)
+    this.props.handleClick(event, this)
   }
 })
 

@@ -1,5 +1,6 @@
 "use babel"
 
+var _ = require('lodash')
 var Promise = require('bluebird')
 var fs = Promise.promisifyAll(require('fs-extra'))
 var ipc = require('ipc')
@@ -28,7 +29,7 @@ module.exports = class PlaylistLoader {
       if(this.treeCache.length){
         resolve(this.treeCache)
       }else{
-        glob.callAsync(this, path.join(this.root, '*.m3u')).bind(this).then((files)=>{
+        glob.callAsync(this, path.join(this.root, '**', '*.m3u')).bind(this).then((files)=>{
           this.treeCache = files.map( file => new Playlist({
             id: md5(file),
             path: file,

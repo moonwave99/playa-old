@@ -12,7 +12,19 @@ var CHANGE_EVENT = 'change'
 var PlayerStore = assign({}, EventEmitter.prototype, {
   
   getPlaybackInfo: function(){
-    return playa.player.playbackInfo()
+    var info = playa.player.playbackInfo()
+    var totalTime = info.item.duration || 0
+    var currentTime = Math.round(info.position) || 0
+    return{
+      totalTime: totalTime,
+      currentTime: currentTime,
+      remainingTime: totalTime - currentTime,
+      playing: !!info.playing,      
+      hideInfo: !info.item.duration,
+      metadata: info.item.metadata || {},
+      item: info.item || {},
+      filename: info.item.filename || null
+    }
   },
   
   emitChange: function() {

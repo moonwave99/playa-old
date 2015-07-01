@@ -6,22 +6,16 @@ var cx = require('classnames')
 var moment = require('moment')
 require("moment-duration-format")
 
+var PlayerStore = require('../../stores/PlayerStore')
 var PlayerActions = require('../../actions/PlayerActions')
 
+function getPlayerState(){
+  return PlayerStore.getPlaybackInfo()
+}
+
 module.exports = React.createClass({
-  propTypes: {
-    playbackInfo: ReactPropTypes.object
-  },
   getInitialState: function(){
-    return {
-      duration: 0,
-      currentTime: 0,
-      remainingTime: 0,
-      playing: false,
-      hideInfo: true,
-      metadata: {},
-      filename: null
-    }
+    return getPlayerState()
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
@@ -33,21 +27,13 @@ module.exports = React.createClass({
     PlayerActions.next()
   },
   play: function(event){
-    (this.props.playbackInfo && this.props.playbackInfo.playing) ? PlayerActions.pause() : PlayerActions.play()
+    this.state.playing ? PlayerActions.pause() : PlayerActions.play()
   },
-  componentWillReceiveProps: function(nextProps){
-    var info = nextProps.playbackInfo
-    var totalTime = info.item.duration
-    var currentTime = Math.round(info.position) || 0
-    this.setState({
-      totalTime: totalTime,
-      currentTime: currentTime,
-      remainingTime: totalTime - currentTime,
-      playing: !!info.playing,      
-      hideInfo: !info.item.duration,
-      metadata: info.item.metadata || {},
-      filename: info.item.filename || null
-    })    
+  componentDidMount: function(){
+    PlayerStore.addChangeListener(this._onPlayerChange)
+  },
+  componentWillUnmount: function(){
+    PlayerStore.removeChangeListener(this._onPlayerChange)
   },
   render: function() {    
     var wrapperClasses = cx({
@@ -79,5 +65,8 @@ module.exports = React.createClass({
   onProgressAreaClick: function(event){
     var bounds = event.target.getBoundingClientRect()
     PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
-  }
+  },
+  _onPlayerChange: function(){
+    this.setState(getPlayerState())
+  }  
 })
