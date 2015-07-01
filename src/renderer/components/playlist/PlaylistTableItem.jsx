@@ -20,7 +20,7 @@ var PlaylistItem = React.createClass({
       'selected'  : this.props.isSelected
     })
     return (
-      <tr onDoubleClick={this.onDoubleClick} onClick={this.onClick} className={itemClasses}>
+      <tr onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} className={itemClasses}>
         <td className="text-center">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</td>
         <td className="text-center">{ this.props.metadata.track }</td>
         <td className="text-nowrap">{ this.props.metadata.artist }</td>
@@ -31,10 +31,10 @@ var PlaylistItem = React.createClass({
       </tr>
     )
   },
-  onDoubleClick: function(){
+  handleDoubleClick: function(){
     this.props.handleDoubleClick(this)
   },
-  onClick: function(event){
+  handleClick: function(event){
     this.props.handleClick(event, this)
   }
 })

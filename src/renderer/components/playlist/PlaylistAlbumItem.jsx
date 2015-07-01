@@ -41,7 +41,7 @@ var PlaylistItem = React.createClass({
       'open': this.props.isOpened
     })
     return (
-      <div className={classes} onClick={this.onClick} onDoubleClick={this.onDoubleClick} data-id={this.props.album.id}>
+      <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id}>
         <header>
           <span className="artist">{this.props.metadata.artist}</span><br/>
           <span className="title">{this.props.album.title} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
@@ -55,10 +55,10 @@ var PlaylistItem = React.createClass({
     event.stopPropagation()
     this.props.handleDoubleClick(event.target.dataset.id)
   },
-  onDoubleClick: function(event){
+  handleDoubleClick: function(event){
     this.props.handleDoubleClick(this.props.album.tracks[0].id)
   },
-  onClick: function(event){
+  handleClick: function(event){
     this.props.handleClick(event, this)
   }
 })

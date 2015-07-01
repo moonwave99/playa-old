@@ -54,7 +54,7 @@ module.exports = React.createClass({
             <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
           </div>
           <span className="playback-time-indicator time-remaining">-{this.formatTime(this.state.remainingTime)}</span>
-          <div className="progress-area" onClick={this.onProgressAreaClick}>
+          <div className="progress-area" onClick={this.handleProgressAreaClick}>
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>
         </div>
@@ -62,7 +62,7 @@ module.exports = React.createClass({
       </div>      
     )
   },
-  onProgressAreaClick: function(event){
+  handleProgressAreaClick: function(event){
     var bounds = event.target.getBoundingClientRect()
     PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
   },
