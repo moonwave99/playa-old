@@ -6,6 +6,7 @@ Playlist                  = require './renderer/util/Playlist'
 Player                    = require './renderer/util/Player'
 PlaylistLoader            = require './renderer/util/PlaylistLoader'
 FileLoader                = require './renderer/util/FileLoader'
+CoverLoader               = require './renderer/util/CoverLoader'
 AppDispatcher             = require './renderer/dispatcher/AppDispatcher'
 PlayerConstants           = require './renderer/constants/PlayerConstants'
 PlaylistBrowserConstants  = require './renderer/constants/PlaylistBrowserConstants'
@@ -20,6 +21,7 @@ module.exports = class Playa
   constructor: () ->
     @playlistLoader = new PlaylistLoader({ root: '/Users/moonwave99/Desktop/_playlists' })
     @fileLoader = new FileLoader()
+    @coverLoader = new CoverLoader({ root: '/Users/moonwave99/Desktop/_coverCache' })
     @player = new Player()
     @player.fileLoader = @fileLoader
     

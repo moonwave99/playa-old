@@ -1,15 +1,55 @@
 "use babel"
 
+var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var moment = require('moment')
+var DragSource = require('react-dnd').DragSource
+var DropTarget = require('react-dnd').DropTarget
 var cx = require('classnames')
+var moment = require('moment')
 require("moment-duration-format")
 
-var PlaylistItem = React.createClass({
+const albumSource = {
+  beginDrag(props) {
+    return {
+      id: props.itemKey,
+      originalIndex: props.index
+    }
+  },
+  endDrag(props, monitor) {
+    const { id: droppedId, originalIndex } = monitor.getItem()
+    const didDrop = monitor.didDrop()
+    if (!didDrop) {
+      props.moveAlbum(droppedId, originalIndex)
+    }
+  }  
+}
+
+const albumTarget = {
+  drop(props, monitor) {
+    const draggedId = monitor.getItem().id
+    if (draggedId !== props.id) {
+      props.moveAlbum(draggedId, props.itemKey)
+    }
+  },
+  hover(props, monitor, component) {
+    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
+    React.findDOMNode(component).classList.add('drag-over')
+  }
+}
+
+var PlaylistAlbumItem = React.createClass({
+  getInitialState: function(){
+    return {
+      cover: null
+    }
+  },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
+  componentWillMount: function(){
+    playa.coverLoader.load(this.props.album).then(this.updateCover)
+  },
   renderTracklist: function(){
     return (
       <ul className="list-unstyled tracklist">
@@ -37,19 +77,23 @@ var PlaylistItem = React.createClass({
     var classes = cx({
       'album' : true,
       'playing' : isPlaying,
-      'selected'  : this.props.isSelected,
+      'selected' : this.props.isSelected,
       'open': this.props.isOpened
     })
-    return (
-      <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id}>
+    var opacity = this.props.isDragging ? 0 : 1
+    var coverStyle = this.state.cover ? { backgroundImage: 'url(' + this.state.cover + ')'} : {}
+    
+    return this.props.connectDragSource(this.props.connectDropTarget(
+      <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
         <header>
+          <div className="cover" style={coverStyle}></div>
           <span className="artist">{this.props.metadata.artist}</span><br/>
           <span className="title">{this.props.album.title} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
           <span className="date">{this.props.metadata.date}</span>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </div>
-    )
+    ))
   },
   handleTracklistDoubleClick: function(event){
     event.stopPropagation()
@@ -60,7 +104,19 @@ var PlaylistItem = React.createClass({
   },
   handleClick: function(event){
     this.props.handleClick(event, this)
+  },
+  updateCover: function(cover){
+    this.setState({ cover: cover })
   }
 })
 
-module.exports = PlaylistItem
+PlaylistAlbumItem = DropTarget('ALBUM', albumTarget, connect => ({
+  connectDropTarget: connect.dropTarget(),
+}))(PlaylistAlbumItem)
+
+PlaylistAlbumItem = DragSource('ALBUM', albumSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+}))(PlaylistAlbumItem)
+
+module.exports = PlaylistAlbumItem

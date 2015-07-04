@@ -7,6 +7,7 @@ var fs = Promise.promisifyAll(require('fs-extra'))
 var md5 = require('MD5')
 var uid = require('uid')
 var PlaylistItem = require('./PlaylistItem')
+var Album = require('./Album')
 
 module.exports = class Playlist{
   constructor(options){
@@ -21,11 +22,11 @@ module.exports = class Playlist{
     return _.reduce(this.items, (memo, item)=>{
       var album = _.find(memo, (i)=>{ return i.title && item.metadata.album && (i.title.toLowerCase() == item.metadata.album.toLowerCase()) })
       if(!album){
-        album = {
+        album = new Album({
           id: md5(item.metadata.artist + item.metadata.album),
           title: item.metadata.album,
           tracks: []
-        }
+        })
         memo.push(album)
       }
       album.tracks.push(item)
@@ -83,5 +84,9 @@ module.exports = class Playlist{
   }
   indexOf(id){
     return _.findIndex(this.items, { id: id })
+  }
+  reorder(from, to, at){
+    var movingItems = this.items.splice(from, to-from+1)
+    Array.prototype.splice.apply(this.items, [at, 0].concat(movingItems))
   }
 }

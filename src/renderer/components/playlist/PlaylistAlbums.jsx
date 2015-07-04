@@ -11,6 +11,9 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var PlayerStore = require('../../stores/PlayerStore')
 
+var DragDropContext = require('react-dnd').DragDropContext
+var HTML5Backend = require('react-dnd/modules/backends/HTML5')
+
 function getPlayerState(){
   var playerState = PlayerStore.getPlaybackInfo()
   return {
@@ -38,12 +41,14 @@ var PlaylistAlbums = React.createClass({
       var output = (
         <PlaylistAlbumItem
           key={album.title || uid()}
+          index={index}
           itemKey={album.id}
           album={album}
           metadata={album.tracks[0].metadata}
           handleClick={this.handleClick}
           handleDoubleClick={this.handleDoubleClick}
           currentItem={this.state.currentItem}
+          moveAlbum={this.moveAlbum}
           isOpened={this.props.openElements.indexOf(album.id) > -1}
           isSelected={this.props.selection.indexOf(album.id) > -1} />
       )
@@ -62,7 +67,15 @@ var PlaylistAlbums = React.createClass({
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
+  },
+  moveAlbum: function(id, afterId){
+    var albumFrom = _(this.props.albums).findWhere({ id: id })
+    var albumTo = _(this.props.albums).findWhere({ id: afterId })
+    var from = this.props.playlist.indexOf(albumFrom.tracks[0].id)
+    var to = this.props.playlist.indexOf(albumFrom.tracks[albumFrom.tracks.length-1].id)
+    var at = this.props.playlist.indexOf(albumTo.tracks[0].id)
+    OpenPlaylistActions.reorder(this.props.playlist.id, from, to, at)
   }  
 })
 
-module.exports = PlaylistAlbums
+module.exports = DragDropContext(HTML5Backend)(PlaylistAlbums)

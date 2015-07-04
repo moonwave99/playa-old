@@ -7,8 +7,6 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var PlaylistBrowserConstants = require('../constants/PlaylistBrowserConstants')
 
-var Playa = require('../../playa')
-
 var CHANGE_EVENT = 'change'
 
 var _playlistTree = []

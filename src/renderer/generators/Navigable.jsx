@@ -43,6 +43,9 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement){
       key.unbind('left')
       key.unbind('right')       
     },
+    componentWillUpdate(nextProps, nextState){
+      this.props.handleScrollToElement(nextState, this.getIdList())
+    },
     render() {
       return (
         <Component

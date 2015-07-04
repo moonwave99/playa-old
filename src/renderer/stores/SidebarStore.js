@@ -7,8 +7,6 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var SidebarConstants = require('../constants/SidebarConstants')
 
-var Playa = require('../../playa')
-
 var CHANGE_EVENT = 'change'
 
 var _showSidebar = false

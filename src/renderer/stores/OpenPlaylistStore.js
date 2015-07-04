@@ -153,6 +153,13 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           OpenPlaylistStore.emitChange()
         }
         break
+      case OpenPlaylistConstants.REORDER_PLAYLIST:
+        var playlist = _.findWhere(_playlists, { id: action.id })
+        if(playlist){
+          playlist.reorder(action.from, action.to, action.at)
+          OpenPlaylistStore.emitChange()
+        }        
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.
