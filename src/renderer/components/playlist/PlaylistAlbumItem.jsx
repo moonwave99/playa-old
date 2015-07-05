@@ -48,7 +48,11 @@ var PlaylistAlbumItem = React.createClass({
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
   componentWillMount: function(){
-    playa.coverLoader.load(this.props.album).then(this.updateCover)
+    if(this.props.album.title){
+      playa.coverLoader.load(this.props.album)
+        .then(this.updateCover)
+        .catch((err)=>{})
+    }
   },
   renderTracklist: function(){
     return (
@@ -63,11 +67,12 @@ var PlaylistAlbumItem = React.createClass({
       'track' : true,
       'playing' : isPlaying
     })    
+    var title = this.props.album.isCompilation() ? (track.metadata.artist + ' - ' + track.metadata.title) : track.metadata.title
     return (
       <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
         <span className="track-playing-indicator">{ isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
         <span className="track-number">{ track.metadata.track }.</span>
-        <span className="track-title">{ track.metadata.title }</span>
+        <span className="track-title">{ title }</span>
         <span className="track-duration">{ this.formatTime(track.duration) }</span>
       </li>
     )
@@ -83,11 +88,15 @@ var PlaylistAlbumItem = React.createClass({
     var opacity = this.props.isDragging ? 0 : 1
     var coverStyle = this.state.cover ? { backgroundImage: 'url(' + this.state.cover + ')'} : {}
     
+    var coverClasses = cx({
+      'cover' : true,
+      'loaded': !!this.state.cover
+    })
     return this.props.connectDragSource(this.props.connectDropTarget(
       <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
         <header>
-          <div className="cover" style={coverStyle}></div>
-          <span className="artist">{this.props.metadata.artist}</span><br/>
+          <div className={coverClasses} style={coverStyle}></div>
+          <span className="artist">{this.props.album.getArtist()}</span><br/>
           <span className="title">{this.props.album.title} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
           <span className="date">{this.props.metadata.date}</span>
         </header>

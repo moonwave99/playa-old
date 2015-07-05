@@ -20,7 +20,9 @@ module.exports = class Playlist{
   }
   groupByAlbum(){
     return _.reduce(this.items, (memo, item)=>{
-      var album = _.find(memo, (i)=>{ return i.title && item.metadata.album && (i.title.toLowerCase() == item.metadata.album.toLowerCase()) })
+      var album = _.find(memo, (i)=>{
+        return i.title && item.metadata.album && (i.title.toLowerCase() == item.metadata.album.toLowerCase())
+      })
       if(!album){
         album = new Album({
           id: md5(item.metadata.artist + item.metadata.album),

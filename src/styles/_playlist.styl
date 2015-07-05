@@ -64,6 +64,10 @@
           position absolute
           top 0
           left 0
+          opacity 0
+          transition opacity .3s linear
+          &.loaded
+            opacity 1
         .artist
           color $albumArtistColor
           font-size size($albumArtistFontSize)

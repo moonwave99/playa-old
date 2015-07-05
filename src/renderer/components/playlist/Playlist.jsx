@@ -51,6 +51,12 @@ var Playlist = React.createClass({
           function(component){
             var album = _.findWhere(component.props.albums, { id: component.state.selection[0] })
             return album ? album.tracks[0].id : null
+          },
+          function(component){
+            return _.reduce(component.state.selection, (memo, id)=>{
+              memo = memo.concat(_.findWhere(component.props.albums, { id: id }).tracks.map( i => i.id ))
+              return memo
+            }, [])
           })
         return (
           <div className="playlist">
@@ -74,7 +80,10 @@ var Playlist = React.createClass({
           function(component){
             var track = _.findWhere(component.props.playlist.items, { id: component.state.selection[0] })
             return track ? track.id : null
-          })
+          },
+          function(component){
+            return component.state.selection
+          })          
         return (
           <div className="playlist">
             <PlaylistTableOnSteroids
@@ -96,8 +105,8 @@ var Playlist = React.createClass({
     OpenPlaylistActions.playFile(id, this.props.playlist)
     PlayerActions.play()    
   },
-  handleDelKeyPress: function(event, item){
-    OpenPlaylistActions.removeFiles(item.state.selection, item.props.playlist)    
+  handleDelKeyPress: function(event, item, tracksToRemove){
+    OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)    
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
@@ -106,7 +115,9 @@ var Playlist = React.createClass({
     }          
   },
   handleScrollToElement: function(state, list){
-    var targetElement = document.querySelector('[data-id="' + state.selection[0] + '"]');
+    var targetElement = document.querySelector('[data-id="' + state.selection[0] + '"]')
+    if(!targetElement)
+      return
     var node = React.findDOMNode(this)
     var {direction, parentBounds, elBounds} = _overflows(node, targetElement)
     if(direction < 0){

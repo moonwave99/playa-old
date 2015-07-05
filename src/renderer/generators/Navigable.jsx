@@ -4,7 +4,7 @@ var _ = require('lodash')
 var React = require('react')
 var key = require('keymaster')
 
-module.exports = function(Component, scopeName, getIdList, getSelectedElement){
+module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
 
   const NavigableComponent = React.createClass({
     getIdList() {
@@ -12,6 +12,9 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement){
     },
     getSelectedElement(){
       return getSelectedElement(this)
+    },
+    getSelectedIds(){
+      return getSelectedIds(this)
     },
     getInitialState() {
       return {
@@ -136,7 +139,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement){
       }
     },
     handleDelKeyPress(event) {
-      this.props.handleDelKeyPress(event, this)
+      this.props.handleDelKeyPress(event, this, getSelectedIds(this))
       this.setState({
         selection: []
       })      

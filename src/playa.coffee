@@ -17,11 +17,19 @@ OpenPlaylistStore         = require './renderer/stores/OpenPlaylistStore'
 SidebarStore              = require './renderer/stores/SidebarStore'
 OpenPlaylistActions       = require './renderer/actions/OpenPlaylistActions'
 
+require('dotenv').load()
+
 module.exports = class Playa
   constructor: () ->
-    @playlistLoader = new PlaylistLoader({ root: '/Users/moonwave99/Desktop/_playlists' })
+    @playlistLoader = new PlaylistLoader
+      root: '/Users/moonwave99/Desktop/_playlists'
     @fileLoader = new FileLoader()
-    @coverLoader = new CoverLoader({ root: '/Users/moonwave99/Desktop/_coverCache' })
+    @coverLoader = new CoverLoader
+      root: '/Users/moonwave99/Desktop/_coverCache'
+      discogs:
+        key: process.env.DISCOGS_KEY
+        secret: process.env.DISCOGS_SECRET
+        throttle: 1000
     @player = new Player()
     @player.fileLoader = @fileLoader
     

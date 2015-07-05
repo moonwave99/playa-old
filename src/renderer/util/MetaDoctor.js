@@ -11,7 +11,7 @@ var MetaDoctor = {
           memo[key] = parseInt(value.split('/')[0]) || 0
           break
         case 'date':
-          memo[key] = moment(new Date(value)).format('YYYY')
+          memo[key] = moment(new Date(value.match(/\d{4}/)[0])).format('YYYY')
           break
         default:
           memo[key] = value  

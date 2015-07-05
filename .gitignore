@@ -16,3 +16,4 @@ debug.log
 /src/styles/fonts/
 .tm_properties
 .idea
+.env*
