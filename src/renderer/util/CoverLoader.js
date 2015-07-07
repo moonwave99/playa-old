@@ -61,8 +61,7 @@ module.exports = class CoverLoader {
   loadCoverFromDiscogs(album){
     this.log('Looking up for ' + album.title)
     return needle.requestAsync('get', 'https://api.discogs.com/database/search', {
-      artist: album.tracks[0].metadata.artist,
-      release_title: album.title,
+      q: album.tracks[0].metadata.artist + ' ' + album.title,
       key: this.discogs.key,
       secret: this.discogs.secret
     }).then((response)=>{
