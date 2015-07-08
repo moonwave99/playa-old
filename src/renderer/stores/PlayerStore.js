@@ -6,6 +6,7 @@ var ipc = require('ipc')
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var PlayerConstants = require('../constants/PlayerConstants')
+var PlaylistItem = require('../util/PlaylistItem')
 
 var CHANGE_EVENT = 'change'
 
@@ -22,7 +23,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
       playing: !!info.playing,      
       hideInfo: !info.item.duration,
       metadata: info.item.metadata || {},
-      item: info.item || {},
+      item: info.item ? new PlaylistItem(info.item): {},
       filename: info.item.filename || null
     }
   },

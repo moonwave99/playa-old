@@ -42,6 +42,8 @@
       &:hover
         header
           background-color $albumHoverBackgroundColor
+          .links
+            transform translateX(0)
       &.selected
         header
           background-color $albumSelectedBackgroundColor        
@@ -55,6 +57,12 @@
         position relative
         padding-top size($albumHeaderTopPadding)
         padding-left size($albumItemClosedHeight)
+        overflow-x hidden
+        .links
+          transition transform .2s ease-in
+          transform translateX(100%)
+          width 10vw
+          float right
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
@@ -83,7 +91,7 @@
           display inline-block
           max-width 80%
           ellipsed()
-        .date
+        .year
           font-size size($albumDateFontSize)
           vertical-align middle
           margin-right 1rem

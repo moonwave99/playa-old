@@ -27,7 +27,7 @@ var PlaylistItem = React.createClass({
         <td className="text-nowrap">{ this.props.metadata.album }</td>
         <td className="text-nowrap">{ this.props.metadata.title }</td>
         <td className="text-center">{ this.formatTime(this.props.duration) }</td>
-        <td className="text-center">{ this.props.metadata.date }</td>
+        <td className="text-center">{ this.props.metadata.year }</td>
       </tr>
     )
   },

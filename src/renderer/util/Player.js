@@ -17,6 +17,7 @@ module.exports = class Player extends EventEmitter{
     this.player.on('nowplaying', this.onNowplaying.bind(this))
     this.timer = null        
     this.attached = false
+    this.currentAlbum = null
   }
   getAll(){
     return this.playlist ? this.playlist.items() : []
@@ -36,7 +37,7 @@ module.exports = class Player extends EventEmitter{
   attach(){
     return new Promise((resolve, reject)=>{
       if(this.attached){
-        resolve()
+        resolve(true)
       }else if(!this.playlist){
         reject(new Error('No playlist set!'))
       }else{
@@ -45,7 +46,7 @@ module.exports = class Player extends EventEmitter{
             reject(err)
           }else{
             this.attached = true
-            resolve()
+            resolve(true)
           }
         })
       }    
@@ -54,7 +55,7 @@ module.exports = class Player extends EventEmitter{
   detach(){
     return new Promise((resolve, reject)=>{
       if(!this.attached){
-        resolve()
+        resolve(true)
       }else if(!this.playlist){
         reject(new Error('No playlist to detach!'))
       }else{
@@ -63,7 +64,7 @@ module.exports = class Player extends EventEmitter{
             reject(err)
           }else{
             this.attached = false
-            resolve()
+            resolve(true)
           }
         })
       }
@@ -156,12 +157,52 @@ module.exports = class Player extends EventEmitter{
   remove(file){
     this.playlist.remove(file)
   }
+  closeFiles(filesToClose){
+    return Promise.all(filesToClose.map((file)=>{
+      var filename = file.filename
+      return new Promise((resolve, reject)=>{
+        file.close((err)=>{
+          if(err){ reject(err)
+          }else{ resolve(filename) }
+        })
+      })
+    }))
+  }
   clearPlaylist() {
-    this.playlist.clear()      
+    var filesToClose = this.playlist.items().map( i => i.file )
+    this.playlist.clear()
+    return this.closeFiles(filesToClose)
   }
   append(files){
     files.forEach((file)=>{
       file && this.playlist.insert(file)
     })
   }
+  playAlbum(album, trackId, playlist){    
+    var _playAlbum = Promise.all(album.tracks.map((track)=>{
+      return new Promise((resolve, reject)=>{
+        groove.open(track.filename, (err, file)=>{
+          if(err){
+            reject(err)
+          }else{
+            resolve(file)
+          }
+        })
+      })
+    })).then((files)=>{
+      this.currentAlbum = album
+      return this.append(files)
+    }).then(()=>{
+      this.goto(trackId)
+      return true
+    }).catch((err)=>{
+      console.error(err, err.stack)
+    })
+    
+    if(this.currentAlbum && this.currentAlbum.id !== album.id){
+      return this.clearPlaylist().then(_playAlbum)
+    }else{
+      return _playAlbum
+    }
+  } 
 }

@@ -51,9 +51,9 @@ module.exports = React.createClass({
   handleViewSwitchClick: function(){
     if(!this.state.selectedPlaylist)
       return
-    OpenPlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.displayMode == 'table' ? 'albums' : 'table' })
+    OpenPlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.getDisplayMode() == 'table' ? 'albums' : 'table' })
   },
-  render: function() {   
+  render: function() {  
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>

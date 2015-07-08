@@ -1,11 +1,12 @@
 "use babel"
 
 var _ = require('lodash')
-var groove = require('groove')
+var path = require('path')
 var Promise = require('bluebird')
 var fs = Promise.promisifyAll(require('fs-extra'))
 var md5 = require('MD5')
 var uid = require('uid')
+var MetaDoctor = require('./MetaDoctor')
 var PlaylistItem = require('./PlaylistItem')
 var Album = require('./Album')
 
@@ -16,7 +17,18 @@ module.exports = class Playlist{
     this.title = options.title
     this.path = options.path
     this.loaded = false
-    this.displayMode = 'albums'
+  }
+  getFileList(){
+    return this.items.map( i => i.filename )
+  }
+  getItems(){
+    return this.items
+  }
+  getIds(){
+    return this.items.map( i => i.id )
+  }  
+  getDisplayMode(){
+    return 'table'
   }
   groupByAlbum(){
     return _.reduce(this.items, (memo, item)=>{
@@ -43,8 +55,8 @@ module.exports = class Playlist{
       if(this.loaded || this.isNew()){
         resolve(this)
       }else{
-        playa.fileLoader.loadFiles(files).bind(playa.fileLoader).then((items)=>{
-          this.items = this.items.concat(items)
+        playa.fileLoader.loadFiles(files).bind(playa.fileLoader).then((files)=>{
+          this.items = this.items.concat(files.map( file => new PlaylistItem(file) ))
           this.loaded = true
           resolve(this)
         })            
@@ -52,37 +64,17 @@ module.exports = class Playlist{
     })
   }
   addFolder(folder){
-    return playa.fileLoader.loadFolder(folder).then((items)=>{
-      this.items = this.items.concat(items)
+    return playa.fileLoader.loadFolder(folder).then((files)=>{
+      this.items = this.items.concat(files.map( file => new PlaylistItem(file) ))
     })
   }
-  closeFiles(files){
-    files = files || this.items
-    
-    return Promise.all(files.map((item)=>{
-      return new Promise((resolve, reject)=>{
-        item.grooveFile.close((err)=>{
-          if(err){
-            reject(err)
-          }else{
-            resolve(item)
-          }
-        })
-      })
-    }))     
-  }
-  removeFiles(ids){
-    return this.closeFiles(this.items.filter( i => ids.indexOf(i.id) > -1)).then((removedItems)=>{
-      var removedIds = removedItems.map((i)=>{ return i.id })
-      _.remove(this.items, (item)=>{
-        return removedIds.indexOf(item.id) > -1
-      })
+  removeItems(ids){
+    _.remove(this.items, (item)=>{
+      return ids.indexOf(item.id) > -1
     })
   }
   clear(){
-    return this.closeFiles().then(()=>{
-      this.items = []
-    })
+    this.items = []
   }
   indexOf(id){
     return _.findIndex(this.items, { id: id })

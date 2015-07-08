@@ -10,12 +10,6 @@ module.exports = {
       playlists: playlists
     })    
   },
-  load: function(index){
-    AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.LOAD_PLAYLIST,
-      index: index
-    })    
-  },
   savePlaylist: function(index){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SAVE_PLAYLIST
@@ -46,6 +40,14 @@ module.exports = {
       playlist: playlist
     })    
   },
+  playAlbum: function(album, trackId, playlist){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.PLAY_ALBUM,
+      album: album,
+      trackId: trackId,
+      playlist: playlist
+    })    
+  },  
   select: function(index){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST,

@@ -142,7 +142,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       this.props.handleDelKeyPress(event, this, getSelectedIds(this))
       this.setState({
         selection: []
-      })      
+      })
     },
     handleSelectAllKeyPress(event) {
       this.setState({

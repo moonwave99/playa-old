@@ -6,6 +6,7 @@ var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
 var DropTarget = require('react-dnd').DropTarget
 var cx = require('classnames')
+var shell = require('shell')
 var moment = require('moment')
 require("moment-duration-format")
 
@@ -48,11 +49,9 @@ var PlaylistAlbumItem = React.createClass({
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },  
   componentWillMount: function(){
-    if(this.props.album.title){
-      playa.coverLoader.load(this.props.album)
-        .then(this.updateCover)
-        .catch((err)=>{})
-    }
+    playa.coverLoader.load(this.props.album)
+      .then(this.updateCover)
+      .catch((err)=>{})
   },
   renderTracklist: function(){
     return (
@@ -78,7 +77,7 @@ var PlaylistAlbumItem = React.createClass({
     )
   },
   render: function() {
-    var isPlaying = !!(this.props.album.tracks.filter((i)=>{ return i.id == this.props.currentItem.id }).length)    
+    var isPlaying = this.props.album.contains(this.props.currentItem.id)    
     var classes = cx({
       'album' : true,
       'playing' : isPlaying,
@@ -97,8 +96,14 @@ var PlaylistAlbumItem = React.createClass({
         <header>
           <div className={coverClasses} style={coverStyle}></div>
           <span className="artist">{this.props.album.getArtist()}</span><br/>
-          <span className="title">{this.props.album.title} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
-          <span className="date">{this.props.metadata.date}</span>
+          <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
+          <span className="year">{this.props.album.getYear()}</span>
+          <ul className="links list-inline">
+            <li>
+              <a href={'http://www.discogs.com/search?type=all&q=' + encodeURIComponent(this.props.album.getArtist()) + ' ' + this.props.album.getTitle()}
+                onClick={this.handleExternalLinkClick}>Discogs</a>
+              </li>
+          </ul>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </div>
@@ -106,13 +111,17 @@ var PlaylistAlbumItem = React.createClass({
   },
   handleTracklistDoubleClick: function(event){
     event.stopPropagation()
-    this.props.handleDoubleClick(event.target.dataset.id)
+    this.props.handleDoubleClick(this.props.album, event.target.dataset.id)
   },
   handleDoubleClick: function(event){
-    this.props.handleDoubleClick(this.props.album.tracks[0].id)
+    this.props.handleDoubleClick(this.props.album, this.props.album.tracks[0].id)
   },
   handleClick: function(event){
     this.props.handleClick(event, this)
+  },
+  handleExternalLinkClick: function(event){
+    event.preventDefault()
+    shell.openExternal(event.currentTarget.href)
   },
   updateCover: function(cover){
     this.setState({ cover: cover })

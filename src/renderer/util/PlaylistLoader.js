@@ -11,6 +11,7 @@ var assert = require('assert')
 var glob = Promise.promisifyAll(require('glob'))
 
 var Playlist = require('./Playlist')
+var AlbumPlaylist = require('./AlbumPlaylist')
 
 module.exports = class PlaylistLoader {
   constructor(options) {
@@ -30,7 +31,7 @@ module.exports = class PlaylistLoader {
         resolve(this.treeCache)
       }else{
         glob.callAsync(this, path.join(this.root, '**', '*.m3u')).bind(this).then((files)=>{
-          this.treeCache = files.map( file => new Playlist({
+          this.treeCache = files.map( file => new AlbumPlaylist({
             id: md5(file),
             path: file,
             title: path.basename(file, '.m3u')
@@ -55,7 +56,7 @@ module.exports = class PlaylistLoader {
     var targetPath = path.join(process.env.HOME, 'Desktop', '_playlists', playlist.title + '.m3u')
     return fs.outputFileAsync(
       targetPath,
-      playlist.items.map((i)=>{ return i.filename }).join("\n")
+      playlist.getFileList().join("\n")
     ).then(()=>{
       playlist.path = targetPath
     })

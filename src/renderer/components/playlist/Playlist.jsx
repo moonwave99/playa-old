@@ -40,30 +40,26 @@ var Playlist = React.createClass({
     React.findDOMNode(this).removeEventListener('scroll')
   },
   render: function() {
-    switch(this.props.playlist.displayMode){
+    switch(this.props.playlist.getDisplayMode()){
       case 'albums':
         var PlaylistAlbumsOnSteroids = NavGenerator(
           PlaylistAlbums,
           'playlistAlbums',
           function(component){
-            return component.props.albums.map( i => i.id )
+            return component.props.playlist.getIds()
           },
           function(component){
-            var album = _.findWhere(component.props.albums, { id: component.state.selection[0] })
+            var album = component.props.playlist.getAlbumById(component.state.selection[0])
             return album ? album.tracks[0].id : null
           },
           function(component){
-            return _.reduce(component.state.selection, (memo, id)=>{
-              memo = memo.concat(_.findWhere(component.props.albums, { id: id }).tracks.map( i => i.id ))
-              return memo
-            }, [])
+            return component.state.selection
           })
         return (
           <div className="playlist">
             <PlaylistAlbumsOnSteroids
               playlist={this.props.playlist}
-              albums={this.props.playlist.groupByAlbum()}
-              handleDoubleClick={this.handleDoubleClick}
+              handleDoubleClick={this.handleAlbumDoubleClick}
               handleDelKeyPress={this.handleDelKeyPress}
               handleEnterKeyPress={this.handleEnterKeyPress}
               handleScrollToElement={this.handleScrollToElement}/>        
@@ -101,12 +97,16 @@ var Playlist = React.createClass({
     // console.log(event)
     // this.props.handleScroll(this, event)
   },
+  handleAlbumDoubleClick: function(album, id){
+    OpenPlaylistActions.playAlbum(album, id, this.props.playlist)
+    PlayerActions.play()        
+  },
   handleDoubleClick: function(id){
     OpenPlaylistActions.playFile(id, this.props.playlist)
     PlayerActions.play()    
   },
   handleDelKeyPress: function(event, item, tracksToRemove){
-    OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)    
+    OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){

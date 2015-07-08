@@ -10,6 +10,7 @@ var EventEmitter = require('events').EventEmitter
 var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
 
 var Playlist = require('../util/Playlist')
+var AlbumPlaylist = require('../util/AlbumPlaylist')
 
 var CHANGE_EVENT = 'change'
 
@@ -79,14 +80,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         if(playlist = _playlists[index]){
           _selectPlaylist(playlist, index)
         }
-        break        
-      case OpenPlaylistConstants.LOAD_PLAYLIST:
-        if(_playlists[action.index]){
-          _playlists[action.index].load().then(()=>{
-            OpenPlaylistStore.emitChange()
-          })
-        }
-        break        
+        break           
       case OpenPlaylistConstants.ADD_PLAYLIST:
         var newPlaylists = _.difference(action.playlists.map( i => i.id), _playlists.map(i => i.id))
         _playlists = _playlists.concat(action.playlists.filter((p)=>{
@@ -123,25 +117,25 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           playa.player.goto(action.id)
         }
         break
+      case OpenPlaylistConstants.PLAY_ALBUM:
+        var playlist = _playlists[action.playlist.id]
+        if(action.playlist.id !== _activeIndex){
+          _activeIndex = action.playlist.id          
+        }
+        playa.player.playAlbum(action.album, action.trackId, action.playlist)
+        break        
       case OpenPlaylistConstants.REMOVE_FILES:
         if(_playlists[_selectedIndex]){
-          _playlists[_selectedIndex].removeFiles(action.ids).then(function(){
-            OpenPlaylistStore.emitChange()  
-          }).catch((err)=>{
-            console.error(err.stack)
-          })
+          _playlists[_selectedIndex].removeItems(action.ids)
         }
         break        
       case OpenPlaylistConstants.CLOSE_PLAYLIST:
         if(_playlists[_selectedIndex]){
-          _playlists[_selectedIndex].clear().then(function(){
-            _playlists = _playlists.filter((playlist)=>{
-              return playlist !== _playlists[_selectedIndex]
-            })
-            OpenPlaylistStore.emitChange()  
-          }).catch((err)=>{
-            console.error(err.stack)
-          })          
+          _playlists[_selectedIndex].clear()
+          _playlists = _playlists.filter((playlist)=>{
+            return playlist !== _playlists[_selectedIndex]
+          })
+          OpenPlaylistStore.emitChange()
         }
         break
       case OpenPlaylistConstants.UPDATE_UI:
