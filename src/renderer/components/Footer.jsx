@@ -23,7 +23,7 @@ var Footer = React.createClass({
   },
   playlistDescription: function(){
     var itemsLength = this.props.selectedPlaylist ? this.props.selectedPlaylist.getItems().length : null
-    return itemsLength ? itemsLength + " items." : ''
+    return itemsLength ? itemsLength + " albums." : ''
   },
   handleViewSwitchClick: function(event){
     this.props.handleViewSwitchClick(this)

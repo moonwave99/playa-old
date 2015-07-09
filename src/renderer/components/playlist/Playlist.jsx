@@ -31,74 +31,32 @@ var Playlist = React.createClass({
     playlist: ReactPropTypes.object,
     handleScroll: ReactPropTypes.func    
   },
-  componentDidMount: function(){
-    var node = React.findDOMNode(this)
-    node.addEventListener('scroll', _.throttle(this.handleScroll, 100))
-    node.scrollTop = this.props.playlist.scrollBy
-  },
-  componentWillUnmount: function(){
-    React.findDOMNode(this).removeEventListener('scroll')
-  },
   render: function() {
-    switch(this.props.playlist.getDisplayMode()){
-      case 'albums':
-        var PlaylistAlbumsOnSteroids = NavGenerator(
-          PlaylistAlbums,
-          'playlistAlbums',
-          function(component){
-            return component.props.playlist.getIds()
-          },
-          function(component){
-            var album = component.props.playlist.getAlbumById(component.state.selection[0])
-            return album ? album.tracks[0].id : null
-          },
-          function(component){
-            return component.state.selection
-          })
-        return (
-          <div className="playlist">
-            <PlaylistAlbumsOnSteroids
-              playlist={this.props.playlist}
-              handleDoubleClick={this.handleAlbumDoubleClick}
-              handleDelKeyPress={this.handleDelKeyPress}
-              handleEnterKeyPress={this.handleEnterKeyPress}
-              handleScrollToElement={this.handleScrollToElement}/>        
-          </div>
-        )        
-        break
-      default:
-        var PlaylistTableOnSteroids = NavGenerator(
-          PlaylistTable,
-          'playlistTable',
-          function(component){
-            return component.props.playlist.items.map( i => i.id )
-          },
-          function(component){
-            var track = _.findWhere(component.props.playlist.items, { id: component.state.selection[0] })
-            return track ? track.id : null
-          },
-          function(component){
-            return component.state.selection
-          })          
-        return (
-          <div className="playlist">
-            <PlaylistTableOnSteroids
-              playlist={this.props.playlist}
-              handleDoubleClick={this.handleDoubleClick}
-              handleDelKeyPress={this.handleDelKeyPress}
-              handleEnterKeyPress={this.handleEnterKeyPress}
-              handleScrollToElement={this.handleScrollToElement}/>        
-          </div>
-        )
-        break
-    }
+    var PlaylistAlbumsOnSteroids = NavGenerator(
+      PlaylistAlbums,
+      'playlistAlbums',
+      function(component){
+        return component.props.playlist.getIds()
+      },
+      function(component){
+        return component.props.playlist.getAlbumById(component.state.selection[0])
+      },
+      function(component){
+        return component.state.selection
+      })
+    return (
+      <div className="playlist">
+        <PlaylistAlbumsOnSteroids
+          playlist={this.props.playlist}
+          handleDoubleClick={this.handleAlbumDoubleClick}
+          handleDelKeyPress={this.handleDelKeyPress}
+          handleEnterKeyPress={this.handleEnterKeyPress}
+          handleScrollToElement={this.handleScrollToElement}/>        
+      </div>
+    )
   },
-  handleScroll: function(event){
-    // console.log(event)
-    // this.props.handleScroll(this, event)
-  },
-  handleAlbumDoubleClick: function(albumNode, trackId){
-    OpenPlaylistActions.playAlbum(albumNode, trackId, this.props.playlist)
+  handleAlbumDoubleClick: function(album, trackId){
+    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
     PlayerActions.play()        
   },
   handleDoubleClick: function(trackId){
@@ -110,7 +68,8 @@ var Playlist = React.createClass({
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
-      OpenPlaylistActions.playFile(item.getSelectedElement(), this.props.playlist)
+      var album = item.getSelectedElement()
+      OpenPlaylistActions.playAlbum(album, album.tracks[0].id, this.props.playlist)
       PlayerActions.play()
     }          
   },

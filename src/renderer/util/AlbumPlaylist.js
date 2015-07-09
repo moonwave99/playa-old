@@ -58,7 +58,6 @@ module.exports = class AlbumPlaylist{
   removeItems(ids=[]){
     ids.forEach((id)=>{
       var index = this.indexOf(id)
-      console.log(id, index)
       this.items.removeAt(index)
     })
   }
@@ -70,7 +69,18 @@ module.exports = class AlbumPlaylist{
   }  
   indexOf(id){
     return _.findIndex(this.getItems(), { id: id })
-  }  
+  }
+  reorder(albumFrom, albumTo){
+    var items = this.getItems()
+    var albumIds = items.map( i => i.id )
+    var indexFrom = albumIds.indexOf(albumFrom)
+    var indexTo = albumIds.indexOf(albumTo)
+    albumIds.splice(indexTo, 0, albumIds.splice(indexFrom, 1)[0])
+    this.items = new DoublyLinkedList()
+    albumIds.forEach((id)=>{
+      this.items.add(_.findWhere(items, { id: id }))
+    })
+  }
   _process(files){
     var albums = _.groupBy(files, (file)=>{
       return file.metadata.album ? file.metadata.album.toLowerCase() : '_noalbum'

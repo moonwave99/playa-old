@@ -67,15 +67,7 @@ var PlaylistAlbums = React.createClass({
     this.setState(getPlayerState())
   },
   moveAlbum: function(id, afterId){
-    
-    // #TODO use the linked list for this ^^
-    
-    // var albumFrom = _(this.props.albums).findWhere({ id: id })
-    // var albumTo = _(this.props.albums).findWhere({ id: afterId })
-    // var from = this.props.playlist.indexOf(albumFrom.tracks[0].id)
-    // var to = this.props.playlist.indexOf(albumFrom.tracks[albumFrom.tracks.length-1].id)
-    // var at = this.props.playlist.indexOf(albumTo.tracks[0].id)
-    // OpenPlaylistActions.reorder(this.props.playlist.id, from, to, at)
+    OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
   }  
 })
 

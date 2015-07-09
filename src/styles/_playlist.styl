@@ -50,6 +50,11 @@
       &.playing
         header
           background-color $albumPlayingBackgroundColor
+      &:hover,
+      &.playing
+        header
+          .cover.loaded
+            opacity 1
       &.drag-over
         box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .8)
       header
@@ -63,6 +68,7 @@
           transform translateX(100%)
           width 10vw
           float right
+          display none
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
@@ -73,9 +79,9 @@
           top 0
           left 0
           opacity 0
-          transition opacity .3s linear
+          transition opacity .3s ease-in
           &.loaded
-            opacity 1
+            opacity .7
         .artist
           color $albumArtistColor
           font-size size($albumArtistFontSize)
