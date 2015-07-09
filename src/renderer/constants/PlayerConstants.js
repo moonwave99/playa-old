@@ -4,7 +4,7 @@ module.exports = keyMirror({
   PLAY: null,
   PAUSE: null,
   STOP: null,
-  NEXT: null,
-  PREV: null,
+  NEXT_TRACK: null,
+  PREV_TRACK: null,
   SEEK: null
 });

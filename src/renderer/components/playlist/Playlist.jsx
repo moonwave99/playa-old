@@ -97,12 +97,12 @@ var Playlist = React.createClass({
     // console.log(event)
     // this.props.handleScroll(this, event)
   },
-  handleAlbumDoubleClick: function(album, id){
-    OpenPlaylistActions.playAlbum(album, id, this.props.playlist)
+  handleAlbumDoubleClick: function(albumNode, trackId){
+    OpenPlaylistActions.playAlbum(albumNode, trackId, this.props.playlist)
     PlayerActions.play()        
   },
-  handleDoubleClick: function(id){
-    OpenPlaylistActions.playFile(id, this.props.playlist)
+  handleDoubleClick: function(trackId){
+    OpenPlaylistActions.playFile(trackId, this.props.playlist)
     PlayerActions.play()    
   },
   handleDelKeyPress: function(event, item, tracksToRemove){

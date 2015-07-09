@@ -18,6 +18,12 @@ module.exports = class AlbumPlaylist{
     this.path = options.path
     this.loaded = false    
   }
+  getPrevious(album){
+    return this.items.getPrevious(album)
+  }
+  getNext(album){
+    return this.items.getNext(album)
+  }  
   getFileList(){
     return _.flatten(this.items.toArray().map( i => i.tracks.map(t => t.filename) ))
   }
@@ -76,6 +82,5 @@ module.exports = class AlbumPlaylist{
         tracks: tracks
       }))
     })
-    // this.items.makeCircular()
   }
 }

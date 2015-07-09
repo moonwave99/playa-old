@@ -19,14 +19,14 @@ var PlayerActions = {
       actionType: PlayerConstants.STOP
     })
   },    
-  next: function(){
+  nextTrack: function(){
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.NEXT
+      actionType: PlayerConstants.NEXT_TRACK
     })
   },
-  prev: function(){
+  prevTrack: function(){
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.PREV
+      actionType: PlayerConstants.PREV_TRACK
     })
   },
   seek: function(to){

@@ -21,10 +21,10 @@ module.exports = React.createClass({
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },
   prev: function(){
-    PlayerActions.prev()
+    PlayerActions.prevTrack()
   },
   next: function(){
-    PlayerActions.next()
+    PlayerActions.nextTrack()
   },
   play: function(event){
     this.state.playing ? PlayerActions.pause() : PlayerActions.play()

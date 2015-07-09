@@ -57,14 +57,14 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
         playa.player.pause()
         PlayerStore.emitChange()
         break
-      case PlayerConstants.NEXT:
-        var next = playa.player.next()
+      case PlayerConstants.NEXT_TRACK:
+        var next = playa.player.nextTrack()
         if(next){
-          PlayerStore.emitChange()
+          // PlayerStore.emitChange()
         }
         break
-      case PlayerConstants.PREV:
-        var prev = playa.player.prev()
+      case PlayerConstants.PREV_TRACK:
+        var prev = playa.player.prevTrack()
         if(prev){
           PlayerStore.emitChange()
         }        

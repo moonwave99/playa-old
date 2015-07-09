@@ -60,8 +60,8 @@ var PlaylistAlbums = React.createClass({
   handleClick: function(event, item){
     this.props.handleClick(event, item)
   },  
-  handleDoubleClick: function(album, id){
-    this.props.handleDoubleClick(album, id)
+  handleDoubleClick: function(album, trackId){
+    this.props.handleDoubleClick(album, trackId)
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

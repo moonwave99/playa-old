@@ -110,11 +110,11 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         if(action.playlist.id !== _activeIndex){
           playa.player.clearPlaylist()
           playa.player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
-          playa.player.goto(action.id)
+          playa.player.gotoTrack(action.id)
           _activeIndex = action.playlist.id          
         }else if (action.id) {
           _activeIndex = action.playlist.id
-          playa.player.goto(action.id)
+          playa.player.gotoTrack(action.id)
         }
         break
       case OpenPlaylistConstants.PLAY_ALBUM:
@@ -122,7 +122,8 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         if(action.playlist.id !== _activeIndex){
           _activeIndex = action.playlist.id          
         }
-        playa.player.playAlbum(action.album, action.trackId, action.playlist)
+        playa.player.userPlaylist = action.playlist
+        playa.player.playAlbum(action.album, action.trackId)
         break        
       case OpenPlaylistConstants.REMOVE_FILES:
         if(_playlists[_selectedIndex]){
