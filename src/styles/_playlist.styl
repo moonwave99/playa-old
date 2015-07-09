@@ -55,6 +55,10 @@
         header
           .cover.loaded
             opacity 1
+          .artist
+            color $albumArtistColorPlaying
+          .title
+            color $albumArtistColor
       &.drag-over
         box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .8)
       header
@@ -89,6 +93,7 @@
           padding-left 1rem
           display inline-block
           max-width 80%          
+          transition color .3s ease-in
           ellipsed()
         .title
           font-size size($albumTitleFontSize)
@@ -96,6 +101,7 @@
           padding-left 1rem
           display inline-block
           max-width 80%
+          transition color .3s ease-in
           ellipsed()
         .year
           font-size size($albumDateFontSize)
