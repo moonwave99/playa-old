@@ -5,7 +5,7 @@ var uid = require('uid')
 var key = require('keymaster')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var PlaylistAlbumItem = require('./PlaylistAlbumItem.jsx')
+var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
@@ -21,7 +21,7 @@ function getPlayerState(){
   }  
 }
 
-var PlaylistAlbums = React.createClass({
+var AlbumPlaylist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
     handleClick: ReactPropTypes.func,
@@ -39,7 +39,7 @@ var PlaylistAlbums = React.createClass({
   render: function() {
     var albums = this.props.playlist.getItems().map((album, index)=>{
       return (
-        <PlaylistAlbumItem
+        <AlbumPlaylistItem
           key={album.id}
           index={index}
           itemKey={album.id}
@@ -61,7 +61,8 @@ var PlaylistAlbums = React.createClass({
     this.props.handleClick(event, item)
   },  
   handleDoubleClick: function(album, trackId){
-    this.props.handleDoubleClick(album, trackId)
+    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
+    PlayerActions.play()
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
@@ -71,4 +72,4 @@ var PlaylistAlbums = React.createClass({
   }  
 })
 
-module.exports = DragDropContext(HTML5Backend)(PlaylistAlbums)
+module.exports = DragDropContext(HTML5Backend)(AlbumPlaylist)

@@ -7,6 +7,7 @@ path = require 'path'
 os = require 'os'
 net = require 'net'
 url = require 'url'
+dialog = require 'dialog'
 
 {EventEmitter} = require 'events'
 _ = require 'underscore-plus'
@@ -131,6 +132,10 @@ class Application
 
     @menu.on 'application:run-specs', =>
       @openWithOptions(test: true)
+      
+    ipc.on 'request:save:dialog', (event, params) ->
+      params||={}
+      event.returnValue = dialog.showSaveDialog(params)      
 
     appWindow
 

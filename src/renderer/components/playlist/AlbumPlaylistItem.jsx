@@ -39,7 +39,7 @@ const albumTarget = {
   }
 }
 
-var PlaylistAlbumItem = React.createClass({
+var AlbumPlaylistItem = React.createClass({
   getInitialState: function(){
     return {
       cover: null
@@ -128,13 +128,13 @@ var PlaylistAlbumItem = React.createClass({
   }
 })
 
-PlaylistAlbumItem = DropTarget('ALBUM', albumTarget, connect => ({
+AlbumPlaylistItem = DropTarget('ALBUM', albumTarget, connect => ({
   connectDropTarget: connect.dropTarget(),
-}))(PlaylistAlbumItem)
+}))(AlbumPlaylistItem)
 
-PlaylistAlbumItem = DragSource('ALBUM', albumSource, (connect, monitor) => ({
+AlbumPlaylistItem = DragSource('ALBUM', albumSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging()
-}))(PlaylistAlbumItem)
+}))(AlbumPlaylistItem)
 
-module.exports = PlaylistAlbumItem
+module.exports = AlbumPlaylistItem

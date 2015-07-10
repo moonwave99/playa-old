@@ -3,8 +3,7 @@
 var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var PlaylistTable = require('./PlaylistTable.jsx')
-var PlaylistAlbums = require('./PlaylistAlbums.jsx')
+var AlbumPlaylist = require('./AlbumPlaylist.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
@@ -27,14 +26,13 @@ var _overflows = function(parent, element){
 }
 
 var Playlist = React.createClass({
-  propTypes: {
-    playlist: ReactPropTypes.object,
-    handleScroll: ReactPropTypes.func    
+  componentDidMount: function(){
+    this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
   },
   render: function() {
-    var PlaylistAlbumsOnSteroids = NavGenerator(
-      PlaylistAlbums,
-      'playlistAlbums',
+    var AlbumPlaylistOnSteroids = NavGenerator(
+      AlbumPlaylist,
+      'albumPlaylist',
       function(component){
         return component.props.playlist.getIds()
       },
@@ -46,22 +44,14 @@ var Playlist = React.createClass({
       })
     return (
       <div className="playlist">
-        <PlaylistAlbumsOnSteroids
+        <AlbumPlaylistOnSteroids
           playlist={this.props.playlist}
-          handleDoubleClick={this.handleAlbumDoubleClick}
+          initSelection={[this.props.playlist.lastScrolledAlbum]}
           handleDelKeyPress={this.handleDelKeyPress}
           handleEnterKeyPress={this.handleEnterKeyPress}
           handleScrollToElement={this.handleScrollToElement}/>        
       </div>
     )
-  },
-  handleAlbumDoubleClick: function(album, trackId){
-    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
-    PlayerActions.play()        
-  },
-  handleDoubleClick: function(trackId){
-    OpenPlaylistActions.playFile(trackId, this.props.playlist)
-    PlayerActions.play()    
   },
   handleDelKeyPress: function(event, item, tracksToRemove){
     OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)
@@ -74,17 +64,30 @@ var Playlist = React.createClass({
     }          
   },
   handleScrollToElement: function(state, list){
-    var targetElement = document.querySelector('[data-id="' + state.selection[0] + '"]')
-    if(!targetElement)
+    var wrapper = React.findDOMNode(this)
+    var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
+    if(!targetElement){
       return
-    var node = React.findDOMNode(this)
-    var {direction, parentBounds, elBounds} = _overflows(node, targetElement)
+    }
+    
+    // save position of last selected album
+    this.props.playlist.lastScrolledAlbum = state.selection[0]
+    
+    var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
     if(direction < 0){
-      node.scrollTop = targetElement.offsetTop
+      wrapper.scrollTop = targetElement.offsetTop
     }else if(direction > 0){
       var maxEls = Math.floor(parentBounds.height / elBounds.height)
-      node.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
+      wrapper.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
     }
+  },
+  scrollToAlbum: function(albumId){
+    var wrapper = React.findDOMNode(this)
+    var targetElement = wrapper.querySelector('[data-id="' + albumId + '"]')
+    if(!targetElement){
+      return
+    }
+    wrapper.scrollTop = targetElement.offsetTop        
   }  
 })
 

@@ -60,13 +60,6 @@ module.exports = {
       id: id
     })        
   },  
-  updateUI: function(id, ui){
-    AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.UPDATE_UI,
-      id: id,
-      ui: ui
-    })    
-  },
   reorder: function(id, from, to, at){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.REORDER_PLAYLIST,

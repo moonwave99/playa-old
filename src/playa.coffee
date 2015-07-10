@@ -56,7 +56,6 @@ module.exports = class Playa
         new AlbumPlaylist({
           id: md5 '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
           path: '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
-          title: 'slsk'
         })
       ]
 

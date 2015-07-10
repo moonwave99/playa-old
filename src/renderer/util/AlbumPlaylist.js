@@ -14,9 +14,10 @@ module.exports = class AlbumPlaylist{
   constructor(options){
     this.items = new DoublyLinkedList()
     this.id = options.id || uid()
-    this.title = options.title
     this.path = options.path
+    this.title = this.isNew() ? 'Untitled' : path.basename(this.path, '.m3u')
     this.loaded = false    
+    this.lastScrolledAlbum = null
   }
   getPrevious(album){
     return this.items.getPrevious(album)

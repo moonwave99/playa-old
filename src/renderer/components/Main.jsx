@@ -45,9 +45,6 @@ module.exports = React.createClass({
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     OpenPlaylistActions.select(selectedIndex-1)
   },
-  handleScroll: function(item, event){
-    OpenPlaylistActions.updateUI(item.props.playlist.id, { scrollBy: React.findDOMNode(item).scrollTop })
-  },
   handleViewSwitchClick: function(){
     if(!this.state.selectedPlaylist)
       return
@@ -57,10 +54,7 @@ module.exports = React.createClass({
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist
-            className="playa-playlist-main"
-            playlist={playlist}
-            handleScroll={this.handleScroll}/>
+          <Playlist playlist={playlist}/>
         </Tabs.Panel>
       )
     })
@@ -79,7 +73,7 @@ module.exports = React.createClass({
             {openPlaylists}
           </Tabs>
         </div>
-        <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.selectedPlaylist || {} } />
+        <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.selectedPlaylist} />
       </div>
     )
   },

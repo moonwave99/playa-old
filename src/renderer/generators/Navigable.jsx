@@ -18,7 +18,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     getInitialState() {
       return {
-        selection: [],
+        selection: this.props.initSelection || [],
         openElements: []
       }
     },

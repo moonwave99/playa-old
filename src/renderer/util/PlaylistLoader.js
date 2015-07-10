@@ -53,7 +53,19 @@ module.exports = class PlaylistLoader {
     })
   }
   save(playlist){
-    var targetPath = path.join(process.env.HOME, 'Desktop', '_playlists', playlist.title + '.m3u')
+    var targetPath
+    if(playlist.isNew()){
+      targetPath = ipc.sendSync('request:save:dialog', {
+        title: 'Save Playlist as',
+        defaultPath: this.root,
+        filters: [
+          { name: 'Playlist files', extensions: ['m3u'] }
+        ] 
+      })
+    }else{
+      targetPath = path.join(this.root, playlist.title + '.m3u')
+    }
+     
     return fs.outputFileAsync(
       targetPath,
       playlist.getFileList().join("\n")

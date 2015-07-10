@@ -8,9 +8,7 @@ var Footer = React.createClass({
   render: function() {
     var iconClasses = cx({
       'fa' : true,
-      'fa-fw' : true,
-      'fa-list': this.props.selectedPlaylist.getDisplayMode() == 'albums',
-      'fa-th-list' : this.props.selectedPlaylist.getDisplayMode() != 'albums'
+      'fa-fw' : true
     })
     return (
       <footer className="footer">
@@ -23,7 +21,7 @@ var Footer = React.createClass({
   },
   playlistDescription: function(){
     var itemsLength = this.props.selectedPlaylist ? this.props.selectedPlaylist.getItems().length : null
-    return itemsLength ? itemsLength + " albums." : ''
+    return itemsLength ? itemsLength + " albums." : 'No playlist selected.'
   },
   handleViewSwitchClick: function(event){
     this.props.handleViewSwitchClick(this)

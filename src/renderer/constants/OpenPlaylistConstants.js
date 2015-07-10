@@ -11,6 +11,5 @@ module.exports = keyMirror({
   PLAY_PLAYLIST: null,
   PLAY_FILE: null,
   PLAY_ALBUM: null,
-  ADD_FOLDER: null,
-  UPDATE_UI: null
+  ADD_FOLDER: null
 });

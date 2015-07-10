@@ -23,28 +23,36 @@ var _selectPlaylist = function(playlist, index){
   playa.playlistLoader.load(playlist).then((playlist)=>{
     console.info('Selected ' + playlist.id)
     OpenPlaylistStore.emitChange()  
-  })  
+  })
+}
+
+var _getSelectedPlaylist = function(){
+  return _playlists[_selectedIndex]
+}
+
+var _getAt = function(index){
+  return _playlists[index]
 }
 
 var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function(){
-    return _playlists;
+    return _playlists
   },
   
   getAt: function(index){
-    return _playlists[index];
+    return _playlists[index]
   },
   
   getSelectedIndex: function(){
-    return _selectedIndex;
+    return _selectedIndex
   },
   
   getSelectedPlaylist: function(){
-    return _playlists[_selectedIndex];
+    return _playlists[_selectedIndex]
   },  
-  
+
   getActiveIndex: function(){
-    return _activeIndex;
+    return _activeIndex
   },
   
   emitChange: function(){
@@ -68,16 +76,15 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
       case OpenPlaylistConstants.SELECT_PLAYLIST:
-        var index = action.selected
-        var playlist
-        if(playlist = _playlists[index]){
-          _selectPlaylist(playlist, index)
+        var playlist = _getAt(action.selected)
+        if(playlist){
+          _selectPlaylist(playlist, action.selected)
         }
         break
       case OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID:
         var index = _.findIndex(_playlists, { id: action.id })
-        var playlist
-        if(playlist = _playlists[index]){
+        var playlist = _getAt(index)
+        if(playlist){
           _selectPlaylist(playlist, index)
         }
         break           
@@ -89,8 +96,8 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
-        var playlist
-        if(playlist = _playlists[_selectedIndex]){
+        var playlist = _getSelectedPlaylist()
+        if(playlist){
           playa.playlistLoader.save(playlist).then((file)=>{
             console.info('Saved ' + playlist.id)
             OpenPlaylistStore.emitChange()
@@ -98,24 +105,14 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         }        
         break
       case OpenPlaylistConstants.ADD_FOLDER:
-        if (action.folder && _playlists[_selectedIndex]) {
-          _playlists[_selectedIndex].addFolder(action.folder).then(()=>{
+        var playlist = _getSelectedPlaylist()
+        if(action.folder && playlist) {
+          playlist.addFolder(action.folder).then(()=>{
             OpenPlaylistStore.emitChange()  
           }).catch((err)=>{
             console.error(err.stack)
           })  
         }        
-        break
-      case OpenPlaylistConstants.PLAY_FILE:
-        if(action.playlist.id !== _activeIndex){
-          playa.player.clearPlaylist()
-          playa.player.append(action.playlist.items.map((item)=> { return item.grooveFile } ))
-          playa.player.gotoTrack(action.id)
-          _activeIndex = action.playlist.id          
-        }else if (action.id) {
-          _activeIndex = action.playlist.id
-          playa.player.gotoTrack(action.id)
-        }
         break
       case OpenPlaylistConstants.PLAY_ALBUM:
         var playlist = _playlists[action.playlist.id]
@@ -126,26 +123,25 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         playa.player.playAlbum(action.album, action.trackId)
         break        
       case OpenPlaylistConstants.REMOVE_FILES:
-        if(_playlists[_selectedIndex]){
-          _playlists[_selectedIndex].removeItems(action.ids)
+        var playlist = _getSelectedPlaylist()
+        if(playlist){
+          _getSelectedPlaylist().removeItems(action.ids)
         }
         break        
       case OpenPlaylistConstants.CLOSE_PLAYLIST:
-        if(_playlists[_selectedIndex]){
-          _playlists[_selectedIndex].clear()
-          _playlists = _playlists.filter((playlist)=>{
-            return playlist !== _playlists[_selectedIndex]
-          })
-          OpenPlaylistStore.emitChange()
-        }
-        break
-      case OpenPlaylistConstants.UPDATE_UI:
-        var playlist = _.findWhere(_playlists, { id: action.id })
+        var playlist = _getSelectedPlaylist()
         if(playlist){
-          _.forEach(action.ui, (value, key)=>{
-            playlist[key] = value
+          playlist.clear()
+          _playlists = _playlists.filter((p)=>{
+            return p !== playlist
           })
-          OpenPlaylistStore.emitChange()
+          var nexPlaylist = _getAt(_selectedIndex -1)
+          if(nexPlaylist){
+            _selectPlaylist(nexPlaylist, _selectedIndex-1)  
+          }else{
+            OpenPlaylistStore.emitChange()
+          }
+          
         }
         break
       case OpenPlaylistConstants.REORDER_PLAYLIST:
