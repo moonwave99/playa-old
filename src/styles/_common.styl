@@ -1,7 +1,7 @@
 html, body
   min-height 100vh
   height 100%
-  
+
 html
   body
     a
@@ -20,7 +20,7 @@ html
   backface-visibility hidden
   .playa-main
     width 100vw
-    padding-top size($playbackBarHeight + $tabsBarHeight)
+    padding-top size($playbackBarHeight)
     backface-visibility hidden
     position relative
     &.sidebar-open
@@ -32,7 +32,7 @@ html
       backface-visibility hidden
       position absolute
       right 0
-  
+
   .footer
     height size($footerHeight)
     line-height size($footerHeight)
@@ -51,4 +51,4 @@ html
         .fa
           vertical-align middle
           color $footerIconColor
-          font-size size($footerIconSize)    
+          font-size size($footerIconSize)

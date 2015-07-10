@@ -6,7 +6,6 @@
   position absolute
   top size($playbackBarHeight)
   transition transform .2s ease-in-out
-  margin-top size($tabsBarHeight)
   &.sidebar-left
     transform 'translateX(calc(%s - %s))' % ($sidebarClosedWidth $sidebarWidth)
     left 0
@@ -26,33 +25,33 @@
         .fa
           color $sidebarIconColor
           font-size size($sidebarIconSize)
-          
+
   .playlist-browser
     li
       line-height size($playlistBrowserLineHeight)
       font-size size($playlistBrowserFontSize)
       &:hover
-        background-color rgba(white, .05)      
+        background-color rgba(white, .05)
       &.selected
         background-color rgba(white, .1)
       .fa
         margin-right .5rem
-        
-    .tree-view 
+
+    .tree-view
       overflow-y hidden
       padding-left .5rem
 
-    .tree-view_children 
+    .tree-view_children
       margin-left 1rem
-    
-    .tree-view_children-collapsed 
+
+    .tree-view_children-collapsed
       height 0
-    
-    .tree-view_arrow 
+
+    .tree-view_arrow
       line-height size($playlistBrowserLineHeight)
       cursor pointer
       margin-right .5rem
       display inline-block
-    
-    .tree-view_arrow-collapsed 
+
+    .tree-view_arrow-collapsed
       transform rotate(-90deg)

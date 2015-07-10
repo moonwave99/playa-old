@@ -1,12 +1,10 @@
 .tabs-navigation
-  position fixed
   top size($playbackBarHeight)
-  left 0
-  right 0
   line-height size($tabsBarHeight)
   background-color $tabsBarBgColor
   box-shadow 0 0 2rem rgba(0,0,0,.75)
   user-select none
+  clearfix()
   .tabs-menu
     list-style none
     padding 0
@@ -16,9 +14,12 @@
       float left
       a
         display block
-        padding 0 1rem
+        padding 0
+        width size($tabsWidth)
         color $tabsBarColor
         text-decoration none
+        text-align center
+        box-shadow: 0 0 black, 1px 0 rgba($mainColor, .1)
       &.is-active
         a
           background-color rgba(white, .2)

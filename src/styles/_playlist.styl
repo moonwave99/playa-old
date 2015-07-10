@@ -18,7 +18,7 @@
             transform translateX(0)
       &.selected
         header
-          background-color $albumSelectedBackgroundColor        
+          background-color $albumSelectedBackgroundColor
       &.playing
         header
           background-color $albumPlayingBackgroundColor
@@ -64,7 +64,7 @@
           vertical-align middle
           padding-left 1rem
           display inline-block
-          max-width 80%          
+          max-width 80%
           transition color .3s ease-in
           ellipsed()
         .title
@@ -88,6 +88,7 @@
         line-height size($albumTracklistLineHeight)
         font-size size($albumTracklistFontSize)
         .disc-number
+          color $albumArtistColor
           font-size .9rem
           padding-left 6.4rem
         .track

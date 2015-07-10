@@ -10,7 +10,7 @@ backgroundHover(
     background-color activeColor
   &:focus
     background-color focusColor
-    
+
 colorHover(
   defaultColor = rgba(0,0,0,.05),
   activeColor = rgba(0,0,0,.1),
@@ -25,11 +25,11 @@ colorHover(
     color activeColor
 
 ellipsed()
-  white-space nowrap           
+  white-space nowrap
   overflow hidden
   text-overflow ellipsis
 
-searchBox(width = 15rem, height = 2rem)  
+searchBox(width = 15rem, height = 2rem)
   border none
   width 15rem
   padding 0 unit(size(height) / 2, 'rem')
@@ -38,8 +38,14 @@ searchBox(width = 15rem, height = 2rem)
   &:focus
     outline none
 
-serif()
-  font-family 'Merriweather', Georgia, serif
-  
 monospaced()
   font-family Menlo, Monaco, Consolas, 'Courier New', monospace
+
+clearfix()
+  &:before,
+  &:after
+    content " "
+    display table
+
+  &:after
+    clear both
