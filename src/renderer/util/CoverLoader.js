@@ -21,7 +21,7 @@ module.exports = class CoverLoader {
           .then((cover)=>{
             callback()
           })
-          .catch(callback)        
+          .catch(callback)
       }, this.discogs.throttle)
     }, 1)
   }
@@ -38,7 +38,7 @@ module.exports = class CoverLoader {
           if(err){
             reject(err)
           }else{
-            resolve(this.getAlbumCoverPath(album))            
+            resolve(this.getAlbumCoverPath(album))
           }
         })
       }
@@ -56,25 +56,26 @@ module.exports = class CoverLoader {
           resolve(result ? this.getAlbumCoverPath(album) : null)
         })
       }
-    })    
+    })
   }
   loadCoverFromDiscogs(album){
-    this.log('Looking up for ' + album.title)
+    var title = album.getTitle()
+    this.log('Looking up for ' + title)
     return needle.requestAsync('get', 'https://api.discogs.com/database/search', {
-      q: album.tracks[0].metadata.artist + ' ' + album.title,
+      q: album.getArtist() + ' ' + title,
       key: this.discogs.key,
       secret: this.discogs.secret
     }).then((response)=>{
       this.log('Successful request: ' + response[0].req.path)
       if(!response[1].results.length){
-        throw new Error('No results for: ' + album.title)
+        throw new Error('No results for: ' + title)
       }else{
-        this.log('Found ' + album.title, response)
+        this.log('Found ' + title, response)
         var thumbResult = _.find(response[1].results, (result) => {
           return result.thumb.length > 0
         })
         if(!thumbResult)
-          throw new Error('No results for: ' + album.title)
+          throw new Error('No results for: ' + title)
         return needle.getAsync(thumbResult.thumb)
       }
     }).then((response)=>{
@@ -107,7 +108,7 @@ module.exports = class CoverLoader {
           reject(err)
         }else{
           this.log('Saved ' + targetPath + '[' + album.title + ']')
-          resolve(targetPath)          
+          resolve(targetPath)
         }
       })
     })
