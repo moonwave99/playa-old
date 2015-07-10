@@ -24,7 +24,8 @@ module.exports = class Playa
     @playlistLoader = new PlaylistLoader
       root: '/Users/moonwave99/Desktop/_playlists'
       playlistExtension: 'm3u'
-    @fileLoader = new FileLoader()
+    @fileLoader = new FileLoader
+      fileExtensions: ['mp3', 'flac']
     @coverLoader = new CoverLoader
       root: '/Users/moonwave99/Desktop/_coverCache'
       discogs:
@@ -33,13 +34,13 @@ module.exports = class Playa
         throttle: 1000
     @player = new Player()
     @player.fileLoader = @fileLoader
-    
+
     @player.on 'nowplaying', ->
       PlayerStore.emitChange()
 
     @player.on 'playerTick', ->
       PlayerStore.emitChange()
-    
+
   init: ->
     @initIPC()
     @loadPlaylists()
@@ -62,7 +63,7 @@ module.exports = class Playa
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
       selected: 0
-    
+
   initIPC: ->
     ipc.on 'playback:prev', ->
       AppDispatcher.dispatch
@@ -75,28 +76,28 @@ module.exports = class Playa
     ipc.on 'playback:toggle', ->
       AppDispatcher.dispatch
         actionType: if @player.playing() then PlayerConstants.PAUSE else PlayerConstants.PLAY
-        
+
     ipc.on 'sidebar:toggle', ->
       AppDispatcher.dispatch
         actionType: SidebarConstants.TOGGLE
-        
+
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
         playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled') })]
-        
+
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
-        actionType: OpenPlaylistConstants.SAVE_PLAYLIST        
-        
+        actionType: OpenPlaylistConstants.SAVE_PLAYLIST
+
     ipc.on 'playlist:close', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
-        
+
     ipc.on 'open:folder', (folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
-        
+
   render: ->
     React.render React.createElement(Main), document.getElementById('main')

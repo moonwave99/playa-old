@@ -15,6 +15,7 @@ var PlaylistItem = require('./PlaylistItem')
 
 module.exports = class FileLoader {
   constructor(options) {
+    this.fileExtensions = options.fileExtensions
     this.cache = {}
   }
   loadFiles(files) {
@@ -25,13 +26,13 @@ module.exports = class FileLoader {
   }
   loadFolder(folder) {
     return new Promise((resolve, reject)=>{
-      glob("**/*.{mp3,flac}", { cwd: folder }, (err, files)=> {
+      glob("**/*.{" + this.fileExtensions.join(',') + "}", { cwd: folder }, (err, files)=> {
         if(err){
           reject(err)
         }else{
           resolve(files)
         }
-      })      
+      })
     })
     .then((files)=>{
       return Promise.all(files.map( f => this.openFile( path.join(folder, f) )))
@@ -56,7 +57,7 @@ module.exports = class FileLoader {
           stream.close()
           resolve(this.cache[hash])
         })
-      }    
+      }
     })
   }
   getFromPool(filename){
