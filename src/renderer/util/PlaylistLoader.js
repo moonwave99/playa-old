@@ -15,6 +15,7 @@ var AlbumPlaylist = require('./AlbumPlaylist')
 module.exports = class PlaylistLoader {
   constructor(options) {
     this.root = options.root
+    this.playlistExtension = options.playlistExtension
     this.treeCache = []
   }
   parseM3U(m3UPath){
@@ -23,20 +24,20 @@ module.exports = class PlaylistLoader {
     }).catch((err)=>{
       console.error(err.stack)
     })
-  }  
+  }
   loadTree(){
     return new Promise((resolve, reject)=>{
       if(this.treeCache.length){
         resolve(this.treeCache)
       }else{
-        glob.callAsync(this, path.join(this.root, '**', '*.m3u')).bind(this).then((files)=>{
+        glob.callAsync(this, path.join(this.root, '**', '*.' + this.playlistExtension)).bind(this).then((files)=>{
           this.treeCache = files.map( file => new AlbumPlaylist({
             id: md5(file),
             path: file,
-            title: path.basename(file, '.m3u')
+            title: path.basename(file, '.' + this.playlistExtension)
           }) )
           resolve(this.treeCache)
-        }).catch(reject)        
+        }).catch(reject)
       }
     })
   }
@@ -47,7 +48,7 @@ module.exports = class PlaylistLoader {
       }else{
         resolve(this.parseM3U(playlist.path).then((files)=>{
           return playlist.load(files)
-        }))   
+        }))
       }
     })
   }
@@ -58,13 +59,13 @@ module.exports = class PlaylistLoader {
         title: 'Save Playlist as',
         defaultPath: this.root,
         filters: [
-          { name: 'Playlist files', extensions: ['m3u'] }
-        ] 
+          { name: 'Playlist files', extensions: [this.playlistExtension] }
+        ]
       })
     }else{
-      targetPath = path.join(this.root, playlist.title + '.m3u')
+      targetPath = path.join(this.root, playlist.title + '.' + this.playlistExtension)
     }
-     
+
     return fs.outputFileAsync(
       targetPath,
       playlist.getFileList().join("\n")

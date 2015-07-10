@@ -23,6 +23,7 @@ module.exports = class Playa
   constructor: () ->
     @playlistLoader = new PlaylistLoader
       root: '/Users/moonwave99/Desktop/_playlists'
+      playlistExtension: 'm3u'
     @fileLoader = new FileLoader()
     @coverLoader = new CoverLoader
       root: '/Users/moonwave99/Desktop/_coverCache'
