@@ -115,14 +115,14 @@ module.exports = (grunt) ->
     stylus: stylusConfig
 
     cson: csonConfig
-    
+
     'local-googlefont':
       lato:
         options:
           family: 'Lato'
           sizes: [300, 400, 700]
           cssDestination: 'src/styles/fonts'
-          fontDestination: 'static/fonts'    
+          fontDestination: 'static/fonts'
 
     coffeelint:
       options:
@@ -222,5 +222,5 @@ module.exports = (grunt) ->
   ciTasks.push('codesign')
   grunt.registerTask('ci', ciTasks)
 
-  defaultTasks = ['bower:install', 'build', 'set-version', 'local-googlefont', 'stylus:compile', 'generate-asar']
+  defaultTasks = ['bower:install', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
   grunt.registerTask('default', defaultTasks)
