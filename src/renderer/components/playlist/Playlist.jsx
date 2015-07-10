@@ -9,6 +9,15 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var NavGenerator = require('../../generators/Navigable.jsx')
 
+var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, 'albumPlaylist',
+  function(component){
+    return component.props.playlist.getIds()
+  },
+  function(component){
+    return component.props.playlist.getAlbumById(component.state.selection[0])
+  }
+)
+
 var _overflows = function(parent, element){
   var parentBounds = parent.getBoundingClientRect()
   var elBounds = element.getBoundingClientRect()
@@ -30,18 +39,6 @@ var Playlist = React.createClass({
     this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
   },
   render: function() {
-    var AlbumPlaylistOnSteroids = NavGenerator(
-      AlbumPlaylist,
-      'albumPlaylist',
-      function(component){
-        return component.props.playlist.getIds()
-      },
-      function(component){
-        return component.props.playlist.getAlbumById(component.state.selection[0])
-      },
-      function(component){
-        return component.state.selection
-      })
     return (
       <div className="playlist">
         <AlbumPlaylistOnSteroids

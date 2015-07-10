@@ -24,7 +24,8 @@ var AlbumPlaylist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
     handleClick: ReactPropTypes.func,
-    handleDoubleClick: ReactPropTypes.func
+    handleDoubleClick: ReactPropTypes.func,
+    selection: ReactPropTypes.array
   },
   getInitialState: function(){
     return getPlayerState()

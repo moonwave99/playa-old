@@ -12,17 +12,17 @@ var PlaylistBrowserEntry = React.createClass({
       selected: this.props.isSelected
     })
     return (
-      <li className={classes} onClick={this.handlePlaylistClick} onDoubleClick={this.handlePlaylistDoubleClick}>
+      <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
         <i className="fa fa-fw fa-file-audio-o"></i>
         {this.props.playlist.title}
       </li>
     )
   },
-  handlePlaylistClick: function(event){
-    this.props.onClick(event, this)
+  handleClick: function(event){
+    this.props.handleClick(event, this)
   },
-  handlePlaylistDoubleClick: function(event){
-    this.props.onDoubleClick(event, this)
+  handleDoubleClick: function(event){
+    this.props.handleDoubleClick(event, this)
   }
 })
 

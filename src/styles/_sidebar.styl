@@ -29,13 +29,14 @@
           
   .playlist-browser
     margin .5rem 0 0 0
+    user-select none
     li
       line-height size($playlistBrowserLineHeight)
       font-size size($playlistBrowserFontSize)
+      &:hover
+        background-color rgba(white, .05)      
       &.selected
         background-color rgba(white, .1)
-      &:hover
-        background-color rgba(white, .08)
       .fa
         margin-right .5rem
         
@@ -54,7 +55,6 @@
       cursor pointer
       margin-right .5rem
       display inline-block
-      user-select none
     
     .tree-view_arrow-collapsed 
       transform rotate(-90deg)
