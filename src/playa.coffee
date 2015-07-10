@@ -98,15 +98,5 @@ module.exports = class Playa
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
         
-    ipc.on 'playlist:toggleViewMode', ->
-      selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
-      if !selectedPlaylist then return
-        
-      AppDispatcher.dispatch
-        actionType: OpenPlaylistConstants.UPDATE_UI,
-        id: selectedPlaylist.id,
-        ui:
-          displayMode: if selectedPlaylist.getDisplayMode() == 'table' then 'albums' else 'table'
-        
   render: ->
     React.render React.createElement(Main), document.getElementById('main')

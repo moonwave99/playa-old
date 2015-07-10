@@ -4,6 +4,11 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var PlayerConstants = require('../constants/PlayerConstants')
 
 var PlayerActions = {
+  toggle: function(){
+    AppDispatcher.dispatch({
+      actionType: PlayerConstants.TOGGLE_PLAYBACK
+    })
+  },  
   play: function(){
     AppDispatcher.dispatch({
       actionType: PlayerConstants.PLAY

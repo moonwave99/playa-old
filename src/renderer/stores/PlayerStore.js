@@ -48,6 +48,10 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
   
   dispatcherIndex: AppDispatcher.register(function(action) {    
     switch(action.actionType) {
+      case PlayerConstants.TOGGLE_PLAYBACK:
+        playa.player.playing() ? playa.player.pause() : playa.player.play()
+        PlayerStore.emitChange()
+        break
       case PlayerConstants.PLAY:
         playa.player.play()
         PlayerStore.emitChange()

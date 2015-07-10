@@ -2,7 +2,6 @@
 
 var _ = require('lodash')
 var uid = require('uid')
-var key = require('keymaster')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')

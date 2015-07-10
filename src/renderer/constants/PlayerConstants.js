@@ -1,6 +1,7 @@
 var keyMirror = require('keymirror');
 
 module.exports = keyMirror({
+  TOGGLE: null,
   PLAY: null,
   PAUSE: null,
   STOP: null,

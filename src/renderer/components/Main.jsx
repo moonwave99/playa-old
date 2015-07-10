@@ -3,6 +3,7 @@
 var ipc = require('ipc')
 var _ = require('lodash')
 var cx = require('classnames')
+var key = require('keymaster')
 
 var React = require('react')
 var Tabs = require('react-simpletabs')
@@ -11,12 +12,11 @@ var Playlist = require('./playlist/Playlist.jsx')
 var Sidebar = require('./Sidebar/Sidebar.jsx')
 var Footer = require('./Footer.jsx')
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-
 var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
 var SidebarStore = require('../stores/SidebarStore')
 
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
+var PlayerActions = require('../actions/PlayerActions')
 
 function getSidebarState(){
   return SidebarStore.getSidebarInfo()
@@ -37,10 +37,12 @@ module.exports = React.createClass({
   componentDidMount: function() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
+    key('space', this.handleSpacePress)
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
+    key.unbind('space')
   },  
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     OpenPlaylistActions.select(selectedIndex-1)
@@ -76,6 +78,9 @@ module.exports = React.createClass({
         <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.selectedPlaylist} />
       </div>
     )
+  },
+  handleSpacePress: function(event){
+    PlayerActions.toggle()
   },
   _onOpenPlaylistChange: function() {
     this.setState(getOpenPlaylistState())
