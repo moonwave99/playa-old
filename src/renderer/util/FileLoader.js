@@ -1,9 +1,11 @@
 "use babel"
 
 var ipc = require('ipc')
+var fs = require('fs-extra')
 var md5 = require('MD5')
 var path = require('path')
 var groove = require('groove')
+var mm = require('musicmetadata')
 var assert = require('assert')
 var glob = require('glob')
 var Promise = require('bluebird')
@@ -23,36 +25,37 @@ module.exports = class FileLoader {
   }
   loadFolder(folder) {
     return new Promise((resolve, reject)=>{
-      glob("**/*.{mp3,flac}", { cwd: folder }, (er, files)=> {
-        Promise.all(
-          files.map((f)=>{ return this.openFile( path.join(folder, f) ) })
-        ).then((files)=>{
-          resolve(files)
-        }).catch((err)=>{
+      glob("**/*.{mp3,flac}", { cwd: folder }, (err, files)=> {
+        if(err){
           reject(err)
-        })
+        }else{
+          resolve(files)
+        }
       })      
+    })
+    .then((files)=>{
+      return Promise.all(files.map( f => this.openFile( path.join(folder, f) )))
+    })
+    .catch((err)=>{
+      console.error(err, err.stack)
     })
   }
   openFile(filename){
+    var stream
     return new Promise((resolve, reject)=>{
       var hash = md5(filename)
       if(this.cache[hash]){
         resolve(this.cache[hash])
       }else{
-        groove.open(filename, (err, file)=>{
-          if(err){
-            reject(err)
-          }else{
-            this.cache[hash] = new PlaylistItem({
-              filename: file.filename,
-              metadata: MetaDoctor.normalise(file.metadata()),
-              duration: file.duration(),
-              grooveFile: file
-            })
-            resolve(this.cache[hash])
+        mm(stream = fs.createReadStream(filename), { duration: true }, (err, metadata)=>{
+          this.cache[hash] = {
+            filename: filename,
+            metadata: err ? {} : MetaDoctor.normalise(metadata),
+            duration: metadata.duration,
           }
-        })  
+          stream.close()
+          resolve(this.cache[hash])
+        })
       }    
     })
   }

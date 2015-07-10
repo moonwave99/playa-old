@@ -2,11 +2,20 @@
 
 var _ = require('lodash')
 var React = require('react')
+var ReactPropTypes = React.PropTypes
 var key = require('keymaster')
 
-module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
+module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){  
+  getSelectedIds = getSelectedIds || function(component){
+    return component.state.selection
+  }
 
   const NavigableComponent = React.createClass({
+    propTypes: {
+      handleDelKeyPress: ReactPropTypes.func.isRequired,
+      handleEnterKeyPress: ReactPropTypes.func.isRequired,
+      handleScrollToElement: ReactPropTypes.func.isRequired
+    },
     getIdList() {
       return getIdList(this)
     },
@@ -18,7 +27,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     getInitialState() {
       return {
-        selection: [],
+        selection: this.props.initSelection || [],
         openElements: []
       }
     },
@@ -31,36 +40,40 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       key.setScope(scopeName)      
     },
     componentWillUnmount() {
-      key.unbind('backspace')
-      key.unbind('del')
-      key.unbind('enter')
-      key.unbind('command+a')
-      key.unbind('up')
-      key.unbind('down')
-      key.unbind('shift+up')
-      key.unbind('shift+down')
-      key.unbind('alt+up')
-      key.unbind('alt+down')
-      key.unbind('shift+alt+up')
-      key.unbind('shift+alt+down')    
-      key.unbind('left')
-      key.unbind('right')       
+      key.unbind('backspace', scopeName)
+      key.unbind('del', scopeName)
+      key.unbind('enter', scopeName)
+      key.unbind('command+a', scopeName)
+      key.unbind('up', scopeName)
+      key.unbind('down', scopeName)
+      key.unbind('shift+up', scopeName)
+      key.unbind('shift+down', scopeName)
+      key.unbind('alt+up', scopeName)
+      key.unbind('alt+down', scopeName)
+      key.unbind('shift+alt+up', scopeName)
+      key.unbind('shift+alt+down', scopeName)    
+      key.unbind('left', scopeName)
+      key.unbind('right', scopeName)       
     },
     componentWillUpdate(nextProps, nextState){
       this.props.handleScrollToElement(nextState, this.getIdList())
     },
     render() {
       return (
-        <Component
-          handleClick={this.handleClick}
-          {...this.props}
-          {...this.state} />
+        <div onClick={this.getFocus}>
+          <Component
+            handleClick={this.handleClick}
+            {...this.props}
+            {...this.state} />
+        </div>
       )
+    },
+    getFocus(event){
+      key.setScope(scopeName)
     },
     handleClick(event, item) {
       var ids = this.getIdList()
       var index = ids.indexOf(item.props.itemKey)
-    
       var [low, hi] = [
         ids.indexOf(this.state.selection[0]),
         ids.indexOf(this.state.selection[this.state.selection.length-1])
@@ -142,7 +155,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       this.props.handleDelKeyPress(event, this, getSelectedIds(this))
       this.setState({
         selection: []
-      })      
+      })
     },
     handleSelectAllKeyPress(event) {
       this.setState({
@@ -151,6 +164,5 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     }
   })
   
-  return NavigableComponent
-  
+  return NavigableComponent 
 }

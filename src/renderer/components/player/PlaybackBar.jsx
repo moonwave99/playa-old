@@ -21,10 +21,10 @@ module.exports = React.createClass({
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },
   prev: function(){
-    PlayerActions.prev()
+    PlayerActions.prevTrack()
   },
   next: function(){
-    PlayerActions.next()
+    PlayerActions.nextTrack()
   },
   play: function(event){
     this.state.playing ? PlayerActions.pause() : PlayerActions.play()
@@ -40,8 +40,13 @@ module.exports = React.createClass({
       'playback-track-info-wrapper' : true,
       'hide-info' : this.state.hideInfo
     })
+    var logoClasses = cx({
+      'playback-logo' : true,
+      'hide-logo' : !this.state.hideInfo
+    })    
     return (
       <div className="playback-bar">
+        <div className={logoClasses}>Playa.</div>      
         <div className="playback-buttons">
           <button onClick={this.prev}><i className="fa fa-fw fa-backward"></i></button>
           <button onClick={this.play}>{this.state.playing ? <i className="fa fa-fw fa-pause"></i> : <i className="fa fa-fw fa-play"></i>}</button>

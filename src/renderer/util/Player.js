@@ -12,19 +12,26 @@ module.exports = class Player extends EventEmitter{
   constructor(options) {
     super(options)
     this.player = groove.createPlayer()
-    this.playlist = groove.createPlaylist()
+    this.groovePlaylist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
     this.timer = null        
+    this.userPlaylist = null
     this.attached = false
+    this.loading = false
+    this.currentAlbum = {}
+    this.lastTrackPlayed = null
+    this.lastAction = null
+    this.playbackDirection = 0
   }
   getAll(){
-    return this.playlist ? this.playlist.items() : []
+    return this.groovePlaylist ? this.groovePlaylist.items() : []
   }
   startTimer(){
-    if(this.timer)
+    if(this.timer){
       return
-      
+    }
+
     this.timer = setInterval(()=>{
       this.emit('playerTick')
     }, 1000)
@@ -36,16 +43,16 @@ module.exports = class Player extends EventEmitter{
   attach(){
     return new Promise((resolve, reject)=>{
       if(this.attached){
-        resolve()
-      }else if(!this.playlist){
+        resolve(true)
+      }else if(!this.groovePlaylist){
         reject(new Error('No playlist set!'))
       }else{
-        this.player.attach(this.playlist, (err)=>{
+        this.player.attach(this.groovePlaylist, (err)=>{
           if(err){
             reject(err)
           }else{
             this.attached = true
-            resolve()
+            resolve(true)
           }
         })
       }    
@@ -54,8 +61,8 @@ module.exports = class Player extends EventEmitter{
   detach(){
     return new Promise((resolve, reject)=>{
       if(!this.attached){
-        resolve()
-      }else if(!this.playlist){
+        resolve(true)
+      }else if(!this.groovePlaylist){
         reject(new Error('No playlist to detach!'))
       }else{
         this.player.detach((err)=>{
@@ -63,105 +70,172 @@ module.exports = class Player extends EventEmitter{
             reject(err)
           }else{
             this.attached = false
-            resolve()
+            resolve(true)
           }
         })
       }
     })
   }  
   onNowplaying() {
-    var current = this.playlist.position()
+    if(this.loading){
+      return
+    }
+    var current = this.groovePlaylist.position()
     if(current.item){
+      if(!this.lastTrackPlayed){
+        this.lastTrackPlayed = current.item.file.metadata()
+      }else{
+        var _lastTrackPlayed = current.item.file.metadata()
+        this.playbackDirection = this.lastTrackPlayed.track <= _lastTrackPlayed.track ? 1 : -1
+        this.lastTrackPlayed = _lastTrackPlayed        
+      }
       if(!this.timer){
         this.startTimer()
       }
       this.emit('nowplaying')  
     }else{
-      this.clearTimer()
+      if(this.playbackDirection == 0){
+        this.lastAction == 'prev' ? this.prevAlbum() : this.nextAlbum()
+      }else{
+        this.playbackDirection > 0 ? this.nextAlbum() : this.prevAlbum()  
+      }
     }
   }
   playing() {
-    return this.playlist && this.playlist.playing()
+    return this.groovePlaylist && this.groovePlaylist.playing()
   }
   playbackInfo() {
-    if(!this.playlist){
+    if(!this.groovePlaylist){
       return null;
     }
-    var info = this.playlist.position()
+    var info = this.groovePlaylist.position()
     return {
       position: info.pos,
-      playing: info.item && this.playlist.playing(),
+      playing: info.item && this.groovePlaylist.playing(),
       item: info.item ? this.fileLoader.getFromPool(info.item.file.filename) : {}
     }
   }
   play() {
     this.attach().then(()=>{
       this.startTimer()
-      this.playlist.play()
+      this.groovePlaylist.play()
     })
   }
   pause() {
-    this.playlist.pause()
+    this.groovePlaylist.pause()
     this.clearTimer()
   }
-  next() {
-    var items = this.playlist.items()
-    var current = this.playlist.position()
+  nextTrack() {
+    this.lastAction = 'next'
+    var items = this.groovePlaylist.items()
+    var current = this.groovePlaylist.position()
     var currentIndex = _.findIndex(items, (item)=>{
       return item.id == current.item.id
     })
     if(currentIndex < items.length -1){
-      this.playlist.seek(items[currentIndex+1], -1)
+      this.groovePlaylist.seek(items[currentIndex+1], -1)
       return true
     }else{
-      return false
+      return this.nextAlbum()
     }    
   }
-  prev() {
-    var items = this.playlist.items()
-    var current = this.playlist.position()
+  prevTrack() {
+    this.lastAction = 'prev'
+    var items = this.groovePlaylist.items()
+    var current = this.groovePlaylist.position()
     var currentIndex = _.findIndex(items, (item)=>{
       return item.id == current.item.id
     })
     if(currentIndex > 0){
-      this.playlist.seek(items[currentIndex-1], -1)
-      return true
+      this.groovePlaylist.seek(items[currentIndex-1], -1)
+      return true      
     }else{
-      return false
+      return this.prevAlbum()
     }    
   }
-  goto(id) {
-    var item = _.find(this.playlist.items(), (item)=>{
+  gotoTrack(id) {
+    id = id || this.currentAlbum.tracks[0].id
+    var item = _.find(this.groovePlaylist.items(), (item)=>{
       return id == md5(item.file.filename)
     })
     if(item){
-      this.playlist.seek(item, -1)
-      !this.playlist.playing() && this.play()
+      this.groovePlaylist.seek(item, -1)
+      !this.groovePlaylist.playing() && this.play()
     }
   }
   seek(to) {
-    if(!this.playlist){
+    if(!this.groovePlaylist){
       return false;
     }
-    var current = this.playlist.position()
+    var current = this.groovePlaylist.position()
     var seekToSecond = current.item.file.duration() * to
-    current.item && this.playlist.seek(current.item, seekToSecond)    
+    current.item && this.groovePlaylist.seek(current.item, seekToSecond)    
+  }
+  nextAlbum(){
+    var nextAlbum = this.userPlaylist.getNext(this.currentAlbum)
+    return nextAlbum && this.playAlbum(nextAlbum)
+  }
+  prevAlbum(){
+    var prevAlbum = this.userPlaylist.getPrevious(this.currentAlbum)
+    return prevAlbum && this.playAlbum(prevAlbum)    
   }
   insert(file) {
-    this.playlist.insert(file)
+    this.groovePlaylist.insert(file)
     if(this.playing() && !this.attached){
-      this.playlist.pause()
+      this.groovePlaylist.pause()
     }
   }
   remove(file){
-    this.playlist.remove(file)
+    this.groovePlaylist.remove(file)
+  }
+  closeFiles(filesToClose){
+    return Promise.all(filesToClose.map((file)=>{
+      var filename = file.filename
+      return new Promise((resolve, reject)=>{
+        file.close((err)=>{
+          if(err){ reject(err)
+          }else{ resolve(filename) }
+        })
+      })
+    }))
   }
   clearPlaylist() {
-    this.playlist.clear()      
+    var filesToClose = this.groovePlaylist.items().map( i => i.file )
+    this.groovePlaylist.clear()
+    return this.closeFiles(filesToClose)
   }
   append(files){
     files.forEach((file)=>{
-      file && this.playlist.insert(file)
+      file && this.groovePlaylist.insert(file)
     })
   }
+  playAlbum(album, trackId){
+    if(this.currentAlbum.id !== album.id){
+      this.loading = true
+      this.clearPlaylist().then(()=>{
+        Promise.all(album.tracks.map((track)=>{
+          return new Promise((resolve, reject)=>{
+            groove.open(track.filename, (err, file)=>{
+              if(err){
+                reject(err)
+              }else{
+                resolve(file)
+              }
+            })
+          })
+        })).then((files)=>{
+          this.currentAlbum = album
+          return this.append(files)
+        }).then(()=>{
+          this.loading = false
+          this.gotoTrack(trackId)
+          return true
+        }).catch((err)=>{
+          console.error(err, err.stack)
+        })        
+      })
+    }else{
+      this.gotoTrack(trackId)
+    }
+  } 
 }

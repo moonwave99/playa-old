@@ -10,10 +10,11 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlaylistBrowserEntry = require('./PlaylistBrowserEntry.jsx')
 
 var PlaylistBrowser = React.createClass({
-  getInitialState: function(){
-    return {
-      selection: null
-    }
+  propTypes: {
+    playlist: ReactPropTypes.object,
+    handleClick: ReactPropTypes.func,
+    handleDoubleClick: ReactPropTypes.func,
+    selection: ReactPropTypes.array
   },
   render: function() {
     var classes = cx({
@@ -25,7 +26,13 @@ var PlaylistBrowser = React.createClass({
           <ul className="list-unstyled">
             {
               this.props.tree.map((playlist)=>{
-                return <PlaylistBrowserEntry playlist={playlist} key={playlist.id} onClick={this.handlePlaylistClick} onDoubleClick={this.handlePlaylistDoubleClick} isSelected={this.state.selection == playlist.id}/>
+                return <PlaylistBrowserEntry
+                  playlist={playlist}
+                  key={playlist.id}
+                  itemKey={playlist.id}
+                  handleClick={this.handleClick}
+                  handleDoubleClick={this.handleDoubleClick}
+                  isSelected={this.props.selection.indexOf(playlist.id) > -1}/>
               })
             }
             </ul>
@@ -33,15 +40,12 @@ var PlaylistBrowser = React.createClass({
       </div>
     )
   },
-  handlePlaylistClick: function(event, item){
-    this.setState({
-      selection: item.props.playlist.id
-    })
+  handleClick: function(event, item){
+    this.props.handleClick(event, item)
   },
-  handlePlaylistDoubleClick: function(event, item){
-    var id = item.props.playlist.id;
-    OpenPlaylistActions.add([_.findWhere(this.props.tree, { id: id })])
-    OpenPlaylistActions.selectById(id)
+  handleDoubleClick: function(event, item){
+    OpenPlaylistActions.add([item.props.playlist])
+    OpenPlaylistActions.selectById(item.props.playlist.id)
   }
 })
 

@@ -42,12 +42,23 @@
       &:hover
         header
           background-color $albumHoverBackgroundColor
+          .links
+            transform translateX(0)
       &.selected
         header
           background-color $albumSelectedBackgroundColor        
       &.playing
         header
           background-color $albumPlayingBackgroundColor
+      &:hover,
+      &.playing
+        header
+          .cover.loaded
+            opacity 1
+          .artist
+            color $albumArtistColorPlaying
+          .title
+            color $albumArtistColor
       &.drag-over
         box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .8)
       header
@@ -55,6 +66,13 @@
         position relative
         padding-top size($albumHeaderTopPadding)
         padding-left size($albumItemClosedHeight)
+        overflow-x hidden
+        .links
+          transition transform .2s ease-in
+          transform translateX(100%)
+          width 10vw
+          float right
+          display none
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
@@ -65,9 +83,9 @@
           top 0
           left 0
           opacity 0
-          transition opacity .3s linear
+          transition opacity .3s ease-in
           &.loaded
-            opacity 1
+            opacity .7
         .artist
           color $albumArtistColor
           font-size size($albumArtistFontSize)
@@ -75,6 +93,7 @@
           padding-left 1rem
           display inline-block
           max-width 80%          
+          transition color .3s ease-in
           ellipsed()
         .title
           font-size size($albumTitleFontSize)
@@ -82,8 +101,9 @@
           padding-left 1rem
           display inline-block
           max-width 80%
+          transition color .3s ease-in
           ellipsed()
-        .date
+        .year
           font-size size($albumDateFontSize)
           vertical-align middle
           margin-right 1rem

@@ -9,6 +9,14 @@
   background-color $playbackBarBgColor
   line-height size($playbackBarHeight)
   user-select none
+  .playback-logo
+    position absolute
+    width 100%
+    text-align center
+    font-size size($playbackBarTitleSize)
+    color $playbackBarTitleColor  
+    &.hide-logo
+      display none  
   .playback-buttons
     flex 0 0 size(3*3*$playbackBarButtonSize)
     text-align center

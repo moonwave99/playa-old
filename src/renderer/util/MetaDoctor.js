@@ -4,14 +4,22 @@ var _ = require('lodash')
 var moment = require('moment')
 
 var MetaDoctor = {
-  normalise(metadata){
+  normalise(metadata){ 
     return _.reduce(metadata, (memo, value, key)=>{
       switch(key = key.toLowerCase()){
-        case 'track':
-          memo[key] = parseInt(value.split('/')[0]) || 0
+        case 'artist':
+        case 'albumartist':
+          if(_.isArray(value)){
+            value = value.join(', ')
+          }
+          memo[key] = value
           break
+        case 'track':
+          memo[key] = value.no
+          break
+        case 'year':
         case 'date':
-          memo[key] = moment(new Date(value.match(/\d{4}/)[0])).format('YYYY')
+          memo[key] = value ? moment(new Date(value.match(/\d{4}/)[0])).format('YYYY') : '-'
           break
         default:
           memo[key] = value  

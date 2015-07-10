@@ -3,12 +3,20 @@
 var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var PlaylistTable = require('./PlaylistTable.jsx')
-var PlaylistAlbums = require('./PlaylistAlbums.jsx')
+var AlbumPlaylist = require('./AlbumPlaylist.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var NavGenerator = require('../../generators/Navigable.jsx')
+
+var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, 'albumPlaylist',
+  function(component){
+    return component.props.playlist.getIds()
+  },
+  function(component){
+    return component.props.playlist.getAlbumById(component.state.selection[0])
+  }
+)
 
 var _overflows = function(parent, element){
   var parentBounds = parent.getBoundingClientRect()
@@ -27,105 +35,56 @@ var _overflows = function(parent, element){
 }
 
 var Playlist = React.createClass({
-  propTypes: {
-    playlist: ReactPropTypes.object,
-    handleScroll: ReactPropTypes.func    
-  },
   componentDidMount: function(){
-    var node = React.findDOMNode(this)
-    node.addEventListener('scroll', _.throttle(this.handleScroll, 100))
-    node.scrollTop = this.props.playlist.scrollBy
-  },
-  componentWillUnmount: function(){
-    React.findDOMNode(this).removeEventListener('scroll')
+    this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
   },
   render: function() {
-    switch(this.props.playlist.displayMode){
-      case 'albums':
-        var PlaylistAlbumsOnSteroids = NavGenerator(
-          PlaylistAlbums,
-          'playlistAlbums',
-          function(component){
-            return component.props.albums.map( i => i.id )
-          },
-          function(component){
-            var album = _.findWhere(component.props.albums, { id: component.state.selection[0] })
-            return album ? album.tracks[0].id : null
-          },
-          function(component){
-            return _.reduce(component.state.selection, (memo, id)=>{
-              memo = memo.concat(_.findWhere(component.props.albums, { id: id }).tracks.map( i => i.id ))
-              return memo
-            }, [])
-          })
-        return (
-          <div className="playlist">
-            <PlaylistAlbumsOnSteroids
-              playlist={this.props.playlist}
-              albums={this.props.playlist.groupByAlbum()}
-              handleDoubleClick={this.handleDoubleClick}
-              handleDelKeyPress={this.handleDelKeyPress}
-              handleEnterKeyPress={this.handleEnterKeyPress}
-              handleScrollToElement={this.handleScrollToElement}/>        
-          </div>
-        )        
-        break
-      default:
-        var PlaylistTableOnSteroids = NavGenerator(
-          PlaylistTable,
-          'playlistTable',
-          function(component){
-            return component.props.playlist.items.map( i => i.id )
-          },
-          function(component){
-            var track = _.findWhere(component.props.playlist.items, { id: component.state.selection[0] })
-            return track ? track.id : null
-          },
-          function(component){
-            return component.state.selection
-          })          
-        return (
-          <div className="playlist">
-            <PlaylistTableOnSteroids
-              playlist={this.props.playlist}
-              handleDoubleClick={this.handleDoubleClick}
-              handleDelKeyPress={this.handleDelKeyPress}
-              handleEnterKeyPress={this.handleEnterKeyPress}
-              handleScrollToElement={this.handleScrollToElement}/>        
-          </div>
-        )
-        break
-    }
-  },
-  handleScroll: function(event){
-    // console.log(event)
-    // this.props.handleScroll(this, event)
-  },
-  handleDoubleClick: function(id){
-    OpenPlaylistActions.playFile(id, this.props.playlist)
-    PlayerActions.play()    
+    return (
+      <div className="playlist">
+        <AlbumPlaylistOnSteroids
+          playlist={this.props.playlist}
+          initSelection={[this.props.playlist.lastScrolledAlbum]}
+          handleDelKeyPress={this.handleDelKeyPress}
+          handleEnterKeyPress={this.handleEnterKeyPress}
+          handleScrollToElement={this.handleScrollToElement}/>        
+      </div>
+    )
   },
   handleDelKeyPress: function(event, item, tracksToRemove){
-    OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)    
+    OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
-      OpenPlaylistActions.playFile(item.getSelectedElement(), this.props.playlist)
+      var album = item.getSelectedElement()
+      OpenPlaylistActions.playAlbum(album, album.tracks[0].id, this.props.playlist)
       PlayerActions.play()
     }          
   },
   handleScrollToElement: function(state, list){
-    var targetElement = document.querySelector('[data-id="' + state.selection[0] + '"]')
-    if(!targetElement)
+    var wrapper = React.findDOMNode(this)
+    var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
+    if(!targetElement){
       return
-    var node = React.findDOMNode(this)
-    var {direction, parentBounds, elBounds} = _overflows(node, targetElement)
+    }
+    
+    // save position of last selected album
+    this.props.playlist.lastScrolledAlbum = state.selection[0]
+    
+    var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
     if(direction < 0){
-      node.scrollTop = targetElement.offsetTop
+      wrapper.scrollTop = targetElement.offsetTop
     }else if(direction > 0){
       var maxEls = Math.floor(parentBounds.height / elBounds.height)
-      node.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
+      wrapper.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
     }
+  },
+  scrollToAlbum: function(albumId){
+    var wrapper = React.findDOMNode(this)
+    var targetElement = wrapper.querySelector('[data-id="' + albumId + '"]')
+    if(!targetElement){
+      return
+    }
+    wrapper.scrollTop = targetElement.offsetTop        
   }  
 })
 

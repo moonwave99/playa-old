@@ -2,6 +2,7 @@ md5                       = require 'md5'
 ipc                       = require 'ipc'
 React                     = require 'react'
 Main                      = require './renderer/components/Main.jsx'
+AlbumPlaylist             = require './renderer/util/AlbumPlaylist'
 Playlist                  = require './renderer/util/Playlist'
 Player                    = require './renderer/util/Player'
 PlaylistLoader            = require './renderer/util/PlaylistLoader'
@@ -52,10 +53,9 @@ module.exports = class Playa
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
       playlists: [
-        new Playlist({
-          id: md5('/Users/moonwave99/Desktop/_playlists/slsk.m3u')
+        new AlbumPlaylist({
+          id: md5 '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
           path: '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
-          title: 'slsk'
         })
       ]
 
@@ -83,7 +83,7 @@ module.exports = class Playa
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new Playlist({ title: 'Untitled', id: md5('Untitled') })]
+        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled') })]
         
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
@@ -97,16 +97,6 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
-        
-    ipc.on 'playlist:toggleViewMode', ->
-      selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
-      if !selectedPlaylist then return
-        
-      AppDispatcher.dispatch
-        actionType: OpenPlaylistConstants.UPDATE_UI,
-        id: selectedPlaylist.id,
-        ui:
-          displayMode: if selectedPlaylist.displayMode == 'table' then 'albums' else 'table'
         
   render: ->
     React.render React.createElement(Main), document.getElementById('main')

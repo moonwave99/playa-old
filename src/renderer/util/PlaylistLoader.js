@@ -11,6 +11,7 @@ var assert = require('assert')
 var glob = Promise.promisifyAll(require('glob'))
 
 var Playlist = require('./Playlist')
+var AlbumPlaylist = require('./AlbumPlaylist')
 
 module.exports = class PlaylistLoader {
   constructor(options) {
@@ -30,7 +31,7 @@ module.exports = class PlaylistLoader {
         resolve(this.treeCache)
       }else{
         glob.callAsync(this, path.join(this.root, '**', '*.m3u')).bind(this).then((files)=>{
-          this.treeCache = files.map( file => new Playlist({
+          this.treeCache = files.map( file => new AlbumPlaylist({
             id: md5(file),
             path: file,
             title: path.basename(file, '.m3u')
@@ -52,10 +53,22 @@ module.exports = class PlaylistLoader {
     })
   }
   save(playlist){
-    var targetPath = path.join(process.env.HOME, 'Desktop', '_playlists', playlist.title + '.m3u')
+    var targetPath
+    if(playlist.isNew()){
+      targetPath = ipc.sendSync('request:save:dialog', {
+        title: 'Save Playlist as',
+        defaultPath: this.root,
+        filters: [
+          { name: 'Playlist files', extensions: ['m3u'] }
+        ] 
+      })
+    }else{
+      targetPath = path.join(this.root, playlist.title + '.m3u')
+    }
+     
     return fs.outputFileAsync(
       targetPath,
-      playlist.items.map((i)=>{ return i.filename }).join("\n")
+      playlist.getFileList().join("\n")
     ).then(()=>{
       playlist.path = targetPath
     })

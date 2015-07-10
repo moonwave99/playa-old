@@ -6,6 +6,7 @@ var ipc = require('ipc')
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var PlayerConstants = require('../constants/PlayerConstants')
+var PlaylistItem = require('../util/PlaylistItem')
 
 var CHANGE_EVENT = 'change'
 
@@ -22,7 +23,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
       playing: !!info.playing,      
       hideInfo: !info.item.duration,
       metadata: info.item.metadata || {},
-      item: info.item || {},
+      item: info.item ? new PlaylistItem(info.item): {},
       filename: info.item.filename || null
     }
   },
@@ -47,6 +48,10 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
   
   dispatcherIndex: AppDispatcher.register(function(action) {    
     switch(action.actionType) {
+      case PlayerConstants.TOGGLE_PLAYBACK:
+        playa.player.playing() ? playa.player.pause() : playa.player.play()
+        PlayerStore.emitChange()
+        break
       case PlayerConstants.PLAY:
         playa.player.play()
         PlayerStore.emitChange()
@@ -56,14 +61,14 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
         playa.player.pause()
         PlayerStore.emitChange()
         break
-      case PlayerConstants.NEXT:
-        var next = playa.player.next()
+      case PlayerConstants.NEXT_TRACK:
+        var next = playa.player.nextTrack()
         if(next){
-          PlayerStore.emitChange()
+          // PlayerStore.emitChange()
         }
         break
-      case PlayerConstants.PREV:
-        var prev = playa.player.prev()
+      case PlayerConstants.PREV_TRACK:
+        var prev = playa.player.prevTrack()
         if(prev){
           PlayerStore.emitChange()
         }        

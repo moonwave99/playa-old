@@ -2,10 +2,9 @@
 
 var _ = require('lodash')
 var uid = require('uid')
-var key = require('keymaster')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var PlaylistAlbumItem = require('./PlaylistAlbumItem.jsx')
+var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
@@ -21,11 +20,12 @@ function getPlayerState(){
   }  
 }
 
-var PlaylistAlbums = React.createClass({
+var AlbumPlaylist = React.createClass({
   propTypes: {
-    albums: ReactPropTypes.array,
+    playlist: ReactPropTypes.object,
     handleClick: ReactPropTypes.func,
-    handleDoubleClick: ReactPropTypes.func
+    handleDoubleClick: ReactPropTypes.func,
+    selection: ReactPropTypes.array
   },
   getInitialState: function(){
     return getPlayerState()
@@ -37,14 +37,13 @@ var PlaylistAlbums = React.createClass({
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },  
   render: function() {
-    var albums = this.props.albums.map((album, index)=>{
-      var output = (
-        <PlaylistAlbumItem
-          key={album.title || uid()}
+    var albums = this.props.playlist.getItems().map((album, index)=>{
+      return (
+        <AlbumPlaylistItem
+          key={album.id}
           index={index}
           itemKey={album.id}
           album={album}
-          metadata={album.tracks[0].metadata}
           handleClick={this.handleClick}
           handleDoubleClick={this.handleDoubleClick}
           currentItem={this.state.currentItem}
@@ -52,7 +51,6 @@ var PlaylistAlbums = React.createClass({
           isOpened={this.props.openElements.indexOf(album.id) > -1}
           isSelected={this.props.selection.indexOf(album.id) > -1} />
       )
-      return output
     })
     
     return (
@@ -62,20 +60,16 @@ var PlaylistAlbums = React.createClass({
   handleClick: function(event, item){
     this.props.handleClick(event, item)
   },  
-  handleDoubleClick: function(id){
-    this.props.handleDoubleClick(id)
+  handleDoubleClick: function(album, trackId){
+    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
+    PlayerActions.play()
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
   },
   moveAlbum: function(id, afterId){
-    var albumFrom = _(this.props.albums).findWhere({ id: id })
-    var albumTo = _(this.props.albums).findWhere({ id: afterId })
-    var from = this.props.playlist.indexOf(albumFrom.tracks[0].id)
-    var to = this.props.playlist.indexOf(albumFrom.tracks[albumFrom.tracks.length-1].id)
-    var at = this.props.playlist.indexOf(albumTo.tracks[0].id)
-    OpenPlaylistActions.reorder(this.props.playlist.id, from, to, at)
+    OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
   }  
 })
 
-module.exports = DragDropContext(HTML5Backend)(PlaylistAlbums)
+module.exports = DragDropContext(HTML5Backend)(AlbumPlaylist)

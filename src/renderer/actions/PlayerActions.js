@@ -4,6 +4,11 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var PlayerConstants = require('../constants/PlayerConstants')
 
 var PlayerActions = {
+  toggle: function(){
+    AppDispatcher.dispatch({
+      actionType: PlayerConstants.TOGGLE_PLAYBACK
+    })
+  },  
   play: function(){
     AppDispatcher.dispatch({
       actionType: PlayerConstants.PLAY
@@ -19,14 +24,14 @@ var PlayerActions = {
       actionType: PlayerConstants.STOP
     })
   },    
-  next: function(){
+  nextTrack: function(){
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.NEXT
+      actionType: PlayerConstants.NEXT_TRACK
     })
   },
-  prev: function(){
+  prevTrack: function(){
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.PREV
+      actionType: PlayerConstants.PREV_TRACK
     })
   },
   seek: function(to){
