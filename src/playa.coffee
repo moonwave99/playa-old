@@ -22,12 +22,12 @@ require('dotenv').load()
 module.exports = class Playa
   constructor: () ->
     @playlistLoader = new PlaylistLoader
-      root: '/Users/moonwave99/Desktop/_playlists'
+      root: "#{process.env.HOME}/Desktop/_playlists"
       playlistExtension: 'm3u'
     @fileLoader = new FileLoader
-      fileExtensions: ['mp3', 'flac']
+      fileExtensions: ['mp3', 'mp4', 'flac', 'ogg']
     @coverLoader = new CoverLoader
-      root: '/Users/moonwave99/Desktop/_coverCache'
+      root: "#{process.env.HOME}/Desktop/_coverCache"
       discogs:
         key: process.env.DISCOGS_KEY
         secret: process.env.DISCOGS_SECRET
@@ -55,8 +55,8 @@ module.exports = class Playa
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
       playlists: [
         new AlbumPlaylist({
-          id: md5 '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
-          path: '/Users/moonwave99/Desktop/_playlists/slsk.m3u'
+          id: md5 "#{process.env.HOME}/Desktop/_playlists/slsk.m3u"
+          path: "#{process.env.HOME}/Desktop/_playlists/slsk.m3u"
         })
       ]
 
@@ -84,7 +84,7 @@ module.exports = class Playa
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled') })]
+        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })]
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
