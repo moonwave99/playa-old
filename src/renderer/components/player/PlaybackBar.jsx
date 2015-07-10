@@ -63,7 +63,6 @@ module.exports = React.createClass({
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>
         </div>
-        <div className="playback-filter"></div>
       </div>      
     )
   },

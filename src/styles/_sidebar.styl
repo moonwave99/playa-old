@@ -4,7 +4,7 @@
   backface-visibility hidden
   user-select none
   position absolute
-  top $playbackBarHeight
+  top size($playbackBarHeight)
   transition transform .2s ease-in-out
   margin-top size($tabsBarHeight)
   &.sidebar-left
@@ -28,8 +28,6 @@
           font-size size($sidebarIconSize)
           
   .playlist-browser
-    margin .5rem 0 0 0
-    user-select none
     li
       line-height size($playlistBrowserLineHeight)
       font-size size($playlistBrowserFontSize)

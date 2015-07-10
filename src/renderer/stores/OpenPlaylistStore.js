@@ -9,7 +9,6 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
 
-var Playlist = require('../util/Playlist')
 var AlbumPlaylist = require('../util/AlbumPlaylist')
 
 var CHANGE_EVENT = 'change'

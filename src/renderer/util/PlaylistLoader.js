@@ -10,7 +10,6 @@ var groove = require('groove')
 var assert = require('assert')
 var glob = Promise.promisifyAll(require('glob'))
 
-var Playlist = require('./Playlist')
 var AlbumPlaylist = require('./AlbumPlaylist')
 
 module.exports = class PlaylistLoader {

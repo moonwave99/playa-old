@@ -2,34 +2,6 @@
   height "calc(100vh - %s - %s - %s)" % ($tabsBarHeight $playbackBarHeight $footerHeight)
   overflow-y auto
   user-select none
-  .playlist-column-xs
-    width 3rem
-  .playlist-column-sm
-    width 6rem
-  .playlist-column-md
-    width auto
-  .table
-    margin 0
-    > tbody > tr
-      &:nth-child(odd)
-        background-color rgba(white, .05)
-      &:nth-child(even)
-        background-color rgba(white, .1)
-      &:hover
-        background-color rgba(white, .15)
-      &.selected
-        background-color rgba(white, .25)        
-      &.playing
-        background-color rgba(white, .35)
-      > td
-        border 0
-        padding 0 .5rem
-        line-height size($playlistItemHeight)
-        font-size size($playlistFontSize)
-        vertical-align middle
-        user-select none
-        color $playlistTableColor        
-  
   .albums
     .album
       height size($albumItemClosedHeight)
@@ -115,6 +87,9 @@
         margin 0
         line-height size($albumTracklistLineHeight)
         font-size size($albumTracklistFontSize)
+        .disc-number
+          font-size .9rem
+          padding-left 6.4rem
         .track
           &:nth-child(odd)
             background-color rgba(white, .03)
@@ -124,6 +99,12 @@
             background-color rgba(white, .08)
           &.playing
             background-color rgba(white, .1)
+          .track-artist
+            color $albumArtistColor
+          .separator
+            margin 0 .5rem
+            &:after
+              content '·'
           .track-playing-indicator
             width 1.2rem
             text-align center

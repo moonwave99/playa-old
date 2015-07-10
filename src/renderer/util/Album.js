@@ -12,7 +12,10 @@ module.exports = class Album{
     return _(this.tracks).map(i => i.id).contains(id);
   }
   isCompilation(){
-    return this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i)
+    return (this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i)) || _.uniq(this.tracks.map( i => i.metadata.artist)).length > 1
+  }
+  isMultiple(){
+    return _.uniq(this.tracks.map( t => t.metadata.disk.no )).length > 1
   }
   getTitle(){
     return this.tracks[0].metadata.album || '_noalbum'

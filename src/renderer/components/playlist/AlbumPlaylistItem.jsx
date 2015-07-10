@@ -54,11 +54,32 @@ var AlbumPlaylistItem = React.createClass({
       .catch((err)=>{})
   },
   renderTracklist: function(){
+    var isMultiple = this.props.album.isMultiple()
+    var renderedTracklist = []
+    this.props.album.tracks.forEach((track, index)=>{
+      if(isMultiple && track.metadata.track == 1){
+        renderedTracklist.push((
+          <li key={track.id + '_disc_' + track.metadata.disk.no } className="disc-number">Disc {track.metadata.disk.no}</li>
+        ))
+      }
+      renderedTracklist.push(this.renderTrack(track, index))
+    })
     return (
-      <ul className="list-unstyled tracklist">
-      { this.props.album.tracks.map( (track, index) => this.renderTrack(track, index) )}
-      </ul>
+      <ul className="list-unstyled tracklist">{ renderedTracklist }</ul>
     )
+  },
+  renderTrackTitle: function(track){
+    if(this.props.album.isCompilation()){
+      return (
+        <span className="track-title">
+          <span className="track-artist">{track.metadata.artist}</span>
+          <span className="separator"></span>
+          <span>{track.metadata.title}</span>
+        </span>
+      )
+    }else{
+      return <span className="track-title">{track.metadata.title}</span>
+    }
   },
   renderTrack: function(track, index){
     var isPlaying = track.id == this.props.currentItem.id
@@ -66,12 +87,11 @@ var AlbumPlaylistItem = React.createClass({
       'track' : true,
       'playing' : isPlaying
     })    
-    var title = this.props.album.isCompilation() ? (track.metadata.artist + ' - ' + track.metadata.title) : track.metadata.title
     return (
       <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
         <span className="track-playing-indicator">{ isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
         <span className="track-number">{ track.metadata.track }.</span>
-        <span className="track-title">{ title }</span>
+        { this.renderTrackTitle(track) }
         <span className="track-duration">{ this.formatTime(track.duration) }</span>
       </li>
     )
@@ -102,7 +122,7 @@ var AlbumPlaylistItem = React.createClass({
             <li>
               <a href={'http://www.discogs.com/search?type=all&q=' + encodeURIComponent(this.props.album.getArtist()) + ' ' + this.props.album.getTitle()}
                 onClick={this.handleExternalLinkClick}>Discogs</a>
-              </li>
+            </li>
           </ul>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
