@@ -20,14 +20,15 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
       totalTime: totalTime,
       currentTime: currentTime,
       remainingTime: totalTime - currentTime,
-      playing: !!info.playing,      
+      playing: !!info.playing,
       hideInfo: !info.item.duration,
       metadata: info.item.metadata || {},
       item: info.item ? new PlaylistItem(info.item): {},
-      filename: info.item.filename || null
+      filename: info.item.filename || null,
+      album: info.album
     }
   },
-  
+
   emitChange: function() {
     this.emit(CHANGE_EVENT)
   },
@@ -45,8 +46,8 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function(callback) {
     this.removeListener(CHANGE_EVENT, callback)
   },
-  
-  dispatcherIndex: AppDispatcher.register(function(action) {    
+
+  dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
       case PlayerConstants.TOGGLE_PLAYBACK:
         playa.player.playing() ? playa.player.pause() : playa.player.play()
@@ -57,7 +58,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
         PlayerStore.emitChange()
         break
       case PlayerConstants.PAUSE:
-      case PlayerConstants.STOP:        
+      case PlayerConstants.STOP:
         playa.player.pause()
         PlayerStore.emitChange()
         break
@@ -71,17 +72,17 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
         var prev = playa.player.prevTrack()
         if(prev){
           PlayerStore.emitChange()
-        }        
-        break        
-      case PlayerConstants.SEEK:        
+        }
+        break
+      case PlayerConstants.SEEK:
         playa.player.seek(action.to)
         PlayerStore.emitChange()
-        break                
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.
-  })  
-    
+  })
+
 })
 
 module.exports = PlayerStore

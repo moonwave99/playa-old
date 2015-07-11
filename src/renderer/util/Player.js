@@ -15,11 +15,11 @@ module.exports = class Player extends EventEmitter{
     this.groovePlaylist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
-    this.timer = null        
+    this.timer = null
     this.userPlaylist = null
     this.attached = false
     this.loading = false
-    this.currentAlbum = {}
+    this.currentAlbum = null
     this.lastTrackPlayed = null
     this.lastAction = null
     this.playbackDirection = 0
@@ -55,7 +55,7 @@ module.exports = class Player extends EventEmitter{
             resolve(true)
           }
         })
-      }    
+      }
     })
   }
   detach(){
@@ -75,7 +75,7 @@ module.exports = class Player extends EventEmitter{
         })
       }
     })
-  }  
+  }
   onNowplaying() {
     if(this.loading){
       return
@@ -87,17 +87,17 @@ module.exports = class Player extends EventEmitter{
       }else{
         var _lastTrackPlayed = current.item.file.metadata()
         this.playbackDirection = this.lastTrackPlayed.track <= _lastTrackPlayed.track ? 1 : -1
-        this.lastTrackPlayed = _lastTrackPlayed        
+        this.lastTrackPlayed = _lastTrackPlayed
       }
       if(!this.timer){
         this.startTimer()
       }
-      this.emit('nowplaying')  
+      this.emit('nowplaying')
     }else{
       if(this.playbackDirection == 0){
         this.lastAction == 'prev' ? this.prevAlbum() : this.nextAlbum()
       }else{
-        this.playbackDirection > 0 ? this.nextAlbum() : this.prevAlbum()  
+        this.playbackDirection > 0 ? this.nextAlbum() : this.prevAlbum()
       }
     }
   }
@@ -112,7 +112,8 @@ module.exports = class Player extends EventEmitter{
     return {
       position: info.pos,
       playing: info.item && this.groovePlaylist.playing(),
-      item: info.item ? this.fileLoader.getFromPool(info.item.file.filename) : {}
+      item: info.item ? this.fileLoader.getFromPool(info.item.file.filename) : {},
+      album: this.currentAlbum
     }
   }
   play() {
@@ -137,7 +138,7 @@ module.exports = class Player extends EventEmitter{
       return true
     }else{
       return this.nextAlbum()
-    }    
+    }
   }
   prevTrack() {
     this.lastAction = 'prev'
@@ -148,10 +149,10 @@ module.exports = class Player extends EventEmitter{
     })
     if(currentIndex > 0){
       this.groovePlaylist.seek(items[currentIndex-1], -1)
-      return true      
+      return true
     }else{
       return this.prevAlbum()
-    }    
+    }
   }
   gotoTrack(id) {
     id = id || this.currentAlbum.tracks[0].id
@@ -169,7 +170,7 @@ module.exports = class Player extends EventEmitter{
     }
     var current = this.groovePlaylist.position()
     var seekToSecond = current.item.file.duration() * to
-    current.item && this.groovePlaylist.seek(current.item, seekToSecond)    
+    current.item && this.groovePlaylist.seek(current.item, seekToSecond)
   }
   nextAlbum(){
     var nextAlbum = this.userPlaylist.getNext(this.currentAlbum)
@@ -177,7 +178,7 @@ module.exports = class Player extends EventEmitter{
   }
   prevAlbum(){
     var prevAlbum = this.userPlaylist.getPrevious(this.currentAlbum)
-    return prevAlbum && this.playAlbum(prevAlbum)    
+    return prevAlbum && this.playAlbum(prevAlbum)
   }
   insert(file) {
     this.groovePlaylist.insert(file)
@@ -210,7 +211,7 @@ module.exports = class Player extends EventEmitter{
     })
   }
   playAlbum(album, trackId){
-    if(this.currentAlbum.id !== album.id){
+    if(!this.currentAlbum || (this.currentAlbum.id !== album.id)){
       this.loading = true
       this.clearPlaylist().then(()=>{
         Promise.all(album.tracks.map((track)=>{
@@ -232,10 +233,10 @@ module.exports = class Player extends EventEmitter{
           return true
         }).catch((err)=>{
           console.error(err, err.stack)
-        })        
+        })
       })
     }else{
       this.gotoTrack(trackId)
     }
-  } 
+  }
 }

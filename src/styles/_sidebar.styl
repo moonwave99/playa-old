@@ -5,7 +5,8 @@
   user-select none
   position absolute
   top size($playbackBarHeight)
-  transition transform .2s ease-in-out
+  transition transform .2s linear
+  background-color $sidebarBgColor
   &.sidebar-left
     transform 'translateX(calc(%s - %s))' % ($sidebarClosedWidth $sidebarWidth)
     left 0

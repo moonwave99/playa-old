@@ -20,6 +20,9 @@ module.exports = React.createClass({
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },
+  updateCover: function(cover){
+    this.setState({ cover: cover })
+  },
   prev: function(){
     PlayerActions.prevTrack()
   },
@@ -35,7 +38,7 @@ module.exports = React.createClass({
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },
-  render: function() {    
+  render: function() {
     var wrapperClasses = cx({
       'playback-track-info-wrapper' : true,
       'hide-info' : this.state.hideInfo
@@ -43,16 +46,17 @@ module.exports = React.createClass({
     var logoClasses = cx({
       'playback-logo' : true,
       'hide-logo' : !this.state.hideInfo
-    })    
+    })
     return (
       <div className="playback-bar">
-        <div className={logoClasses}>Playa.</div>      
+        <div className={logoClasses}>Playa.</div>
         <div className="playback-buttons">
           <button onClick={this.prev}><i className="fa fa-fw fa-backward"></i></button>
           <button onClick={this.play}>{this.state.playing ? <i className="fa fa-fw fa-pause"></i> : <i className="fa fa-fw fa-play"></i>}</button>
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
+          {this.renderCover()}
           <span className="playback-time-indicator time-progress">{this.formatTime(this.state.currentTime)}</span>
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ this.state.metadata.title }</span>
@@ -63,8 +67,17 @@ module.exports = React.createClass({
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>
         </div>
-      </div>      
+      </div>
     )
+  },
+  renderCover: function(){
+    if(this.state.cover){
+      return (
+        <div className="playback-track-cover"><img src={this.state.cover}/></div>
+      )
+    }else{
+      return null
+    }
   },
   handleProgressAreaClick: function(event){
     var bounds = event.target.getBoundingClientRect()
@@ -72,5 +85,8 @@ module.exports = React.createClass({
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
-  }  
+    this.state.album && playa.coverLoader.load(this.state.album)
+      .then(this.updateCover)
+      .catch((err)=>{})
+  }
 })
