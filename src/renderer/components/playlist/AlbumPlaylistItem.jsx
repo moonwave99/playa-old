@@ -23,7 +23,7 @@ const albumSource = {
     if (!didDrop) {
       props.moveAlbum(droppedId, originalIndex)
     }
-  }  
+  }
 }
 
 const albumTarget = {
@@ -47,7 +47,7 @@ var AlbumPlaylistItem = React.createClass({
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
-  },  
+  },
   componentWillMount: function(){
     playa.coverLoader.load(this.props.album)
       .then(this.updateCover)
@@ -69,7 +69,7 @@ var AlbumPlaylistItem = React.createClass({
     )
   },
   renderTrackTitle: function(track){
-    if(this.props.album.isCompilation()){
+    if(this.props.album.getArtistCount() > 1){
       return (
         <span className="track-title">
           <span className="track-artist">{track.metadata.artist}</span>
@@ -86,7 +86,7 @@ var AlbumPlaylistItem = React.createClass({
     var classes = cx({
       'track' : true,
       'playing' : isPlaying
-    })    
+    })
     return (
       <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
         <span className="track-playing-indicator">{ isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
@@ -97,7 +97,7 @@ var AlbumPlaylistItem = React.createClass({
     )
   },
   render: function() {
-    var isPlaying = this.props.album.contains(this.props.currentItem.id)    
+    var isPlaying = this.props.album.contains(this.props.currentItem.id)
     var classes = cx({
       'album' : true,
       'playing' : isPlaying,
@@ -106,7 +106,7 @@ var AlbumPlaylistItem = React.createClass({
     })
     var opacity = this.props.isDragging ? 0 : 1
     var coverStyle = this.state.cover ? { backgroundImage: 'url(' + this.state.cover + ')'} : {}
-    
+
     var coverClasses = cx({
       'cover' : true,
       'loaded': !!this.state.cover
