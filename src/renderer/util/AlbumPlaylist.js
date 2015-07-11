@@ -16,7 +16,7 @@ module.exports = class AlbumPlaylist{
     this.id = options.id || uid()
     this.path = options.path
     this.title = this.isNew() ? 'Untitled' : path.basename(this.path, '.m3u')
-    this.loaded = false    
+    this.loaded = false
     this.lastScrolledAlbum = null
   }
   getPrevious(album){
@@ -24,7 +24,7 @@ module.exports = class AlbumPlaylist{
   }
   getNext(album){
     return this.items.getNext(album)
-  }  
+  }
   getFileList(){
     return _.flatten(this.items.toArray().map( i => i.tracks.map(t => t.filename) ))
   }
@@ -39,7 +39,7 @@ module.exports = class AlbumPlaylist{
   }
   getDisplayMode(){
     return 'albums'
-  }  
+  }
   isNew(){
     return !this.path
   }
@@ -52,9 +52,9 @@ module.exports = class AlbumPlaylist{
           this._process(files)
           this.loaded = true
           resolve(this)
-        })            
+        })
       }
-    })   
+    })
   }
   removeItems(ids=[]){
     ids.forEach((id)=>{
@@ -64,10 +64,11 @@ module.exports = class AlbumPlaylist{
   }
   addFolder(folder){
     return playa.fileLoader.loadFolder(folder).bind(this).then(this._process)
-  }    
+  }
   clear(){
     this.items = new DoublyLinkedList()
-  }  
+    this.loaded = false
+  }
   indexOf(id){
     return _.findIndex(this.getItems(), { id: id })
   }
