@@ -9,6 +9,8 @@ var cx = require('classnames')
 var moment = require('moment')
 require("moment-duration-format")
 
+var ContextMenu = require('./ContextMenu.jsx')
+
 const albumSource = {
   beginDrag(props) {
     return {
@@ -108,7 +110,8 @@ var AlbumPlaylistItem = React.createClass({
 
     var coverClasses = cx({
       'cover' : true,
-      'loaded': !!this.state.cover
+      'loaded': !!this.state.cover,
+      'menuOpened' : !!this.props.isMenuOpened
     })
     return this.props.connectDragSource(this.props.connectDropTarget(
       <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
@@ -116,11 +119,17 @@ var AlbumPlaylistItem = React.createClass({
           <div className={coverClasses} style={coverStyle}></div>
           <span className="artist">{this.props.album.getArtist()}</span><br/>
           <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
+          <a href="#" className="menu-link" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
           <span className="year">{this.props.album.getYear()}</span>
+          { this.props.isMenuOpened ? <ContextMenu album={this.props.album}/> : null }
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </div>
     ))
+  },
+  handleMenuLinkClick: function(event){
+    event.stopPropagation()
+    this.props.handleMenuLinkClick(event, this)
   },
   handleTracklistDoubleClick: function(event){
     event.stopPropagation()
