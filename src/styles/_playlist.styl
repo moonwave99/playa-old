@@ -16,8 +16,6 @@
       &:hover
         header
           background-color $albumHoverBackgroundColor
-          .links
-            transform translateX(0)
       &.selected
         header
           background-color $albumSelectedBackgroundColor
@@ -41,12 +39,6 @@
         padding-top size($albumHeaderTopPadding)
         padding-left size($albumItemClosedHeight)
         overflow-x hidden
-        .links
-          transition transform .2s ease-in
-          transform translateX(100%)
-          width 10vw
-          float right
-          display none
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)

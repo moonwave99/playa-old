@@ -6,7 +6,6 @@ var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
 var DropTarget = require('react-dnd').DropTarget
 var cx = require('classnames')
-var shell = require('shell')
 var moment = require('moment')
 require("moment-duration-format")
 
@@ -118,12 +117,6 @@ var AlbumPlaylistItem = React.createClass({
           <span className="artist">{this.props.album.getArtist()}</span><br/>
           <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
           <span className="year">{this.props.album.getYear()}</span>
-          <ul className="links list-inline">
-            <li>
-              <a href={'http://www.discogs.com/search?type=all&q=' + encodeURIComponent(this.props.album.getArtist()) + ' ' + this.props.album.getTitle()}
-                onClick={this.handleExternalLinkClick}>Discogs</a>
-            </li>
-          </ul>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </div>
@@ -138,10 +131,6 @@ var AlbumPlaylistItem = React.createClass({
   },
   handleClick: function(event){
     this.props.handleClick(event, this)
-  },
-  handleExternalLinkClick: function(event){
-    event.preventDefault()
-    shell.openExternal(event.currentTarget.href)
   },
   updateCover: function(cover){
     this.setState({ cover: cover })
