@@ -31,6 +31,7 @@
     li
       line-height size($playlistBrowserLineHeight)
       font-size size($playlistBrowserFontSize)
+      transition background-color .2s ease-in-out
       &:hover
         background-color rgba(white, .05)
       &.selected
@@ -41,6 +42,8 @@
     .tree-view
       overflow-y hidden
       padding-left .5rem
+      li
+        cursor pointer
 
     .tree-view_children
       margin-left 1rem
