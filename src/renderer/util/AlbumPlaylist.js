@@ -40,6 +40,16 @@ module.exports = class AlbumPlaylist{
   getDisplayMode(){
     return 'albums'
   }
+  getStats(){
+    var albums = this.getItems()
+    var stats
+    return _.reduce(albums, (memo, album)=>{
+      stats = album.getStats()
+      memo.tracks += stats.tracks
+      memo.totalTime += stats.totalTime
+      return memo
+    }, { tracks: 0, totalTime: 0, albums: albums.length })
+  }
   isNew(){
     return !this.path
   }

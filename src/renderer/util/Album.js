@@ -40,6 +40,13 @@ module.exports = class Album{
   getYear(){
     return this._year
   }
+  getStats(){
+    return _.reduce(this.tracks, (memo, track)=>{
+      memo.tracks++
+      memo.totalTime += track.duration
+      return memo
+    }, { tracks: 0, totalTime: 0})
+  }
   getFolder(){
     return this._folder
   }

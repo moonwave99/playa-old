@@ -24,10 +24,10 @@ function getSidebarState(){
 
 function getOpenPlaylistState(){
   return {
-    openPlaylists: OpenPlaylistStore.getAll() || [],
-    selectedPlaylist: OpenPlaylistStore.getSelectedPlaylist() || null,
+    openPlaylists: OpenPlaylistStore.getAll(),
+    selectedPlaylist: OpenPlaylistStore.getSelectedPlaylist(),
     selectedIndex: OpenPlaylistStore.getSelectedIndex()
-  }  
+  }
 }
 
 module.exports = React.createClass({
@@ -43,16 +43,11 @@ module.exports = React.createClass({
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
     key.unbind('space')
-  },  
+  },
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     OpenPlaylistActions.select(selectedIndex-1)
   },
-  handleViewSwitchClick: function(){
-    if(!this.state.selectedPlaylist)
-      return
-    OpenPlaylistActions.updateUI(this.state.selectedPlaylist.id, { displayMode: this.state.selectedPlaylist.getDisplayMode() == 'table' ? 'albums' : 'table' })
-  },
-  render: function() {  
+  render: function() {
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
@@ -75,7 +70,7 @@ module.exports = React.createClass({
             {openPlaylists}
           </Tabs>
         </div>
-        <Footer handleViewSwitchClick={this.handleViewSwitchClick} selectedPlaylist={this.state.selectedPlaylist} />
+        <Footer selectedPlaylist={this.state.selectedPlaylist} />
       </div>
     )
   },

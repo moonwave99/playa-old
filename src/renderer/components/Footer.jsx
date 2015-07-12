@@ -3,8 +3,13 @@
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
+var moment = require('moment')
+require("moment-duration-format")
 
 var Footer = React.createClass({
+  formatTime: function(time){
+    return moment.duration(time, "seconds").format("hh [hours], mm [minutes and] ss [seconds]", { trim: false })
+  },
   render: function() {
     var iconClasses = cx({
       'fa' : true,
@@ -20,8 +25,12 @@ var Footer = React.createClass({
     )
   },
   playlistDescription: function(){
-    var itemsLength = this.props.selectedPlaylist ? this.props.selectedPlaylist.getItems().length : null
-    return itemsLength ? itemsLength + " albums." : 'No playlist selected.'
+    if(!this.props.selectedPlaylist){
+      return 'No playlist selected.'
+    }else{
+      var stats = this.props.selectedPlaylist.getStats()
+      return stats.albums + ' albums · ' + stats.tracks + ' tracks · ' + this.formatTime(stats.totalTime)
+    }
   },
   handleViewSwitchClick: function(event){
     this.props.handleViewSwitchClick(this)

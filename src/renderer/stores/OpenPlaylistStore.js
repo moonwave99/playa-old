@@ -39,7 +39,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   },
 
   getAt: function(index){
-    return _playlists[index]
+    return _getAt(index)
   },
 
   getSelectedIndex: function(){
@@ -47,7 +47,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   },
 
   getSelectedPlaylist: function(){
-    return _playlists[_selectedIndex]
+    return _getSelectedPlaylist()
   },
 
   getActiveIndex: function(){
