@@ -23,7 +23,7 @@ var _overflows = function(parent, element){
   var elBounds = element.getBoundingClientRect()
   var direction = 0
   if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
-    direction = 1 
+    direction = 1
   }else if(elBounds.top < parentBounds.top){
     direction = -1
   }
@@ -42,11 +42,12 @@ var Playlist = React.createClass({
     return (
       <div className="playlist">
         <AlbumPlaylistOnSteroids
+          allowMultipleSelection={true}
           playlist={this.props.playlist}
           initSelection={[this.props.playlist.lastScrolledAlbum]}
           handleDelKeyPress={this.handleDelKeyPress}
           handleEnterKeyPress={this.handleEnterKeyPress}
-          handleScrollToElement={this.handleScrollToElement}/>        
+          handleScrollToElement={this.handleScrollToElement}/>
       </div>
     )
   },
@@ -58,7 +59,7 @@ var Playlist = React.createClass({
       var album = item.getSelectedElement()
       OpenPlaylistActions.playAlbum(album, album.tracks[0].id, this.props.playlist)
       PlayerActions.play()
-    }          
+    }
   },
   handleScrollToElement: function(state, list){
     var wrapper = React.findDOMNode(this)
@@ -66,10 +67,10 @@ var Playlist = React.createClass({
     if(!targetElement){
       return
     }
-    
+
     // save position of last selected album
     this.props.playlist.lastScrolledAlbum = state.selection[0]
-    
+
     var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
     if(direction < 0){
       wrapper.scrollTop = targetElement.offsetTop
@@ -84,8 +85,8 @@ var Playlist = React.createClass({
     if(!targetElement){
       return
     }
-    wrapper.scrollTop = targetElement.offsetTop        
-  }  
+    wrapper.scrollTop = targetElement.offsetTop
+  }
 })
 
 module.exports = Playlist

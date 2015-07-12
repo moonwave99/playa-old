@@ -5,7 +5,7 @@ var React = require('react')
 var ReactPropTypes = React.PropTypes
 var key = require('keymaster')
 
-module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){  
+module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
   getSelectedIds = getSelectedIds || function(component){
     return component.state.selection
   }
@@ -14,7 +14,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     propTypes: {
       handleDelKeyPress: ReactPropTypes.func.isRequired,
       handleEnterKeyPress: ReactPropTypes.func.isRequired,
-      handleScrollToElement: ReactPropTypes.func.isRequired
+      handleScrollToElement: ReactPropTypes.func.isRequired,
+      allowMultipleSelection: ReactPropTypes.bool
     },
     getIdList() {
       return getIdList(this)
@@ -33,11 +34,11 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     componentDidMount() {
       key('backspace, del', scopeName, this.handleDelKeyPress)
-      key('enter', scopeName, this.handleEnterKeyPress)    
+      key('enter', scopeName, this.handleEnterKeyPress)
       key('command+a', scopeName, this.handleSelectAllKeyPress)
       key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', scopeName, this.handleArrowKeyPress)
       key('left, right', scopeName, this.handleLeftRightKeyPress)
-      key.setScope(scopeName)      
+      key.setScope(scopeName)
     },
     componentWillUnmount() {
       key.unbind('backspace', scopeName)
@@ -51,9 +52,9 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       key.unbind('alt+up', scopeName)
       key.unbind('alt+down', scopeName)
       key.unbind('shift+alt+up', scopeName)
-      key.unbind('shift+alt+down', scopeName)    
+      key.unbind('shift+alt+down', scopeName)
       key.unbind('left', scopeName)
-      key.unbind('right', scopeName)       
+      key.unbind('right', scopeName)
     },
     componentWillUpdate(nextProps, nextState){
       this.props.handleScrollToElement(nextState, this.getIdList())
@@ -106,7 +107,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       ]
       var newLow = low
       var newHi = hi
-    
+
       switch(event.which){
         case 38: // up
           if(event.shiftKey && event.altKey){
@@ -116,7 +117,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           }else if(event.altKey){
             newLow = newHi = 0
           }else{
-            newLow = Math.max(0, low-1)  
+            newLow = Math.max(0, low-1)
             newHi = newLow
           }
           break
@@ -130,12 +131,12 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           }else{
             newLow = Math.min(ids.length-1, low+1)
             newHi = newLow
-          }        
-          break        
+          }
+          break
       }
       this.setState({
         selection: ids.slice(newLow, newHi+1)
-      })      
+      })
     },
     handleLeftRightKeyPress(event){
       switch(event.which){
@@ -148,7 +149,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           this.setState({
             openElements: _.difference(this.state.openElements, this.state.selection)
           })
-          break        
+          break
       }
     },
     handleDelKeyPress(event) {
@@ -160,9 +161,9 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     handleSelectAllKeyPress(event) {
       this.setState({
         selection: this.getIdList()
-      })      
+      })
     }
   })
-  
-  return NavigableComponent 
+
+  return NavigableComponent
 }
