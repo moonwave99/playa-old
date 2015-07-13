@@ -29,7 +29,9 @@ var Footer = React.createClass({
       return 'No playlist selected.'
     }else{
       var stats = this.props.selectedPlaylist.getStats()
-      return stats.albums + ' albums · ' + stats.tracks + ' tracks · ' + this.formatTime(stats.totalTime)
+      return (stats.tracks == 0)
+        ? 'No tracks in this playlist yet.'
+        : stats.albums + ' albums · ' + stats.tracks + ' tracks · ' + this.formatTime(stats.totalTime)
     }
   },
   handleViewSwitchClick: function(event){
