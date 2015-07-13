@@ -22,9 +22,13 @@ class AppWindow
 
     @loadSettings = _.extend(@loadSettings, options)
 
+    lastWindowState = @loadSettings.sessionSettings.get('lastWindowState') || {}
+
     windowOpts =
-      width: 1024
-      height: 768
+      width: lastWindowState.width || 1024
+      height: lastWindowState.height || 768
+      x: lastWindowState.x
+      y: lastWindowState.y
       transparent: true
       frame: false
       title: options.title ? "You Should Set options.title"
@@ -35,6 +39,18 @@ class AppWindow
     windowOpts = _.extend(windowOpts, @loadSettings)
 
     @window = new BrowserWindow(windowOpts)
+
+    @window.maximize() if lastWindowState.maximized
+
+    @window.on 'close', (e) =>
+      bounds = @window.getBounds()
+      @loadSettings.sessionSettings.set "lastWindowState",
+         x: bounds.x,
+         y: bounds.y,
+         width: bounds.width,
+         height: bounds.height,
+         maximized: @window.isMaximized()
+      @loadSettings.sessionSettings.save()
 
     @window.on 'closed', (e) =>
       this.emit 'closed', e
@@ -60,22 +76,22 @@ class AppWindow
   openFolder: ->
     folder = dialog.showOpenDialog({ properties: ['openDirectory'], title: 'Open folder' })
     @window.webContents.send('open:folder', folder[0]) if folder
-    
-  prevTrack: ->  
+
+  prevTrack: ->
     @window.webContents.send('playback:prev')
-    
-  nextTrack: ->  
+
+  nextTrack: ->
     @window.webContents.send('playback:next')
-    
+
   togglePlayback: ->
     @window.webContents.send('playback:toggle')
-    
+
   createPlaylist: ->
     @window.webContents.send('playlist:create')
-    
+
   savePlaylist: ->
     @window.webContents.send('playlist:save')
-        
+
   closePlaylist: ->
     @window.webContents.send('playlist:close')
 
@@ -87,7 +103,7 @@ class AppWindow
 
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
-    
+
   reload: ->
     @window.webContents.reload()
 

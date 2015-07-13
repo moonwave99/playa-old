@@ -15,6 +15,7 @@ _ = require 'underscore-plus'
 
 AppMenu = require './appmenu'
 AppWindow = require './appwindow'
+SessionSettings = require './session_settings'
 
 module.exports =
 class Application
@@ -27,6 +28,10 @@ class Application
 
     @pkgJson = require '../../package.json'
     @windows = []
+    @sessionSettings = new SessionSettings
+      path: path.join app.getPath('userData'), 'session_settings.json'
+    @sessionSettings.load()
+    options.sessionSettings = @sessionSettings
 
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
@@ -91,31 +96,31 @@ class Application
 
     @menu.on 'window:open', ->
       appWindow.openFolder()
-      
+
     @menu.on 'window:prevTrack', ->
-      appWindow.prevTrack()      
-      
+      appWindow.prevTrack()
+
     @menu.on 'window:nextTrack', ->
-      appWindow.nextTrack()      
-      
+      appWindow.nextTrack()
+
     @menu.on 'window:togglePlayback', ->
-      appWindow.togglePlayback()      
-      
-    @menu.on 'window:createPlaylist', ->  
+      appWindow.togglePlayback()
+
+    @menu.on 'window:createPlaylist', ->
       appWindow.createPlaylist()
-      
-    @menu.on 'window:savePlaylist', ->  
-      appWindow.savePlaylist()      
-                  
-    @menu.on 'window:closePlaylist', ->  
+
+    @menu.on 'window:savePlaylist', ->
+      appWindow.savePlaylist()
+
+    @menu.on 'window:closePlaylist', ->
       appWindow.closePlaylist()
 
     @menu.on 'window:toggleViewMode', ->
       appWindow.toggleViewMode()
-      
+
     @menu.on 'window:toggleSidebar', ->
       appWindow.toggleSidebar()
-      
+
     @menu.on 'window:reload', ->
       BrowserWindow.getFocusedWindow().reload()
 
@@ -132,10 +137,10 @@ class Application
 
     @menu.on 'application:run-specs', =>
       @openWithOptions(test: true)
-      
+
     ipc.on 'request:save:dialog', (event, params) ->
       params||={}
-      event.returnValue = dialog.showSaveDialog(params)      
+      event.returnValue = dialog.showSaveDialog(params)
 
     appWindow
 
