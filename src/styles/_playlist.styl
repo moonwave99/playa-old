@@ -1,8 +1,9 @@
 .playlist
-  height "calc(100vh - %s - %s - %s)" % ($tabsBarHeight $playbackBarHeight $footerHeight)
+  height "calc(100vh - %s - %s - %s)" % (size($tabsBarHeight) size($playbackBarHeight) size($footerHeight))
   overflow-y auto
   user-select none
   .albums
+    position relative
     .album
       height size($albumItemClosedHeight)
       vertical-align middle
@@ -44,7 +45,7 @@
         padding-top size($albumHeaderTopPadding)
         padding-left size($albumItemClosedHeight)
         overflow-x hidden
-        transition background-color .2s ease-in
+        transition background-color .1s ease-in
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
