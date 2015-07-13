@@ -20,6 +20,8 @@
   .playback-buttons
     flex 0 0 size($sidebarWidth)
     text-align center
+    @media(max-width: 640px)
+      flex 0 0 size($sidebarCompactWidth)
     button
       margin 0
       padding 0
@@ -30,6 +32,8 @@
       .fa
         font-size size($playbackBarButtonSize)
         vertical-align middle
+        @media(max-width: 640px)
+          font-size size($playbackBarButtonCompactSize)
       &:focus
         outline none
   .playback-track-info-wrapper
@@ -40,6 +44,13 @@
     position relative
     &.hide-info
       opacity 0
+    @media(max-width: 640px)
+      &.show-remaining
+        .playback-time-indicator
+          &.time-progress
+            display none
+          &.time-remaining
+            display block
     .playback-track-cover
       flex 0 0 5rem
       img
@@ -67,6 +78,9 @@
       font-size 1.1rem
       flex 1 100%
       text-align center
+      cursor default
+      @media(max-width: 640px)
+        order 1
       .playback-track-info-artist,
       .playback-track-info-title
         ellipsed()
@@ -83,6 +97,12 @@
       text-align center
       font-size .9rem
       flex 0 0 5rem
+      cursor default
+      @media(max-width: 640px)
+        flex 0 0 4rem
+        order 2
       &.time-remaining
         text-align right
         padding-right 1rem
+        @media(max-width: 640px)
+          display none

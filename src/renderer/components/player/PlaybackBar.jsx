@@ -1,5 +1,6 @@
 "use babel"
 
+var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
@@ -15,7 +16,9 @@ function getPlayerState(){
 
 module.exports = React.createClass({
   getInitialState: function(){
-    return getPlayerState()
+    return _.extend({
+      showRemaining: false
+    }, getPlayerState())
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
@@ -41,11 +44,12 @@ module.exports = React.createClass({
   render: function() {
     var wrapperClasses = cx({
       'playback-track-info-wrapper' : true,
-      'hide-info' : this.state.hideInfo
+      'show-remaining'              : this.state.showRemaining,
+      'hide-info'                   : this.state.hideInfo
     })
     var logoClasses = cx({
       'playback-logo' : true,
-      'hide-logo' : !this.state.hideInfo
+      'hide-logo'     : !this.state.hideInfo
     })
     return (
       <div className="playback-bar">
@@ -57,12 +61,12 @@ module.exports = React.createClass({
         </div>
         <div className={wrapperClasses}>
           {this.renderCover()}
-          <span className="playback-time-indicator time-progress">{this.formatTime(this.state.currentTime)}</span>
+          <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>{this.formatTime(this.state.currentTime)}</span>
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ this.state.metadata.title }</span>
             <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
           </div>
-          <span className="playback-time-indicator time-remaining">-{this.formatTime(this.state.remainingTime)}</span>
+          <span className="playback-time-indicator time-remaining" onClick={this.handleTimeIndicatorClick}>-{this.formatTime(this.state.remainingTime)}</span>
           <div className="progress-area" onClick={this.handleProgressAreaClick}>
             <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
           </div>
@@ -82,6 +86,11 @@ module.exports = React.createClass({
   handleProgressAreaClick: function(event){
     var bounds = event.target.getBoundingClientRect()
     PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
+  },
+  handleTimeIndicatorClick: function(event){
+    this.setState({
+      showRemaining: !this.state.showRemaining
+    })
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

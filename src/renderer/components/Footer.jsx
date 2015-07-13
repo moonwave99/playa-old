@@ -8,7 +8,7 @@ require("moment-duration-format")
 
 var Footer = React.createClass({
   formatTime: function(time){
-    return moment.duration(time, "seconds").format("hh [hours], mm [minutes and] ss [seconds]", { trim: false })
+    return moment.duration(time, "seconds").format("hh [hours and] mm [minutes]", { trim: false })
   },
   render: function() {
     var iconClasses = cx({
