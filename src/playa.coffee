@@ -1,3 +1,4 @@
+_                         = require 'lodash'
 md5                       = require 'md5'
 ipc                       = require 'ipc'
 React                     = require 'react'
@@ -20,7 +21,8 @@ OpenPlaylistActions       = require './renderer/actions/OpenPlaylistActions'
 require('dotenv').load()
 
 module.exports = class Playa
-  constructor: () ->
+  constructor: (options) ->
+    @options = options
     @playlistLoader = new PlaylistLoader
       root: "#{process.env.HOME}/Desktop/_playlists"
       playlistExtension: 'm3u'
@@ -41,6 +43,8 @@ module.exports = class Playa
     @player.on 'playerTick', ->
       PlayerStore.emitChange()
 
+    OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
+
   init: ->
     @initIPC()
     @loadPlaylists()
@@ -51,14 +55,17 @@ module.exports = class Playa
         actionType: PlaylistBrowserConstants.LOAD_TREE
         tree: tree
 
+    playlists = []
+
+    if @options.openPlaylists.length
+      playlists = @options.openPlaylists.map (i) ->
+        new AlbumPlaylist({ id: md5(i), path: i })
+    else
+      playlists = [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
+
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
-      playlists: [
-        new AlbumPlaylist({
-          id: md5 "#{process.env.HOME}/Desktop/_playlists/slsk.m3u"
-          path: "#{process.env.HOME}/Desktop/_playlists/slsk.m3u"
-        })
-      ]
+      playlists: playlists
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
@@ -73,7 +80,7 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: PlayerConstants.NEXT
 
-    ipc.on 'playback:toggle', ->
+    ipc.on 'playback:toggle', =>
       AppDispatcher.dispatch
         actionType: if @player.playing() then PlayerConstants.PAUSE else PlayerConstants.PLAY
 
@@ -84,7 +91,7 @@ module.exports = class Playa
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })]
+        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
@@ -101,3 +108,7 @@ module.exports = class Playa
 
   render: ->
     React.render React.createElement(Main), document.getElementById('main')
+
+  _onOpenPlaylistChange: ->
+    playlists = OpenPlaylistStore.getAll().filter((i) -> !i.isNew() ).map (i) -> i.path
+    if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlists

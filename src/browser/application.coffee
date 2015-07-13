@@ -142,6 +142,14 @@ class Application
       params||={}
       event.returnValue = dialog.showSaveDialog(params)
 
+    ipc.on 'request:session:settings', (event, params) =>
+      params||={}
+      event.returnValue = @sessionSettings.get(params.key) || false
+
+    ipc.on 'session:save', (event, params) =>
+      @sessionSettings.set params.key, params.value
+      @sessionSettings.save()
+
     appWindow
 
   # Removes the given window from the list of windows, so it can be GC'd.
