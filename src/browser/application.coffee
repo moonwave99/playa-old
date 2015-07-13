@@ -94,6 +94,9 @@ class Application
 
     @menu.on 'application:quit', -> app.quit()
 
+    @menu.on 'application:show-settings', ->
+      appWindow.showSettings()
+
     @menu.on 'window:open', ->
       appWindow.openFolder()
 
@@ -118,6 +121,12 @@ class Application
     @menu.on 'window:toggleViewMode', ->
       appWindow.toggleViewMode()
 
+    @menu.on 'window:showFileBrowser', ->
+      appWindow.showFileBrowser()
+
+    @menu.on 'window:showPlaylists', ->
+      appWindow.showPlaylists()
+
     @menu.on 'window:toggleSidebar', ->
       appWindow.toggleSidebar()
 
@@ -141,6 +150,9 @@ class Application
     ipc.on 'request:save:dialog', (event, params) ->
       params||={}
       event.returnValue = dialog.showSaveDialog(params)
+
+    ipc.on 'request:app:path', (event, params) =>
+      event.returnValue = app.getPath params.key
 
     ipc.on 'request:session:settings', (event, params) =>
       params||={}

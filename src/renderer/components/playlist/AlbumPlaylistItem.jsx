@@ -106,8 +106,7 @@ var AlbumPlaylistItem = React.createClass({
       'open': this.props.isOpened
     })
     var opacity = this.props.isDragging ? 0 : 1
-    var coverStyle = this.state.cover ? { backgroundImage: 'url(' + this.state.cover + ')'} : {}
-
+    var coverStyle = this.state.cover ? { backgroundImage: 'url(' + encodeURI(this.state.cover) + ')'} : {}
     var coverClasses = cx({
       'cover' : true,
       'loaded': !!this.state.cover,

@@ -98,8 +98,14 @@ class AppWindow
   toggleViewMode: ->
     @window.webContents.send('playlist:toggleViewMode')
 
-  toggleSidebar: ->
-    @window.webContents.send('sidebar:toggle')
+  showSettings: ->
+    @window.webContents.send('sidebar:show', 'settings')
+
+  showPlaylists: ->
+    @window.webContents.send('sidebar:show', 'playlists')
+
+  showFileBrowser: ->
+    @window.webContents.send('sidebar:show', 'files')
 
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')

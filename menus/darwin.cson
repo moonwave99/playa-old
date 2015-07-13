@@ -14,14 +14,14 @@
       { label: 'Quit', command: 'application:quit', accelerator: 'Command+Q' }
     ]
   }
-  
+
   {
     label: 'File'
     submenu: [
       { label: 'Open', command: 'window:open', accelerator: 'Command+O' }
     ]
   }
-  
+
   {
     label: 'Controls'
     submenu: [
@@ -29,7 +29,7 @@
       { label: 'Previous Track', command: 'window:prevTrack', accelerator: 'MediaPreviousTrack' }
       { label: 'Next Track', command: 'window:nextTrack', accelerator: 'MediaNextTrack' }
     ]
-  }  
+  }
 
   {
     label: 'Playlist'
@@ -44,7 +44,9 @@
   {
     label: 'View'
     submenu: [
-      { label: 'Toggle Sidebar', command: 'window:toggleSidebar', accelerator: 'Command+P' }
+      { label: 'Show Playlists', command: 'window:showPlaylists', accelerator: 'Command+P' }
+      { label: 'Show File Browser', command: 'window:showFileBrowser', accelerator: 'Command+B' }
+      { label: 'Toggle Sidebar', command: 'window:toggleSidebar', accelerator: 'Command+D' }
       { label: 'Toggle Full Screen', command: 'window:toggle-full-screen', accelerator: 'Command+Control+F' }
       {
         label: 'Developer'

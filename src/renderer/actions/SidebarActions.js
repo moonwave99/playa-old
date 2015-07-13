@@ -9,6 +9,12 @@ var SidebarActions = {
       actionType: SidebarConstants.TOGGLE
     })
   }
+  select: function(tab){
+    AppDispatcher.dispatch({
+      actionType: SidebarConstants.SELECT_TAB,
+      tab: tab
+    })
+  }
 }
 
 module.exports = SidebarActions;

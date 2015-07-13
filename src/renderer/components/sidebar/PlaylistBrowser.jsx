@@ -22,7 +22,7 @@ var PlaylistBrowser = React.createClass({
     })
     return (
       <div className={classes}>
-        <TreeView key="root" nodeLabel="Playlists" defaultCollapsed={false}>
+        <TreeView key="root" nodeLabel="/" defaultCollapsed={false}>
           <ul className="list-unstyled">
             {
               this.props.tree.map((playlist)=>{

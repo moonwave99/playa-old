@@ -32,7 +32,7 @@ function getOpenPlaylistState(){
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return _.merge(getSidebarState(), getOpenPlaylistState())
+    return _.merge({ sidebar: getSidebarState() }, getOpenPlaylistState())
   },
   componentDidMount: function() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
@@ -57,12 +57,12 @@ module.exports = React.createClass({
     })
     var classes = cx({
       'playa-main' : true,
-      'sidebar-open' : this.state.showSidebar
+      'sidebar-open' : this.state.sidebar.isOpen
     })
     return (
       <div className={classes}>
         <PlaybackBar/>
-        <Sidebar isOpen={this.state.showSidebar}/>
+        <Sidebar {...this.state.sidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
             tabActive={this.state.selectedIndex+1}
@@ -81,6 +81,6 @@ module.exports = React.createClass({
     this.setState(getOpenPlaylistState())
   },
   _onSidebarChange: function(){
-    this.setState(getSidebarState())
+    this.setState({ sidebar: getSidebarState()})
   }
 })

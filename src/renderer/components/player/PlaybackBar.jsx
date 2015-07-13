@@ -77,7 +77,7 @@ module.exports = React.createClass({
   renderCover: function(){
     if(this.state.cover){
       return (
-        <div className="playback-track-cover"><img src={this.state.cover}/></div>
+        <div className="playback-track-cover"><img src={encodeURI(this.state.cover)}/></div>
       )
     }else{
       return null

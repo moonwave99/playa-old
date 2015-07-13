@@ -1,5 +1,6 @@
 var keyMirror = require('keymirror');
 
 module.exports = keyMirror({
-  TOGGLE: null
+  TOGGLE: null,
+  SELECT_TAB: null
 });

@@ -1,6 +1,7 @@
 _                         = require 'lodash'
 md5                       = require 'md5'
 ipc                       = require 'ipc'
+path                      = require 'path'
 React                     = require 'react'
 Main                      = require './renderer/components/Main.jsx'
 Player                    = require './renderer/util/Player'
@@ -24,12 +25,12 @@ module.exports = class Playa
   constructor: (options) ->
     @options = options
     @playlistLoader = new PlaylistLoader
-      root: "#{process.env.HOME}/Desktop/_playlists"
+      root: path.join @options.userDataFolder, 'Playlists'
       playlistExtension: 'm3u'
     @fileLoader = new FileLoader
       fileExtensions: ['mp3', 'mp4', 'flac', 'ogg']
     @coverLoader = new CoverLoader
-      root: "#{process.env.HOME}/Desktop/_coverCache"
+      root: path.join @options.userDataFolder, 'Covers'
       discogs:
         key: process.env.DISCOGS_KEY
         secret: process.env.DISCOGS_SECRET
@@ -72,6 +73,11 @@ module.exports = class Playa
       selected: 0
 
   initIPC: ->
+    ipc.on 'sidebar:show', (tab)->
+      AppDispatcher.dispatch
+        actionType: SidebarConstants.SELECT_TAB
+        tab: tab
+
     ipc.on 'playback:prev', ->
       AppDispatcher.dispatch
         actionType: PlayerConstants.PREV
