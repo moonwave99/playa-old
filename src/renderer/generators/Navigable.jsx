@@ -36,7 +36,11 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       key('backspace, del', scopeName, this.handleDelKeyPress)
       key('enter', scopeName, this.handleEnterKeyPress)
       key('command+a', scopeName, this.handleSelectAllKeyPress)
-      key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', scopeName, this.handleArrowKeyPress)
+      if(this.props.allowMultipleSelection){
+        key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', scopeName, this.handleArrowKeyPress)
+      }else{
+        key('up, down, alt+up, alt+down', scopeName, this.handleArrowKeyPress)
+      }
       key('left, right', scopeName, this.handleLeftRightKeyPress)
       key.setScope(scopeName)
     },
@@ -47,14 +51,16 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       key.unbind('command+a', scopeName)
       key.unbind('up', scopeName)
       key.unbind('down', scopeName)
-      key.unbind('shift+up', scopeName)
-      key.unbind('shift+down', scopeName)
-      key.unbind('alt+up', scopeName)
-      key.unbind('alt+down', scopeName)
-      key.unbind('shift+alt+up', scopeName)
-      key.unbind('shift+alt+down', scopeName)
       key.unbind('left', scopeName)
       key.unbind('right', scopeName)
+      key.unbind('alt+up', scopeName)
+      key.unbind('alt+down', scopeName)
+      if(this.props.allowMultipleSelection){
+        key.unbind('shift+up', scopeName)
+        key.unbind('shift+down', scopeName)
+        key.unbind('shift+alt+up', scopeName)
+        key.unbind('shift+alt+down', scopeName)
+      }
     },
     componentWillUpdate(nextProps, nextState){
       this.props.handleScrollToElement(nextState, this.getIdList())
@@ -84,7 +90,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
         this.setState({
           selection: item.props.isSelected ? _.without(this.state.selection, item.props.itemKey) : this.state.selection.concat([item.props.itemKey])
         })
-      }else if(event.shiftKey){
+      }else if(event.shiftKey && this.props.allowMultipleSelection){
         this.setState({
           selection: ids.slice(
             Math.min(low, index), Math.max(hi, index)+1
