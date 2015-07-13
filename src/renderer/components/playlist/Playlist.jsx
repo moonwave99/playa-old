@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var cx = require('classnames')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var AlbumPlaylist = require('./AlbumPlaylist.jsx')
@@ -39,8 +40,12 @@ var Playlist = React.createClass({
     this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
   },
   render: function() {
+    var classes = cx({
+      'playlist'    : true,
+      'sidebar-open': !!this.props.isSidebarOpen
+    })
     return (
-      <div className="playlist">
+      <div className={classes}>
         <AlbumPlaylistOnSteroids
           allowMultipleSelection={true}
           playlist={this.props.playlist}

@@ -51,7 +51,7 @@ module.exports = React.createClass({
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist playlist={playlist}/>
+          <Playlist playlist={playlist} isSidebarOpen={this.state.sidebar.isOpen}/>
         </Tabs.Panel>
       )
     })
