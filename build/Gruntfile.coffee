@@ -169,9 +169,9 @@ module.exports = (grunt) ->
       ]
 
     'build-atom-shell':
-      tag: "v0.24.0"
-      nodeVersion: '0.24.0'
-      remoteUrl: "https://github.com/atom/atom-shell"
+      tag: "v0.29.2"
+      nodeVersion: '0.29.0'
+      remoteUrl: "https://github.com/atom/electron"
       buildDir: buildDir
       rebuildPackages: true
       projectName: pkgName
@@ -222,5 +222,5 @@ module.exports = (grunt) ->
   ciTasks.push('codesign')
   grunt.registerTask('ci', ciTasks)
 
-  defaultTasks = ['bower:install', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
+  defaultTasks = ['bower:install', 'build-atom-shell', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
   grunt.registerTask('default', defaultTasks)

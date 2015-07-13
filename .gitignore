@@ -10,6 +10,7 @@ npm-debug.log
 debug.log
 /tags
 /atom-shell/
+/electron/
 /static/components/
 /static/stylesheets/
 /static/fonts/
