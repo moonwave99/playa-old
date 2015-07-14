@@ -30,7 +30,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     getInitialState() {
       return {
         selection: this.props.initSelection || [],
-        openElements: []
+        openElements: [],
+        direction: 0
       }
     },
     componentDidMount() {
@@ -86,12 +87,12 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     focus(params = {}){
       key.setScope(scopeName)
-      if(params.id && params.direction == 'down'){
+      if(params.id && params.direction){
         var ids = this.getIdList()
         var currentIndex = ids.indexOf(params.id)
-        if(currentIndex < ids.length -1){
+        if(currentIndex < ids.length -1 && currentIndex > -1){
           this.setState({
-            selection : [ids[currentIndex+1]]
+            selection : [ids[currentIndex + (params.direction == 'up' ? -1 : 1)]]
           })
         }
       }
@@ -134,6 +135,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
 
       switch(event.which){
         case 38: // up
+          this.setState({ direction: -1 })
           if(event.shiftKey && event.altKey){
             newLow = 0
           }else if(event.shiftKey){
@@ -146,6 +148,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           }
           break
         case 40: // down
+          this.setState({ direction: 1 })
           if(event.shiftKey && event.altKey){
             newHi = ids.length-1
           }else if(event.shiftKey){

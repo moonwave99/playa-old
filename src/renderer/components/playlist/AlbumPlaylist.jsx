@@ -44,6 +44,7 @@ var AlbumPlaylist = React.createClass({
     var albums = this.props.playlist.getItems().map((album, index)=>{
       var isOpened = this.props.openElements.indexOf(album.id) > -1
       var isSelected = this.props.selection.indexOf(album.id) > -1
+
       return (
         <AlbumPlaylistItem
           key={album.id}
@@ -57,9 +58,10 @@ var AlbumPlaylist = React.createClass({
           handleMenuLinkClick={this.handleMenuLinkClick}
           currentItem={this.state.currentItem}
           moveAlbum={this.moveAlbum}
+          direction={this.props.direction}
           isOpened={isOpened}
           isSelected={isSelected}
-          isKeyFocused={isOpened && isSelected && this.props.selection.length == 1}
+          isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}
           isMenuOpened={this.state.openMenu == album.id}/>
       )
     })

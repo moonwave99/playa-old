@@ -160,7 +160,7 @@ var AlbumPlaylistItem = React.createClass({
         this.setState({
           selectedTrack: this.state.selectedTrack-1
         })
-        if(this.state.selectedTrack < 0){
+        if(this.state.selectedTrack < -1){
           this.props.focusParent({
             id: this.props.album.id,
             direction: 'up'
@@ -187,14 +187,13 @@ var AlbumPlaylistItem = React.createClass({
   },
   focus: function(){
     var scope = 'album_tracklist_' + this.props.album.id
-    if(scope == key.getScope()){
-      return
+    if(scope !== key.getScope()){
+      key('up, down, left', scope, this.handleArrowKeyPress)
+      key('enter', scope, this.handleEnterKeyPress)
+      key.setScope(scope)
     }
-    key('up, down, left', scope, this.handleArrowKeyPress)
-    key('enter', scope, this.handleEnterKeyPress)
-    key.setScope(scope)
     this.setState({
-      selectedTrack: -1
+      selectedTrack: this.props.direction == -1 ? this.props.album.tracks.length-1 : -1
     })
   },
   blur: function(){
