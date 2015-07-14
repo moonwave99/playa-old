@@ -26,6 +26,15 @@ module.exports = React.createClass({
   updateCover: function(cover){
     this.setState({ cover: cover })
   },
+  updateWaveform: function(waveform){
+    var wrapper = React.findDOMNode(this.refs.waveform)
+    if(waveform){
+      wrapper.style.backgroundImage = "url('file://" + encodeURI(waveform) + "')"
+      wrapper.classList.add('loaded')
+    }else{
+      wrapper.classList.remove('loaded')
+    }
+  },
   prev: function(){
     PlayerActions.prevTrack()
   },
@@ -41,11 +50,24 @@ module.exports = React.createClass({
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },
+  componentWillUpdate: function(nextProps, nextState){
+    if(!nextState.item){
+      this.updateWaveform(null)
+    }else if(nextState.item.id !== this.state.item.id){
+      this.updateWaveform(null)
+      playa.waveformLoader.load(nextState.item)
+        .then(this.updateWaveform)
+        .catch((err)=>{
+          console.error(err, err.stack)
+        })
+    }
+  },
   render: function() {
     var wrapperClasses = cx({
       'playback-track-info-wrapper' : true,
       'show-remaining'              : this.state.showRemaining,
-      'hide-info'                   : this.state.hideInfo
+      'hide-info'                   : this.state.hideInfo,
+      'show-waveform'               : !!this.state.waveform
     })
     var logoClasses = cx({
       'playback-logo' : true,
@@ -60,6 +82,7 @@ module.exports = React.createClass({
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
+          <div className="waveform" ref="waveform"></div>
           {this.renderCover()}
           <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>{this.formatTime(this.state.currentTime)}</span>
           <div className="playback-track-info">

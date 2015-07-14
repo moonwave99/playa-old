@@ -51,6 +51,20 @@
             display none
           &.time-remaining
             display block
+    .waveform
+      position absolute
+      top 0
+      right 0
+      bottom 0
+      left 0
+      background-size calc(100% - 5rem) 10rem
+      background-repeat no-repeat
+      background-position-x right
+      opacity 0
+      transition opacity .4s ease-in-out
+      z-index -1
+      &.loaded
+        opacity 1
     .playback-track-cover
       flex 0 0 5rem
       overflow hidden
