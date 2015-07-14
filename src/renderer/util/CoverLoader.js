@@ -13,7 +13,6 @@ module.exports = class CoverLoader {
     this.root = options.root
     this.discogs = options.discogs
     this.enableLog = !!options.enableLog
-    this.cache = {}
     this.notFound = []
     this.requestQueue = async.queue((album, callback)=>{
       setTimeout(()=>{
