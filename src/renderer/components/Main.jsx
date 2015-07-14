@@ -1,7 +1,7 @@
 "use babel";
 
-var ipc = require('ipc')
 var _ = require('lodash')
+var ipc = require('ipc')
 var cx = require('classnames')
 var key = require('keymaster')
 
@@ -38,11 +38,13 @@ module.exports = React.createClass({
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
     key('space', this.handleSpacePress)
+    key(_.range(9).map( n => '⌘+' + n).join(', '), this.handleCommandNumberPress)
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
     key.unbind('space')
+    _.range(9).forEach( n => key.unbind('⌘+' + n))
   },
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     OpenPlaylistActions.select(selectedIndex-1)
@@ -73,6 +75,14 @@ module.exports = React.createClass({
         <Footer selectedPlaylist={this.state.selectedPlaylist} />
       </div>
     )
+  },
+  handleCommandNumberPress: function(event){
+    var index = event.which - 48
+    if(index == 0){
+      OpenPlaylistActions.select(this.state.openPlaylists.length -1)
+    }else if(index <= this.state.openPlaylists.length){
+      OpenPlaylistActions.select(index -1)
+    }
   },
   handleSpacePress: function(event){
     PlayerActions.toggle()
