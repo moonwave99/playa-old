@@ -23,6 +23,8 @@ function getPlayerState(){
 var AlbumPlaylist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
+    focusParent: ReactPropTypes.func,
+    closeElements: ReactPropTypes.func,
     handleClick: ReactPropTypes.func,
     handleDoubleClick: ReactPropTypes.func,
     selection: ReactPropTypes.array
@@ -40,19 +42,24 @@ var AlbumPlaylist = React.createClass({
   },
   render: function() {
     var albums = this.props.playlist.getItems().map((album, index)=>{
+      var isOpened = this.props.openElements.indexOf(album.id) > -1
+      var isSelected = this.props.selection.indexOf(album.id) > -1
       return (
         <AlbumPlaylistItem
           key={album.id}
           index={index}
           itemKey={album.id}
           album={album}
+          closeElements={this.props.closeElements}
+          focusParent={this.props.focusParent}
           handleClick={this.handleClick}
-          handleDoubleClick={this.handleDoubleClick}
+          playTrack={this.playTrack}
           handleMenuLinkClick={this.handleMenuLinkClick}
           currentItem={this.state.currentItem}
           moveAlbum={this.moveAlbum}
-          isOpened={this.props.openElements.indexOf(album.id) > -1}
-          isSelected={this.props.selection.indexOf(album.id) > -1}
+          isOpened={isOpened}
+          isSelected={isSelected}
+          isKeyFocused={isOpened && isSelected && this.props.selection.length == 1}
           isMenuOpened={this.state.openMenu == album.id}/>
       )
     })
@@ -67,21 +74,21 @@ var AlbumPlaylist = React.createClass({
   handleClick: function(event, item){
     this.props.handleClick(event, item)
   },
-  handleDoubleClick: function(album, trackId){
-    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
-    PlayerActions.play()
-  },
   handleMenuLinkClick: function(event, item){
     this.setState({
       openMenu: item.props.itemKey
     })
   },
+  moveAlbum: function(id, afterId){
+    OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
+  },
+  playTrack: function(album, trackId){
+    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
+    PlayerActions.play()
+  },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
   },
-  moveAlbum: function(id, afterId){
-    OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
-  }
 })
 
 module.exports = DragDropContext(HTML5Backend)(AlbumPlaylist)

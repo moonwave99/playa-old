@@ -29,13 +29,13 @@ var Sidebar = React.createClass({
   renderTabs: function(){
     return [
       <Tabs.Panel title={<i className="fa fa-fw fa-list"></i>} key="playlists">
-        <PlaylistBrowserTab></PlaylistBrowserTab>
+        <PlaylistBrowserTab isFocused={this.props.isOpen && this.props.selectedTab == 0}></PlaylistBrowserTab>
       </Tabs.Panel>,
       <Tabs.Panel title={<i className="fa fa-fw fa-folder-open-o"></i>} key="files">
-        <FileBrowserTab></FileBrowserTab>
+        <FileBrowserTab isFocused={this.props.isOpen && this.props.selectedTab == 1}></FileBrowserTab>
       </Tabs.Panel>,
       <Tabs.Panel title={<i className="fa fa-fw fa-gears"></i>} key="settings">
-        <SettingsTab></SettingsTab>
+        <SettingsTab isFocused={this.props.isOpen && this.props.selectedTab == 2}></SettingsTab>
       </Tabs.Panel>
     ]
   },

@@ -6,6 +6,7 @@ var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
 var DropTarget = require('react-dnd').DropTarget
 var cx = require('classnames')
+var key = require('keymaster')
 var moment = require('moment')
 require("moment-duration-format")
 
@@ -43,11 +44,19 @@ const albumTarget = {
 var AlbumPlaylistItem = React.createClass({
   getInitialState: function(){
     return {
-      cover: null
+      cover: null,
+      selectedTrack: -1
     }
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
+  },
+  componentWillReceiveProps: function(nextProps){
+    if(nextProps.isKeyFocused){
+      this.focus()
+    }else{
+      this.blur()
+    }
   },
   componentWillMount: function(){
     playa.coverLoader.load(this.props.album)
@@ -85,8 +94,9 @@ var AlbumPlaylistItem = React.createClass({
   renderTrack: function(track, index){
     var isPlaying = track.id == this.props.currentItem.id
     var classes = cx({
-      'track' : true,
-      'playing' : isPlaying
+      'track'     : true,
+      'playing'   : isPlaying,
+      'selected'  : this.state.selectedTrack == index
     })
     return (
       <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
@@ -135,14 +145,68 @@ var AlbumPlaylistItem = React.createClass({
     this.props.handleDoubleClick(this.props.album, event.target.dataset.id)
   },
   handleDoubleClick: function(event){
-    this.props.handleDoubleClick(this.props.album, this.props.album.tracks[0].id)
+    this.props.playTrack(this.props.album, this.props.album.tracks[0].id)
   },
   handleClick: function(event){
     this.props.handleClick(event, this)
   },
+  handleArrowKeyPress: function(event){
+    switch(event.which){
+      case 37: // left
+        this.props.closeElements([this.props.album.id])
+        this.props.focusParent()
+        break
+      case 38: // up
+        this.setState({
+          selectedTrack: this.state.selectedTrack-1
+        })
+        if(this.state.selectedTrack < 0){
+          this.props.focusParent({
+            id: this.props.album.id,
+            direction: 'up'
+          })
+        }
+        break
+      case 40: // down
+        this.setState({
+          selectedTrack: this.state.selectedTrack+1
+        })
+        if(this.state.selectedTrack > this.props.album.tracks.length -1){
+          this.props.focusParent({
+            id: this.props.album.id,
+            direction: 'down'
+          })
+        }
+        break
+    }
+  },
+  handleEnterKeyPress: function(event){
+    if(this.state.selectedTrack > -1){
+      this.props.playTrack(this.props.album, this.props.album.tracks[this.state.selectedTrack].id)
+    }
+  },
+  focus: function(){
+    var scope = 'album_tracklist_' + this.props.album.id
+    if(scope == key.getScope()){
+      return
+    }
+    key('up, down, left', scope, this.handleArrowKeyPress)
+    key('enter', scope, this.handleEnterKeyPress)
+    key.setScope(scope)
+    this.setState({
+      selectedTrack: -1
+    })
+  },
+  blur: function(){
+    var scope = 'album_tracklist_' + this.props.album.id
+    key.unbind('up', scope)
+    key.unbind('down', scope)
+    key.unbind('left', scope)
+    key.unbind('enter', scope)
+  },
   updateCover: function(cover){
     this.setState({ cover: cover })
-  }
+  },
 })
 
 AlbumPlaylistItem = DropTarget('ALBUM', albumTarget, connect => ({

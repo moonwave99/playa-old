@@ -15,6 +15,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       handleDelKeyPress: ReactPropTypes.func.isRequired,
       handleEnterKeyPress: ReactPropTypes.func.isRequired,
       handleScrollToElement: ReactPropTypes.func.isRequired,
+      isFocused: ReactPropTypes.bool,
       allowMultipleSelection: ReactPropTypes.bool
     },
     getIdList() {
@@ -64,19 +65,36 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     componentWillUpdate(nextProps, nextState){
       this.props.handleScrollToElement(nextState, this.getIdList())
+      if(nextProps.isFocused){
+        this.focus()
+      }
     },
     render() {
       return (
-        <div onClick={this.getFocus}>
+        <div onClick={this.handleFocusClick}>
           <Component
             handleClick={this.handleClick}
+            focusParent={this.focus}
+            closeElements={this.closeElements}
             {...this.props}
             {...this.state} />
         </div>
       )
     },
-    getFocus(event){
+    handleFocusClick(event){
+      this.focus()
+    },
+    focus(params = {}){
       key.setScope(scopeName)
+      if(params.id && params.direction == 'down'){
+        var ids = this.getIdList()
+        var currentIndex = ids.indexOf(params.id)
+        if(currentIndex < ids.length -1){
+          this.setState({
+            selection : [ids[currentIndex+1]]
+          })
+        }
+      }
     },
     handleClick(event, item) {
       var ids = this.getIdList()
@@ -147,14 +165,10 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     handleLeftRightKeyPress(event){
       switch(event.which){
         case 39: // right
-          this.setState({
-            openElements: _.uniq(this.state.openElements.concat(this.state.selection))
-          })
+          this.openElements(this.state.selection)
           break
         case 37: // left
-          this.setState({
-            openElements: _.difference(this.state.openElements, this.state.selection)
-          })
+          this.closeElements(this.state.selection)
           break
       }
     },
@@ -167,6 +181,16 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     handleSelectAllKeyPress(event) {
       this.setState({
         selection: this.getIdList()
+      })
+    },
+    openElements(ids){
+      this.setState({
+        openElements: _.uniq(this.state.openElements.concat(ids))
+      })
+    },
+    closeElements(ids){
+      this.setState({
+        openElements: _.difference(this.state.openElements, ids)
       })
     }
   })

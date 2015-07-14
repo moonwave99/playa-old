@@ -36,6 +36,7 @@ var PlaylistBrowserTab = React.createClass({
         handleDelKeyPress={this.handleDelKeyPress}
         handleEnterKeyPress={this.handleEnterKeyPress}
         handleScrollToElement={this.handleScrollToElement}
+        isFocused={this.props.isFocused}
         tree={this.state.playlistTree}/>
     )
   },
