@@ -142,7 +142,7 @@ var AlbumPlaylistItem = React.createClass({
   },
   handleTracklistDoubleClick: function(event){
     event.stopPropagation()
-    this.props.handleDoubleClick(this.props.album, event.target.dataset.id)
+    this.props.playTrack(this.props.album, event.target.dataset.id)
   },
   handleDoubleClick: function(event){
     this.props.playTrack(this.props.album, this.props.album.tracks[0].id)
