@@ -58,8 +58,8 @@ module.exports = class Playa
 
     playlists = []
 
-    if @options.openPlaylists.length
-      playlists = @options.openPlaylists.map (i) ->
+    if @options.sessionSettings.openPlaylists.length
+      playlists = @options.sessionSettings.openPlaylists.map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
     else
       playlists = [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
@@ -70,7 +70,7 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: 0
+      selected: @options.sessionSettings.selectedPlaylist or 0
 
   initIPC: ->
     ipc.on 'sidebar:show', (tab)->
@@ -117,4 +117,6 @@ module.exports = class Playa
 
   _onOpenPlaylistChange: ->
     playlists = OpenPlaylistStore.getAll().filter((i) -> !i.isNew() ).map (i) -> i.path
+    selectedPlaylist = OpenPlaylistStore.getSelectedIndex()
     if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlists
+    if selectedPlaylist > -1 then ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylist

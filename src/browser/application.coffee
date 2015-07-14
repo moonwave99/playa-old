@@ -156,7 +156,7 @@ class Application
 
     ipc.on 'request:session:settings', (event, params) =>
       params||={}
-      event.returnValue = @sessionSettings.get(params.key) || false
+      event.returnValue = if params.key then @sessionSettings.get(params.key) or false else @sessionSettings.all()
 
     ipc.on 'session:save', (event, params) =>
       @sessionSettings.set params.key, params.value

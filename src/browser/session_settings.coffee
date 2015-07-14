@@ -15,3 +15,5 @@ class SessionSettings
     @
   get: (key) ->
     @data[key]
+  all: ->
+    @data
