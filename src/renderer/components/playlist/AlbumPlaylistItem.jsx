@@ -10,6 +10,7 @@ var key = require('keymaster')
 var moment = require('moment')
 require("moment-duration-format")
 
+var DropTargetConstants = require('../../constants/DropTargetConstants')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 
@@ -191,11 +192,11 @@ var AlbumPlaylistItem = React.createClass({
   },
 })
 
-AlbumPlaylistItem = DropTarget('ALBUM', albumTarget, connect => ({
+AlbumPlaylistItem = DropTarget(DropTargetConstants.PLAYLIST_ALBUM, albumTarget, connect => ({
   connectDropTarget: connect.dropTarget(),
 }))(AlbumPlaylistItem)
 
-AlbumPlaylistItem = DragSource('ALBUM', albumSource, (connect, monitor) => ({
+AlbumPlaylistItem = DragSource(DropTargetConstants.PLAYLIST_ALBUM, albumSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging()
 }))(AlbumPlaylistItem)

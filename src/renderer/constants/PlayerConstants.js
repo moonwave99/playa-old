@@ -1,4 +1,4 @@
-var keyMirror = require('keymirror');
+var keyMirror = require('keymirror')
 
 module.exports = keyMirror({
   TOGGLE: null,
@@ -8,4 +8,4 @@ module.exports = keyMirror({
   NEXT_TRACK: null,
   PREV_TRACK: null,
   SEEK: null
-});
+})
