@@ -10,6 +10,7 @@ var key = require('keymaster')
 var moment = require('moment')
 require("moment-duration-format")
 
+var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 
 const albumSource = {
@@ -53,7 +54,7 @@ var AlbumPlaylistItem = React.createClass({
   },
   componentWillReceiveProps: function(nextProps){
     if(nextProps.isKeyFocused){
-      this.focus()
+      !this.props.isKeyFocused && this.focus()
     }else{
       this.blur()
     }
@@ -72,39 +73,20 @@ var AlbumPlaylistItem = React.createClass({
           <li key={track.id + '_disc_' + track.metadata.disk.no } className="disc-number">Disc {track.metadata.disk.no}</li>
         ))
       }
-      renderedTracklist.push(this.renderTrack(track, index))
+      renderedTracklist.push(
+        <AlbumTracklistItem
+          key={track.id}
+          album={this.props.album}
+          track={track}
+          index={index}
+          selected={this.state.selectedTrack == index}
+          isPlaying={track.id == this.props.currentItem.id}
+          handleDoubleClick={this.handleTracklistDoubleClick}
+          />
+      )
     })
     return (
       <ul className="list-unstyled tracklist">{ renderedTracklist }</ul>
-    )
-  },
-  renderTrackTitle: function(track){
-    if(this.props.album.getArtistCount() > 1){
-      return (
-        <span className="track-title">
-          <span className="track-artist">{track.metadata.artist}</span>
-          <span className="separator"></span>
-          <span>{track.metadata.title}</span>
-        </span>
-      )
-    }else{
-      return <span className="track-title">{track.metadata.title}</span>
-    }
-  },
-  renderTrack: function(track, index){
-    var isPlaying = track.id == this.props.currentItem.id
-    var classes = cx({
-      'track'     : true,
-      'playing'   : isPlaying,
-      'selected'  : this.state.selectedTrack == index
-    })
-    return (
-      <li className={classes} key={track.id} onDoubleClick={this.handleTracklistDoubleClick} data-id={track.id}>
-        <span className="track-playing-indicator">{ isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
-        <span className="track-number">{ track.metadata.track }.</span>
-        { this.renderTrackTitle(track) }
-        <span className="track-duration">{ this.formatTime(track.duration) }</span>
-      </li>
     )
   },
   render: function() {
@@ -140,11 +122,12 @@ var AlbumPlaylistItem = React.createClass({
     event.stopPropagation()
     this.props.handleMenuLinkClick(event, this)
   },
-  handleTracklistDoubleClick: function(event){
+  handleTracklistDoubleClick: function(event, item){
     event.stopPropagation()
-    this.props.playTrack(this.props.album, event.target.dataset.id)
+    this.props.playTrack(this.props.album, item.props.track.id)
   },
   handleDoubleClick: function(event){
+    event.stopPropagation()
     this.props.playTrack(this.props.album, this.props.album.tracks[0].id)
   },
   handleClick: function(event){
