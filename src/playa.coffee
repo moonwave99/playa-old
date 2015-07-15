@@ -40,11 +40,11 @@ module.exports = class Playa
       root: path.join @options.userDataFolder, 'Waveforms'
       config:
         'wait'              : 100,
-        'png-width'         : 1200,
-        'png-height'        : 80,
+        'png-width'         : 1600,
+        'png-height'        : 160,
         'png-color-bg'      : '00000000',
-        'png-color-center'  : '55555599',
-        'png-color-outer'   : '21212166'
+        'png-color-center'  : '777777AA',
+        'png-color-outer'   : '77777733'
     @player = new Player()
     @player.fileLoader = @fileLoader
 

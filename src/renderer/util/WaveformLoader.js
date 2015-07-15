@@ -44,7 +44,17 @@ module.exports = class WaveformLoader {
     return fs.existsSync(waveformPath) ? waveformPath : false
   }
   getWaveformPath(track){
-    return path.join(this.root, track.id + '_' + this.config['png-width'] + '.png')
+    return path.join(
+      this.root,
+      [
+        track.id,
+        this.config['png-width'],
+        this.config['png-height'],
+        this.config['png-color-bg'],
+        this.config['png-color-center'],
+        this.config['png-color-outer']
+      ].join('_') + '.png'
+    )
   }
   log(message, response){
     this.enableLog && (response ? console.info(message, response) : console.info(message))

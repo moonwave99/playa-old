@@ -55,7 +55,7 @@ module.exports = React.createClass({
       this.updateWaveform(null)
     }else if(nextState.item.id !== this.state.item.id){
       this.updateWaveform(null)
-      playa.waveformLoader.load(nextState.item)
+      nextState.item.id && playa.waveformLoader.load(nextState.item)
         .then(this.updateWaveform)
         .catch((err)=>{
           console.error(err, err.stack)
