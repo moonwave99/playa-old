@@ -97,7 +97,7 @@ var AlbumPlaylistItem = React.createClass({
       )
     })
     return (
-      <ul className="list-unstyled tracklist">{ renderedTracklist }</ul>
+      <ol className="list-unstyled tracklist">{ renderedTracklist }</ol>
     )
   },
   render: function() {
@@ -117,7 +117,7 @@ var AlbumPlaylistItem = React.createClass({
       'menuOpened'  : !!this.props.isMenuOpened
     })
     return this.props.connectDragSource(this.props.connectDropTarget(
-      <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
+      <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
         <header>
           <div className={coverClasses} style={coverStyle}></div>
           <span className="artist">{this.props.album.getArtist()}</span><br/>
@@ -127,7 +127,7 @@ var AlbumPlaylistItem = React.createClass({
           { this.props.isMenuOpened ? <ContextMenu album={this.props.album}/> : null }
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
-      </div>
+      </li>
     ))
   },
   handleMenuLinkClick: function(event){

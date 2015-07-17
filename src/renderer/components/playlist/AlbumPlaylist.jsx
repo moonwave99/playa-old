@@ -68,7 +68,7 @@ var AlbumPlaylist = React.createClass({
     })
 
     return (
-      <div className="albums" onClick={this.handleGlobalClick}>{albums}</div>
+      <ol className="albums list-unstyled" onClick={this.handleGlobalClick}>{albums}</ol>
     )
   },
   handleGlobalClick: function(event){
