@@ -6,12 +6,14 @@ React                     = require 'react'
 Main                      = require './renderer/components/Main.jsx'
 Player                    = require './renderer/util/Player'
 AlbumPlaylist             = require './renderer/util/AlbumPlaylist'
+FileBrowser               = require './renderer/util/FileBrowser'
 PlaylistLoader            = require './renderer/util/PlaylistLoader'
 FileLoader                = require './renderer/util/FileLoader'
 CoverLoader               = require './renderer/util/CoverLoader'
 WaveformLoader            = require './renderer/util/WaveformLoader'
 AppDispatcher             = require './renderer/dispatcher/AppDispatcher'
 PlayerConstants           = require './renderer/constants/PlayerConstants'
+FileBrowserConstants      = require './renderer/constants/FileBrowserConstants'
 PlaylistBrowserConstants  = require './renderer/constants/PlaylistBrowserConstants'
 OpenPlaylistConstants     = require './renderer/constants/OpenPlaylistConstants'
 SidebarConstants          = require './renderer/constants/SidebarConstants'
@@ -20,22 +22,43 @@ OpenPlaylistStore         = require './renderer/stores/OpenPlaylistStore'
 SidebarStore              = require './renderer/stores/SidebarStore'
 OpenPlaylistActions       = require './renderer/actions/OpenPlaylistActions'
 
+FileTree                  = require './renderer/util/FileTree'
+
 require('dotenv').load()
 
 module.exports = class Playa
   constructor: (options) ->
     @options = options
+    @options.settings =
+      fileBrowserRoot:  path.join process.env.HOME, 'Downloads', '_muzak'
+      playlistRoot:     path.join @options.userDataFolder, 'Playlists'
+
+    @fileBrowser = new FileBrowser()
+
+    @fileTree = new FileTree
+      fileBrowser:  @fileBrowser
+      rootFolder:   @options.settings.fileBrowserRoot
+      filter:       'directory'
+
+    @playlistTree = new FileTree
+      fileBrowser:  @fileBrowser
+      rootFolder:   @options.settings.playlistRoot
+      filter:       'm3u'
+
     @playlistLoader = new PlaylistLoader
-      root: path.join @options.userDataFolder, 'Playlists'
+      root: @options.settings.playlistRoot
       playlistExtension: 'm3u'
+
     @fileLoader = new FileLoader
       fileExtensions: ['mp3', 'mp4', 'flac', 'ogg']
+
     @coverLoader = new CoverLoader
       root: path.join @options.userDataFolder, 'Covers'
       discogs:
         key: process.env.DISCOGS_KEY
         secret: process.env.DISCOGS_SECRET
         throttle: 1000
+
     @waveformLoader = new WaveformLoader
       root: path.join @options.userDataFolder, 'Waveforms'
       config:
@@ -45,8 +68,9 @@ module.exports = class Playa
         'png-color-bg'      : '00000000',
         'png-color-center'  : '777777AA',
         'png-color-outer'   : '77777733'
-    @player = new Player()
-    @player.fileLoader = @fileLoader
+
+    @player = new Player
+      fileLoader: @fileLoader
 
     @player.on 'nowplaying', ->
       PlayerStore.emitChange()
@@ -61,13 +85,6 @@ module.exports = class Playa
     @loadPlaylists()
 
   loadPlaylists: ->
-    @playlistLoader.loadTree().then (tree)=>
-      AppDispatcher.dispatch
-        actionType: PlaylistBrowserConstants.LOAD_TREE
-        tree: tree
-
-    playlists = []
-
     if @options.sessionSettings.openPlaylists.length
       playlists = @options.sessionSettings.openPlaylists.map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
@@ -82,8 +99,25 @@ module.exports = class Playa
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
       selected: @options.sessionSettings.selectedPlaylist or 0
 
+  loadSidebarPlaylists: =>
+    AppDispatcher.dispatch
+      actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT
+      foldere: @options.settings.playlistRoot
+
+  loadSidebarFileBrowser: =>
+    AppDispatcher.dispatch
+      actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT
+      folder: @options.settings.fileBrowserRoot
+
   initIPC: ->
-    ipc.on 'sidebar:show', (tab)->
+    ipc.on 'sidebar:show', (tab)=>
+      switch tab
+        when 'playlists'
+          @loadSidebarPlaylists()
+        when 'files'
+          @loadSidebarFileBrowser()
+        when 'settings' then true
+
       AppDispatcher.dispatch
         actionType: SidebarConstants.SELECT_TAB
         tab: tab

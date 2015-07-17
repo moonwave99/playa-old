@@ -15,6 +15,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       handleDelKeyPress: ReactPropTypes.func.isRequired,
       handleEnterKeyPress: ReactPropTypes.func.isRequired,
       handleScrollToElement: ReactPropTypes.func.isRequired,
+      handleOpen: ReactPropTypes.func,
+      handleClose: ReactPropTypes.func,
       isFocused: ReactPropTypes.bool,
       allowMultipleSelection: ReactPropTypes.bool
     },
@@ -132,7 +134,6 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       ]
       var newLow = low
       var newHi = hi
-
       switch(event.which){
         case 38: // up
           this.setState({ direction: -1 })
@@ -190,11 +191,13 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       this.setState({
         openElements: _.uniq(this.state.openElements.concat(ids))
       })
+      this.props.handleOpen && this.props.handleOpen(ids)
     },
     closeElements(ids){
       this.setState({
         openElements: _.difference(this.state.openElements, ids)
       })
+      this.props.handleClose && this.props.handleClose(ids)
     }
   })
 

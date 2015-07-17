@@ -1,12 +1,13 @@
 .sidebar
   width size($sidebarWidth)
-  height "calc(100vh - %s)" % 7rem
+  height "calc(100vh - %s - %s)" % (size($footerHeight) size($playbackBarHeight))
   backface-visibility hidden
   user-select none
   position absolute
   top size($playbackBarHeight)
   transition transform .2s linear
   background-color $sidebarBgColor
+  overflow auto
   &.sidebar-left
     transform 'translateX(calc(%s - %s))' % ($sidebarClosedWidth $sidebarWidth)
     left 0
@@ -26,36 +27,31 @@
         .fa
           color $sidebarIconColor
           font-size size($sidebarIconSize)
-
-  .playlist-browser
-    li
-      line-height size($playlistBrowserLineHeight)
-      font-size size($playlistBrowserFontSize)
-      transition background-color .2s ease-in-out
-      &:hover
-        background-color rgba(white, .05)
-      &.selected
-        background-color rgba(white, .1)
-      .fa
-        margin-right .5rem
-
-    .tree-view
-      overflow-y hidden
-      padding-left .5rem
-      li
-        cursor pointer
-
-    .tree-view_children
-      margin-left 1rem
-
-    .tree-view_children-collapsed
-      height 0
-
-    .tree-view_arrow
-      line-height size($playlistBrowserLineHeight)
+  .browser
+    margin 0
+    padding .5rem 0 0 1rem
+    overflow-y hidden
+    line-height size($playlistBrowserLineHeight)
+    font-size size($playlistBrowserFontSize)
+    display inline-block
+    min-width 100%
+    .browser-node
       cursor pointer
-      margin-right .5rem
-      display inline-block
-
-    .tree-view_arrow-collapsed
-      transform rotate(-90deg)
+      white-space nowrap
+      transition background .1s linear
+      &:hover
+        background-color rgba(255,255,255,.05)
+      &.selected
+        background-color rgba(255,255,255,.1)
+      .node-arrow
+        margin-right .5rem
+        &:after
+          content '▾'
+          display inline-block
+          transition transform .1s linear
+          width .75rem
+          text-align center
+      &.collapsed
+        .node-arrow
+          &:after
+            transform rotate(-90deg)

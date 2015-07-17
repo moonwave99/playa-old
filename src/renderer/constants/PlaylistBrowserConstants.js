@@ -1,7 +1,9 @@
 var keyMirror = require('keymirror')
 
 module.exports = keyMirror({
-  LOAD_TREE: null,
+  LOAD_PLAYLIST_TREE: null,
+  EXPAND_PLAYLIST_NODES: null,
+  COLLAPSE_PLAYLIST_NODES: null,
   CREATE_PLAYLIST: null,
   CREATE_FOLDER: null
 })
