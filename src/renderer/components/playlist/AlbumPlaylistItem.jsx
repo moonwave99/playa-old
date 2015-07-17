@@ -27,6 +27,8 @@ const albumSource = {
     if (!didDrop) {
       props.moveAlbum(droppedId, originalIndex)
     }
+    // #TODO find a React-ive way.
+    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
   }
 }
 
@@ -38,8 +40,7 @@ const albumTarget = {
     }
   },
   hover(props, monitor, component) {
-    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
-    React.findDOMNode(component).classList.add('drag-over')
+    component.handleDragHover()
   }
 }
 
@@ -82,8 +83,7 @@ var AlbumPlaylistItem = React.createClass({
           index={index}
           selected={this.state.selectedTrack == index}
           isPlaying={track.id == this.props.currentItem.id}
-          handleDoubleClick={this.handleTracklistDoubleClick}
-          />
+          handleDoubleClick={this.handleTracklistDoubleClick}/>
       )
     })
     return (
@@ -93,17 +93,18 @@ var AlbumPlaylistItem = React.createClass({
   render: function() {
     var isPlaying = this.props.album.contains(this.props.currentItem.id)
     var classes = cx({
-      'album' : true,
-      'playing' : isPlaying,
-      'selected' : this.props.isSelected,
-      'open': this.props.isOpened
+      'album'     : true,
+      'playing'   : isPlaying,
+      'selected'  : this.props.isSelected,
+      'open'      : this.props.isOpened,
+      'drag-over' : this.props.isDragHover
     })
     var opacity = this.props.isDragging ? 0 : 1
     var coverStyle = this.state.cover ? { backgroundImage: 'url(' + encodeURI(this.state.cover) + ')'} : {}
     var coverClasses = cx({
-      'cover' : true,
-      'loaded': !!this.state.cover,
-      'menuOpened' : !!this.props.isMenuOpened
+      'cover'       : true,
+      'loaded'      : !!this.state.cover,
+      'menuOpened'  : !!this.props.isMenuOpened
     })
     return this.props.connectDragSource(this.props.connectDropTarget(
       <div className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={this.props.album.id} style={{opacity}}>
@@ -168,6 +169,9 @@ var AlbumPlaylistItem = React.createClass({
     if(this.state.selectedTrack > -1){
       this.props.playTrack(this.props.album, this.props.album.tracks[this.state.selectedTrack].id)
     }
+  },
+  handleDragHover: function(){
+    this.props.handleDragHover && this.props.handleDragHover(this)
   },
   focus: function(){
     var scope = 'album_tracklist_' + this.props.album.id

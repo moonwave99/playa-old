@@ -31,7 +31,8 @@ var AlbumPlaylist = React.createClass({
   },
   getInitialState: function(){
     return _.extend({
-      openMenu: null
+      openMenu: null,
+      dragHover: null,
     }, getPlayerState())
   },
   componentDidMount: function(){
@@ -54,15 +55,17 @@ var AlbumPlaylist = React.createClass({
           closeElements={this.props.closeElements}
           focusParent={this.props.focusParent}
           handleClick={this.handleClick}
-          playTrack={this.playTrack}
           handleMenuLinkClick={this.handleMenuLinkClick}
+          handleDragHover={this.handleDragHover}
+          playTrack={this.playTrack}
           currentItem={this.state.currentItem}
           moveAlbum={this.moveAlbum}
           direction={this.props.direction}
           isOpened={isOpened}
           isSelected={isSelected}
           isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}
-          isMenuOpened={this.state.openMenu == album.id}/>
+          isMenuOpened={this.state.openMenu == album.id}
+          isDragHover={this.state.dragHover == album.id}/>
       )
     })
 
@@ -79,6 +82,11 @@ var AlbumPlaylist = React.createClass({
   handleMenuLinkClick: function(event, item){
     this.setState({
       openMenu: item.props.itemKey
+    })
+  },
+  handleDragHover: function(item){
+    this.setState({
+      dragHover: item.props.album.id
     })
   },
   moveAlbum: function(id, afterId){
