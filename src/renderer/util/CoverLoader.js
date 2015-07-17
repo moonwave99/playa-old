@@ -72,6 +72,7 @@ module.exports = class CoverLoader {
         this.log('Found ' + title, response)
         var thumbResult = _.find(response[1].results, (result) => {
           return result.thumb.length > 0
+            && _.contains(['release', 'master'], result.type)
         })
         if(!thumbResult)
           throw new Error('No results for: ' + title)
