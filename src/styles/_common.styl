@@ -11,6 +11,9 @@ html
         color $secondaryColor
         text-decoration none
 
+::-webkit-scrollbar
+  display none
+
 #main
   min-height 100vh
   width 100vw
@@ -26,13 +29,14 @@ html
     position relative
     &.sidebar-open
       .playa-main-wrapper
-        width "calc(100vw - %s)" % $sidebarWidth
+        transform translateX(size($sidebarWidth))
     .playa-main-wrapper
-      width "calc(100vw - %s)" % $sidebarClosedWidth
-      transition width .2s linear
+      transform translateX(size($sidebarClosedWidth))
+      transition transform .2s linear
       backface-visibility hidden
       position absolute
       right 0
+      left 0
 
   .footer
     height size($footerHeight)

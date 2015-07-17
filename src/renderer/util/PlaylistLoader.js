@@ -7,7 +7,6 @@ var ipc = require('ipc')
 var md5 = require('MD5')
 var path = require('path')
 var groove = require('groove')
-var assert = require('assert')
 var glob = Promise.promisifyAll(require('glob'))
 
 var AlbumPlaylist = require('./AlbumPlaylist')

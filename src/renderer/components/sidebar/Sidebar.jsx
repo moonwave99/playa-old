@@ -8,6 +8,24 @@ var ReactPropTypes = React.PropTypes
 var PlaylistBrowserTab = require('./PlaylistBrowserTab.jsx')
 var FileBrowserTab = require('./FileBrowserTab.jsx')
 var SettingsTab = require('./SettingsTab.jsx')
+var PlaylistBrowserActions = require('../../actions/PlaylistBrowserActions')
+var FileBrowserActions = require('../../actions/FileBrowserActions')
+
+var _overflows = function(parent, element){
+  var parentBounds = parent.getBoundingClientRect()
+  var elBounds = element.getBoundingClientRect()
+  var direction = 0
+  if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
+    direction = 1
+  }else if(elBounds.top < parentBounds.top){
+    direction = -1
+  }
+  return {
+    direction: direction,
+    parentBounds: parentBounds,
+    elBounds: elBounds
+  }
+}
 
 var Sidebar = React.createClass({
   render: function() {
@@ -29,18 +47,44 @@ var Sidebar = React.createClass({
   renderTabs: function(){
     return [
       <Tabs.Panel title={<i className="fa fa-fw fa-list"></i>} key="playlists">
-        <PlaylistBrowserTab isFocused={this.props.isOpen && this.props.selectedTab == 0}></PlaylistBrowserTab>
+        <PlaylistBrowserTab
+          handleScrollToElement={this.handleScrollToElement}
+          isFocused={this.props.isOpen && this.props.selectedTab == 0}/>
       </Tabs.Panel>,
       <Tabs.Panel title={<i className="fa fa-fw fa-folder-open-o"></i>} key="files">
-        <FileBrowserTab isFocused={this.props.isOpen && this.props.selectedTab == 1}></FileBrowserTab>
+        <FileBrowserTab
+          handleScrollToElement={this.handleScrollToElement}
+          isFocused={this.props.isOpen && this.props.selectedTab == 1}/>
       </Tabs.Panel>,
-      <Tabs.Panel title={<i className="fa fa-fw fa-gears"></i>} key="settings">
-        <SettingsTab isFocused={this.props.isOpen && this.props.selectedTab == 2}></SettingsTab>
+      <Tabs.Panel title={<i className="fa fa-fw fa-cog"></i>} key="settings">
+        <SettingsTab isFocused={this.props.isOpen && this.props.selectedTab == 2}/>
       </Tabs.Panel>
     ]
   },
-  handleAfter: function(){
+  handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu){
+    switch(selectedIndex){
+      case 1:
+        PlaylistBrowserActions.loadRoot()
+        break
+      case 2:
+        FileBrowserActions.loadRoot()
+        break
+    }
+  },
+  handleScrollToElement: function(state, list){
+    var wrapper = React.findDOMNode(this).querySelector('.tab-panel')
+    var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
+    if(!targetElement){
+      return
+    }
 
+    var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
+    if(direction < 0){
+      wrapper.scrollTop = targetElement.offsetTop
+    }else if(direction > 0){
+      var maxEls = Math.floor(parentBounds.height / elBounds.height)
+      wrapper.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
+    }
   }
 })
 

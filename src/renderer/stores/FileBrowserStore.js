@@ -1,18 +1,20 @@
 "use babel";
 
 var assign = require('object-assign')
+var path = require('path')
 var ipc = require('ipc')
 
+var FileTree = require('../util/FileTree')
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
-var PlaylistBrowserConstants = require('../constants/PlaylistBrowserConstants')
+var FileBrowserConstants = require('../constants/FileBrowserConstants')
 
 var CHANGE_EVENT = 'change'
 
-var PlaylistBrowserStore = assign({}, EventEmitter.prototype, {
+var FileBrowserStore = assign({}, EventEmitter.prototype, {
 
-  getPlaylistTree: function(){
-    return playa.playlistTree.flatten()
+  getFileTree: function(){
+    return playa.fileTree.flatten()
   },
 
   emitChange: function() {
@@ -35,19 +37,19 @@ var PlaylistBrowserStore = assign({}, EventEmitter.prototype, {
 
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
-      case PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT:
-        playa.playlistTree.loadRoot().then(()=>{
-          PlaylistBrowserStore.emitChange()
+      case FileBrowserConstants.LOAD_FILEBROWSER_ROOT:
+        playa.fileTree.loadRoot().then(()=>{
+          FileBrowserStore.emitChange()
         })
         break
-      case PlaylistBrowserConstants.EXPAND_PLAYLIST_NODES:
-        playa.playlistTree.expand(action.nodes).then(()=>{
-          PlaylistBrowserStore.emitChange()
+      case FileBrowserConstants.EXPAND_FILEBROWSER_NODES:
+        playa.fileTree.expand(action.nodes).then(()=>{
+          FileBrowserStore.emitChange()
         })
         break
-      case PlaylistBrowserConstants.COLLAPSE_PLAYLIST_NODES:
-        playa.playlistTree.collapse(action.nodes)
-        PlaylistBrowserStore.emitChange()
+      case FileBrowserConstants.COLLAPSE_FILEBROWSER_NODES:
+        playa.fileTree.collapse(action.nodes)
+        FileBrowserStore.emitChange()
         break
     }
 
@@ -56,4 +58,4 @@ var PlaylistBrowserStore = assign({}, EventEmitter.prototype, {
 
 })
 
-module.exports = PlaylistBrowserStore
+module.exports = FileBrowserStore

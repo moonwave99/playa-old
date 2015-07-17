@@ -1,15 +1,18 @@
 .tabs-navigation
   top size($playbackBarHeight)
+  height size($tabsBarHeight)
   line-height size($tabsBarHeight)
   background-color $tabsBarBgColor
   box-shadow 0 0 2rem rgba(0,0,0,.75)
   user-select none
+  overflow-x auto
   clearfix()
   .tabs-menu
     list-style none
     padding 0
     margin 0
     font-size size($tabsBarFontSize)
+    clearfix()
     .tabs-menu-item
       float left
       a
@@ -24,6 +27,16 @@
       &.is-active
         a
           background-color $tabsBgActiveColor
+
+.playa-main-wrapper
+  .tabs-navigation
+    width "calc(100vw - %s)" % size($sidebarClosedWidth)
+    .tabs-menu
+      width "calc(100vw - %s)" % size($sidebarClosedWidth)
+.sidebar-open
+  .playa-main-wrapper
+    .tabs-navigation
+      width "calc(100vw - %s)" % size($sidebarWidth)
 
 .sidebar
   .tabs-navigation
