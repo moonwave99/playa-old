@@ -113,6 +113,16 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           })
         }
         break
+      case OpenPlaylistConstants.ADD_FOLDER_AT_POSITION:
+        var playlist = _getSelectedPlaylist()
+        if(action.folder && playlist) {
+          playlist.addFolderAtPosition(action.folder, action.positionId).then(()=>{
+            OpenPlaylistStore.emitChange()
+          }).catch((err)=>{
+            console.error(err.stack)
+          })
+        }
+        break
       case OpenPlaylistConstants.PLAY_ALBUM:
         var playlist = _playlists[action.playlist.id]
         if(action.playlist.id !== _activeIndex){

@@ -10,9 +10,6 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var PlayerStore = require('../../stores/PlayerStore')
 
-var DragDropContext = require('react-dnd').DragDropContext
-var HTML5Backend = require('react-dnd/modules/backends/HTML5')
-
 function getPlayerState(){
   var playerState = PlayerStore.getPlaybackInfo()
   return {
@@ -42,7 +39,7 @@ var AlbumPlaylist = React.createClass({
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },
   render: function() {
-    var albums = this.props.playlist.getItems().map((album, index)=>{
+    var albums = this.props.playlist.getItems().map( (album, index)=> {
       var isOpened = this.props.openElements.indexOf(album.id) > -1
       var isSelected = this.props.selection.indexOf(album.id) > -1
 
@@ -57,6 +54,7 @@ var AlbumPlaylist = React.createClass({
           handleClick={this.handleClick}
           handleMenuLinkClick={this.handleMenuLinkClick}
           handleDragHover={this.handleDragHover}
+          handleFolderDrop={this.handleFolderDrop}
           playTrack={this.playTrack}
           currentItem={this.state.currentItem}
           moveAlbum={this.moveAlbum}
@@ -89,6 +87,9 @@ var AlbumPlaylist = React.createClass({
       dragHover: item.props.album.id
     })
   },
+  handleFolderDrop: function(folder, afterId){
+    OpenPlaylistActions.addFolderAtPosition(folder, afterId)
+  },
   moveAlbum: function(id, afterId){
     OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
   },
@@ -101,4 +102,4 @@ var AlbumPlaylist = React.createClass({
   },
 })
 
-module.exports = DragDropContext(HTML5Backend)(AlbumPlaylist)
+module.exports = AlbumPlaylist

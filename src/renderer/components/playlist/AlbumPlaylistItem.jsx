@@ -18,7 +18,8 @@ const albumSource = {
   beginDrag(props) {
     return {
       id: props.itemKey,
-      originalIndex: props.index
+      originalIndex: props.index,
+      source: DropTargetConstants.PLAYLIST_ALBUM
     }
   },
   endDrag(props, monitor) {
@@ -27,20 +28,29 @@ const albumSource = {
     if (!didDrop) {
       props.moveAlbum(droppedId, originalIndex)
     }
-    // #TODO find a React-ive way.
-    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
   }
 }
 
 const albumTarget = {
   drop(props, monitor) {
-    const draggedId = monitor.getItem().id
-    if (draggedId !== props.id) {
-      props.moveAlbum(draggedId, props.itemKey)
+    var sourceItem = monitor.getItem()
+    switch(sourceItem.source){
+      case DropTargetConstants.FILEBROWSER_FOLDER:
+        props.handleFolderDrop(sourceItem.node.path, props.itemKey)
+        break
+      case DropTargetConstants.PLAYLIST_ALBUM:
+        const draggedId = monitor.getItem().id
+        if (draggedId !== props.id) {
+          props.moveAlbum(draggedId, props.itemKey)
+        }
+        break
     }
+    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
   },
   hover(props, monitor, component) {
-    component.handleDragHover()
+    _.forEach(document.querySelectorAll('.drag-over'), e => e.classList.remove('drag-over') )
+    React.findDOMNode(component).classList.add('drag-over')
+    // component.handleDragHover()
   }
 }
 
@@ -193,10 +203,13 @@ var AlbumPlaylistItem = React.createClass({
   },
   updateCover: function(cover){
     this.setState({ cover: cover })
-  },
+  }
 })
 
-AlbumPlaylistItem = DropTarget(DropTargetConstants.PLAYLIST_ALBUM, albumTarget, connect => ({
+AlbumPlaylistItem = DropTarget([
+    DropTargetConstants.PLAYLIST_ALBUM,
+    DropTargetConstants.FILEBROWSER_FOLDER
+  ], albumTarget, connect => ({
   connectDropTarget: connect.dropTarget(),
 }))(AlbumPlaylistItem)
 

@@ -10,6 +10,7 @@ var FileBrowserTab = require('./FileBrowserTab.jsx')
 var SettingsTab = require('./SettingsTab.jsx')
 var PlaylistBrowserActions = require('../../actions/PlaylistBrowserActions')
 var FileBrowserActions = require('../../actions/FileBrowserActions')
+var SidebarActions = require('../../actions/SidebarActions')
 
 var _overflows = function(parent, element){
   var parentBounds = parent.getBoundingClientRect()
@@ -62,14 +63,7 @@ var Sidebar = React.createClass({
     ]
   },
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu){
-    switch(selectedIndex){
-      case 1:
-        PlaylistBrowserActions.loadRoot()
-        break
-      case 2:
-        FileBrowserActions.loadRoot()
-        break
-    }
+    SidebarActions.select(this.props.tabs[selectedIndex-1])
   },
   handleScrollToElement: function(state, list){
     var wrapper = React.findDOMNode(this).querySelector('.tab-panel')

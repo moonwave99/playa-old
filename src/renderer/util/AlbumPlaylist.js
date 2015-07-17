@@ -73,7 +73,14 @@ module.exports = class AlbumPlaylist{
     })
   }
   addFolder(folder){
-    return playa.fileLoader.loadFolder(folder).bind(this).then(this._process)
+    return playa.fileLoader.loadFolder(folder).bind(this).then((files)=>{
+      return this._process(files)
+    })
+  }
+  addFolderAtPosition(folder, positionId){
+    return playa.fileLoader.loadFolder(folder).bind(this).then((files)=>{
+      return this._process(files, { insertAfter: positionId })
+    })
   }
   clear(){
     this.items = new DoublyLinkedList()
@@ -93,16 +100,36 @@ module.exports = class AlbumPlaylist{
       this.items.add(_.findWhere(items, { id: id }))
     })
   }
-  _process(files){
+  _process(files, opts){
     var albums = _.groupBy(files, (file)=>{
       return file.metadata.album ? file.metadata.album.toLowerCase() : '_noalbum'
     })
-    _.forEach(albums, (tracks, key)=>{
-      tracks = tracks.map( track => new PlaylistItem(track) )
-      this.items.add(new Album({
-        id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
-        tracks: tracks
-      }))
-    })
+    if(opts && opts.insertAfter){
+      var positionIndex = this.indexOf(opts.insertAfter)
+      var [previousAlbums, nextAlbums] =  _.partition(this.getItems(), (item, index)=>{
+        return index < positionIndex
+      })
+      var processedAlbums =  _.map(albums, (tracks, key)=>{
+        tracks = tracks.map( track => new PlaylistItem(track) )
+        return new Album({
+          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          tracks: tracks
+        })
+      })
+      this.items = new DoublyLinkedList()
+      _.uniq(
+        previousAlbums.concat(processedAlbums, nextAlbums),
+        (album => album.id)
+      ).forEach( a => this.items.add(a) )
+    }else{
+      _.forEach(albums, (tracks, key)=>{
+        tracks = tracks.map( track => new PlaylistItem(track) )
+        this.items.add(new Album({
+          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          tracks: tracks
+        }))
+      })
+    }
+    return true
   }
 }

@@ -4,7 +4,24 @@ var _ = require('lodash')
 var cx = require('classnames')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
+var DragSource = require('react-dnd').DragSource
 var TreeView = require('react-treeview')
+
+var DropTargetConstants = require('../../constants/DropTargetConstants')
+
+const fileBrowserTreeNodeSource = {
+  beginDrag(props) {
+    return {
+      id: props.itemKey,
+      originalIndex: props.index,
+      node: props.node,
+      source: DropTargetConstants.FILEBROWSER_FOLDER
+    }
+  },
+  endDrag(props, monitor) {
+
+  }
+}
 
 var FileBrowserTreeNode = React.createClass({
   renderNodeArrow: function(){
@@ -42,7 +59,7 @@ var FileBrowserTreeNode = React.createClass({
     var style = {
       paddingLeft: ( node.depth * 1 + ( node.isDirectory() ? 0 : 1.25) + 0.5 )+ 'rem'
     }
-    return (
+    return this.props.connectDragSource(
       <li
         data-id={node.id}
         style={style}
@@ -65,5 +82,10 @@ var FileBrowserTreeNode = React.createClass({
     this.props.handleArrowClick(event, this)
   }
 })
+
+FileBrowserTreeNode = DragSource(DropTargetConstants.FILEBROWSER_FOLDER, fileBrowserTreeNodeSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+}))(FileBrowserTreeNode)
 
 module.exports = FileBrowserTreeNode

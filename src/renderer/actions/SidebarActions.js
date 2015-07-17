@@ -8,7 +8,7 @@ var SidebarActions = {
     AppDispatcher.dispatch({
       actionType: SidebarConstants.TOGGLE
     })
-  }
+  },
   select: function(tab){
     AppDispatcher.dispatch({
       actionType: SidebarConstants.SELECT_TAB,

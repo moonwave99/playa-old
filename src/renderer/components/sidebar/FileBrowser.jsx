@@ -21,6 +21,7 @@ var FileBrowser = React.createClass({
         key={node.id}
         itemKey={node.id}
         node={node}
+        index={index}
         handleClick={this.handleClick}
         handleDoubleClick={this.handleDoubleClick}
         handleArrowClick={this.handleArrowClick}
@@ -35,7 +36,7 @@ var FileBrowser = React.createClass({
     })
     return (
       <ol className={classes}>
-        { this.props.tree.map( i => this.renderNode(i) ) }
+        { this.props.tree.map( (i, index) => this.renderNode(i, index) ) }
       </ol>
     )
   },

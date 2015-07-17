@@ -7,6 +7,10 @@ var key = require('keymaster')
 
 var React = require('react')
 var Tabs = require('react-simpletabs')
+
+var DragDropContext = require('react-dnd').DragDropContext
+var HTML5Backend = require('react-dnd/modules/backends/HTML5')
+
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
 var Sidebar = require('./Sidebar/Sidebar.jsx')
@@ -30,7 +34,7 @@ function getOpenPlaylistState(){
   }
 }
 
-module.exports = React.createClass({
+var Main = React.createClass({
   getInitialState: function() {
     return _.merge({ sidebar: getSidebarState() }, getOpenPlaylistState())
   },
@@ -45,9 +49,6 @@ module.exports = React.createClass({
     SidebarStore.removeChangeListener(this._onSidebarChange)
     key.unbind('space')
     _.range(9).forEach( n => key.unbind('⌘+' + n))
-  },
-  handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
-    OpenPlaylistActions.select(selectedIndex-1)
   },
   render: function() {
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
@@ -76,6 +77,9 @@ module.exports = React.createClass({
       </div>
     )
   },
+  handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
+    OpenPlaylistActions.select(selectedIndex-1)
+  },
   handleCommandNumberPress: function(event){
     var index = event.which - 48
     if(index == 0){
@@ -94,3 +98,5 @@ module.exports = React.createClass({
     this.setState({ sidebar: getSidebarState()})
   }
 })
+
+module.exports = DragDropContext(HTML5Backend)(Main)
