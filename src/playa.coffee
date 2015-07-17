@@ -38,11 +38,13 @@ module.exports = class Playa
     @fileTree = new FileTree
       fileBrowser:  @fileBrowser
       rootFolder:   @options.settings.fileBrowserRoot
+      rootName:     path.basename @options.settings.fileBrowserRoot
       filter:       'directory'
 
     @playlistTree = new FileTree
       fileBrowser:  @fileBrowser
       rootFolder:   @options.settings.playlistRoot
+      rootName:     'Playlists'
       filter:       'm3u'
 
     @playlistLoader = new PlaylistLoader

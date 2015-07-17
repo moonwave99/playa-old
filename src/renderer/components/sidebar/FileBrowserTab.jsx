@@ -18,6 +18,22 @@ var FileBrowserOnSteroids = NavGenerator(FileBrowser, 'fileBrowser',
   }
 )
 
+var _overflows = function(parent, element){
+  var parentBounds = parent.getBoundingClientRect()
+  var elBounds = element.getBoundingClientRect()
+  var direction = 0
+  if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
+    direction = 1
+  }else if(elBounds.top < parentBounds.top){
+    direction = -1
+  }
+  return {
+    direction: direction,
+    parentBounds: parentBounds,
+    elBounds: elBounds
+  }
+}
+
 var FileBrowserTab = React.createClass({
   getInitialState: function(){
     return {
@@ -51,7 +67,7 @@ var FileBrowserTab = React.createClass({
 
   },
   handleScrollToElement: function(state, list){
-
+    this.props.handleScrollToElement(state, list)
   },
   handleArrowClick: function(event, item){
     if(item.props.collapsed){

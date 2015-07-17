@@ -40,10 +40,11 @@ var FileBrowserTreeNode = React.createClass({
       'has-arrow'     : node.isDirectory()
     })
     var style = {
-      paddingLeft: ( node.depth * 1 + 1 + ( node.isDirectory() ? 0 : 1.25) )+ 'rem'
+      paddingLeft: ( node.depth * 1 + ( node.isDirectory() ? 0 : 1.25) + 0.5 )+ 'rem'
     }
     return (
       <li
+        data-id={node.id}
         style={style}
         className={classes}
         onClick={this.handleClick}

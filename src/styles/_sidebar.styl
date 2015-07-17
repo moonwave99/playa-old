@@ -1,13 +1,11 @@
 .sidebar
   width size($sidebarWidth)
-  height "calc(100vh - %s - %s)" % (size($footerHeight) size($playbackBarHeight))
   backface-visibility hidden
   user-select none
   position absolute
   top size($playbackBarHeight)
   transition transform .2s linear
   background-color $sidebarBgColor
-  overflow auto
   &.sidebar-left
     transform 'translateX(calc(%s - %s))' % ($sidebarClosedWidth $sidebarWidth)
     left 0
@@ -27,18 +25,23 @@
         .fa
           color $sidebarIconColor
           font-size size($sidebarIconSize)
+  .tab-panel
+    height "calc(100vh - %s - %s - %s)" % (size($playbackBarHeight) size($tabsBarHeight) size($footerHeight))
+    overflow auto
   .browser
     margin 0
-    padding .5rem 0 0 1rem
+    padding 0
     overflow-y hidden
     line-height size($playlistBrowserLineHeight)
     font-size size($playlistBrowserFontSize)
     display inline-block
     min-width 100%
+    position relative
     .browser-node
       cursor pointer
       white-space nowrap
       transition background .1s linear
+      padding-right 1rem
       &:hover
         background-color rgba(255,255,255,.05)
       &.selected

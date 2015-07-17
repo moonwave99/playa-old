@@ -12,7 +12,7 @@ module.exports = class FileTree {
     this.rootNode = null
     this.filter = options.filter || 'directory'
     this.rootNode = new FileTreeNode({
-      name: '/',
+      name: options.rootName || '/',
       path: this.rootFolder,
       relativePath: '',
       depth: 0

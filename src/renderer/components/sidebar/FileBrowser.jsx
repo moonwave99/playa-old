@@ -25,8 +25,7 @@ var FileBrowser = React.createClass({
         handleDoubleClick={this.handleDoubleClick}
         handleArrowClick={this.handleArrowClick}
         isSelected={this.props.selection.indexOf(node.id) > -1}
-        collapsed={node.isLeaf()}
-        ></FileBrowserTreeNode>
+        collapsed={node.isLeaf()}/>
     )
   },
   render: function() {
@@ -36,7 +35,7 @@ var FileBrowser = React.createClass({
     })
     return (
       <ol className={classes}>
-        { this.props.tree.map( i => this.renderNode(i) )}
+        { this.props.tree.map( i => this.renderNode(i) ) }
       </ol>
     )
   },

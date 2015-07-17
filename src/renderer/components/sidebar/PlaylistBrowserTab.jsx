@@ -58,7 +58,7 @@ var PlaylistBrowserTab = React.createClass({
     }
   },
   handleScrollToElement: function(state, list){
-
+    this.props.handleScrollToElement(state, list)
   },
   handleDoubleClick: function(event, item){
     this._openPlaylist(item.props.node.path)
