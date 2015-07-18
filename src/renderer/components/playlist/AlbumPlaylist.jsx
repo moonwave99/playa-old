@@ -68,8 +68,8 @@ var AlbumPlaylist = React.createClass({
     })
 
     return (
-      <div>
-        <ol className="albums list-unstyled" onClick={this.handleGlobalClick}>{albums}</ol>
+      <div onClick={this.handleGlobalClick}>
+        <ol className="albums list-unstyled">{albums}</ol>
         <DropArea
           moveAlbum={this.moveAlbum}
           handleFolderDrop={this.handleFolderDrop}
