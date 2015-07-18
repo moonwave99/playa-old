@@ -92,6 +92,10 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         _playlists = _playlists.concat(action.playlists.filter((p)=>{
           return newPlaylists.indexOf(p.id) > -1
         }))
+        // select first of added playlist set
+        if(newPlaylists.length){
+          _selectedIndex = _.findIndex(_playlists, { id: newPlaylists[0] })
+        }
         OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
