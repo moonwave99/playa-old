@@ -13,7 +13,7 @@ module.exports = class Album{
     this._folder = this.tracks.length && path.dirname(this.tracks[0].filename)
     this._title = this.tracks[0].metadata.album || '_noalbum'
     this._year = this.tracks[0].metadata.year
-    this._artists = _.uniq(this.tracks.map( i => i.metadata.artist))
+    this._artists = _.uniq(this.tracks.map( t => t.metadata.artist), a => a.toLowerCase() )
     this._isCompilation = (this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i))
       || this._artists.length > _variousArtistThreshold
     this._isSplit = this._artists.length > 1 && !this._isCompilation
