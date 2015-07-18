@@ -17,6 +17,7 @@
 
   .albums
     position relative
+    margin 0
     .album
       height size($albumItemClosedHeight)
       vertical-align middle
@@ -174,3 +175,13 @@
           .track-duration
             float right
             margin-right 1rem
+
+  .drop-area
+    height size($dropAreaHeight)
+    line-height size($dropAreaHeight)
+    text-align center
+    color $dropAreaTextColor
+    font-size size($dropAreaFontSize)
+    transition background .2s ease-in-out
+    &.over
+      background-color $dropAreaHoverBgColor

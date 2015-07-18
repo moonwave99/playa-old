@@ -19,6 +19,12 @@ module.exports = class AlbumPlaylist{
     this.loaded = false
     this.lastScrolledAlbum = null
   }
+  getFirst(){
+    return this.items.getFirst()
+  }
+  getLast(){
+    return this.items.getLast()
+  }
   getPrevious(album){
     return this.items.getPrevious(album)
   }

@@ -14,10 +14,6 @@ var DragDropConstants = require('../../constants/DragDropConstants')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 
-var _removeAlbumDragOver = function(){
-  _.forEach(document.querySelectorAll('.drag-over'), (e)=> e.classList.remove('drag-over', 'drag-over-bottom', 'drag-over-top') )
-}
-
 const albumSource = {
   beginDrag(props) {
     return {
@@ -30,7 +26,7 @@ const albumSource = {
     const { id: droppedId, originalIndex } = monitor.getItem()
     const didDrop = monitor.didDrop()
     if (!didDrop) {
-      _removeAlbumDragOver()
+      props.handleDragEnd()
     }
   }
 }
@@ -49,10 +45,10 @@ const albumTarget = {
         }
         break
     }
-    _removeAlbumDragOver()
+    props.handleDragEnd()
   },
   hover(props, monitor, component) {
-    _removeAlbumDragOver()
+    props.handleDragEnd()
     React.findDOMNode(component).classList.add('drag-over', props.index < monitor.getItem().originalIndex ? 'drag-over-top' : 'drag-over-bottom')
   }
 }

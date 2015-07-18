@@ -10,6 +10,8 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var PlayerStore = require('../../stores/PlayerStore')
 
+var DropArea = require('./DropArea.jsx')
+
 function getPlayerState(){
   var playerState = PlayerStore.getPlaybackInfo()
   return {
@@ -53,6 +55,7 @@ var AlbumPlaylist = React.createClass({
           handleClick={this.handleClick}
           handleMenuLinkClick={this.handleMenuLinkClick}
           handleFolderDrop={this.handleFolderDrop}
+          handleDragEnd={this.handleDragEnd}
           playTrack={this.playTrack}
           currentItem={this.state.currentItem}
           moveAlbum={this.moveAlbum}
@@ -65,7 +68,13 @@ var AlbumPlaylist = React.createClass({
     })
 
     return (
-      <ol className="albums list-unstyled" onClick={this.handleGlobalClick}>{albums}</ol>
+      <div>
+        <ol className="albums list-unstyled" onClick={this.handleGlobalClick}>{albums}</ol>
+        <DropArea
+          moveAlbum={this.moveAlbum}
+          handleFolderDrop={this.handleFolderDrop}
+          handleDragEnd={this.handleDragEnd}/>
+      </div>
     )
   },
   handleGlobalClick: function(event){
@@ -80,9 +89,21 @@ var AlbumPlaylist = React.createClass({
     })
   },
   handleFolderDrop: function(folder, afterId){
-    OpenPlaylistActions.addFolderAtPosition(folder, afterId)
+    if(!afterId){
+      OpenPlaylistActions.addFolder(folder)
+    }else{
+      OpenPlaylistActions.addFolderAtPosition(folder, afterId)
+    }
+  },
+  handleDragEnd: function(){
+    var node = React.findDOMNode(this)
+    _.forEach(node.querySelectorAll('.drag-over'), (e)=> e.classList.remove('drag-over', 'drag-over-bottom', 'drag-over-top') )
+    node.querySelector('.drop-area').classList.remove('over')
   },
   moveAlbum: function(id, afterId, position){
+    if(!afterId){
+      afterId = this.props.playlist.getLast().id
+    }
     if(id != afterId){
       OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId, position)
     }
