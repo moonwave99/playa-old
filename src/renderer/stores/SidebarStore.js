@@ -44,8 +44,13 @@ var SidebarStore = assign({}, EventEmitter.prototype, {
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
       case SidebarConstants.SELECT_TAB:
-        _isOpen = true
-        _selectedTab = _tabs.indexOf(action.tab)
+        var targetTab = _tabs.indexOf(action.tab)
+        if(_isOpen && _selectedTab == targetTab){
+          _isOpen = false
+        }else{
+          _isOpen = true
+          _selectedTab = targetTab
+        }
         SidebarStore.emitChange()
         break
       case SidebarConstants.TOGGLE:
