@@ -7,7 +7,7 @@ var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
 var TreeView = require('react-treeview')
 
-var DropTargetConstants = require('../../constants/DropTargetConstants')
+var DragDropConstants = require('../../constants/DragDropConstants')
 
 const fileBrowserTreeNodeSource = {
   beginDrag(props) {
@@ -15,7 +15,7 @@ const fileBrowserTreeNodeSource = {
       id: props.itemKey,
       originalIndex: props.index,
       node: props.node,
-      source: DropTargetConstants.FILEBROWSER_FOLDER
+      source: DragDropConstants.FILEBROWSER_FOLDER
     }
   },
   endDrag(props, monitor) {
@@ -83,7 +83,7 @@ var FileBrowserTreeNode = React.createClass({
   }
 })
 
-FileBrowserTreeNode = DragSource(DropTargetConstants.FILEBROWSER_FOLDER, fileBrowserTreeNodeSource, (connect, monitor) => ({
+FileBrowserTreeNode = DragSource(DragDropConstants.FILEBROWSER_FOLDER, fileBrowserTreeNodeSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging()
 }))(FileBrowserTreeNode)

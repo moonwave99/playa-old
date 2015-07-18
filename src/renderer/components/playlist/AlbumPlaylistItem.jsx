@@ -10,7 +10,7 @@ var key = require('keymaster')
 var moment = require('moment')
 require("moment-duration-format")
 
-var DropTargetConstants = require('../../constants/DropTargetConstants')
+var DragDropConstants = require('../../constants/DragDropConstants')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 
@@ -23,7 +23,7 @@ const albumSource = {
     return {
       id: props.itemKey,
       originalIndex: props.index,
-      source: DropTargetConstants.PLAYLIST_ALBUM
+      source: DragDropConstants.PLAYLIST_ALBUM
     }
   },
   endDrag(props, monitor) {
@@ -39,10 +39,10 @@ const albumTarget = {
   drop(props, monitor) {
     var sourceItem = monitor.getItem()
     switch(sourceItem.source){
-      case DropTargetConstants.FILEBROWSER_FOLDER:
+      case DragDropConstants.FILEBROWSER_FOLDER:
         props.handleFolderDrop(sourceItem.node.path, props.itemKey)
         break
-      case DropTargetConstants.PLAYLIST_ALBUM:
+      case DragDropConstants.PLAYLIST_ALBUM:
         const draggedId = monitor.getItem().id
         if (draggedId !== props.id) {
           props.moveAlbum(draggedId, props.itemKey, props.index < monitor.getItem().originalIndex ? 'before' : 'after')
@@ -206,13 +206,13 @@ var AlbumPlaylistItem = React.createClass({
 })
 
 AlbumPlaylistItem = DropTarget([
-    DropTargetConstants.PLAYLIST_ALBUM,
-    DropTargetConstants.FILEBROWSER_FOLDER
+    DragDropConstants.PLAYLIST_ALBUM,
+    DragDropConstants.FILEBROWSER_FOLDER
   ], albumTarget, connect => ({
   connectDropTarget: connect.dropTarget(),
 }))(AlbumPlaylistItem)
 
-AlbumPlaylistItem = DragSource(DropTargetConstants.PLAYLIST_ALBUM, albumSource, (connect, monitor) => ({
+AlbumPlaylistItem = DragSource(DragDropConstants.PLAYLIST_ALBUM, albumSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging()
 }))(AlbumPlaylistItem)
