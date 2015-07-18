@@ -1,0 +1,25 @@
+.context-menu
+  position absolute
+  top 3.5rem
+  right 4rem
+  width size($albumContextMenuWidth)
+  background-color $albumContextMenuBgColor
+  border-radius .5rem
+  line-height 2rem
+  padding 0 1rem
+  font-size .9rem
+  z-index 1050
+  margin 0
+  padding 0
+  li
+    vertical-align middle
+    box-shadow inset 0 -1px rgba($mainColor, .1)
+    &:last-child
+      box-shadow none
+    a
+      display block
+      padding 0 1rem
+      transition background-color .1s ease-in
+      &:hover
+        color $mainColor
+        background-color lighten($albumContextMenuBgColor, 25%)
