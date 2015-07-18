@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var shell = require('shell')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
@@ -99,6 +100,41 @@ var AlbumPlaylistItem = React.createClass({
       <ol className="list-unstyled tracklist">{ renderedTracklist }</ol>
     )
   },
+  renderContextMenu: function(){
+    var actions = [
+      {
+        'label': 'Reveal in Finder',
+        'handler': function(event){
+          event.stopPropagation()
+          shell.openExternal('file://' + this.props.album.getFolder())
+        }.bind(this)
+      },
+      {
+        'label': 'Search on Discogs',
+        'handler': function(event){
+          event.stopPropagation()
+          this.openLink('http://www.discogs.com/search?type=release&q=')
+        }.bind(this)
+      },
+      {
+        'label': 'Search on RYM',
+        'handler': function(event){
+          event.stopPropagation()
+          this.openLink('https://rateyourmusic.com/search?searchtype=l&searchterm=')
+        }.bind(this)
+      },
+      {
+        'label': 'Search on Last.fm',
+        'handler': function(event){
+          event.stopPropagation()
+          this.openLink('http://www.last.fm/search?type=album&q=')
+        }.bind(this)
+      }
+    ]
+    return (
+      <ContextMenu actions={actions}/>
+    )
+  },
   render: function() {
     var isPlaying = this.props.album.contains(this.props.currentItem.id)
     var classes = cx({
@@ -122,7 +158,7 @@ var AlbumPlaylistItem = React.createClass({
           <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
           <a href="#" className="menu-link" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
           <span className="year">{this.props.album.getYear()}</span>
-          { this.props.isMenuOpened ? <ContextMenu album={this.props.album}/> : null }
+          { this.props.isMenuOpened ? this.renderContextMenu() : null }
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </li>
@@ -195,6 +231,9 @@ var AlbumPlaylistItem = React.createClass({
     key.unbind('down', scope)
     key.unbind('left', scope)
     key.unbind('enter', scope)
+  },
+  openLink: function(base){
+    shell.openExternal(base + encodeURIComponent(this.props.album.getArtist() + ' ' + this.props.album.getTitle()))
   },
   updateCover: function(cover){
     this.setState({ cover: cover })
