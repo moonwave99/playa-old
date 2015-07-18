@@ -67,13 +67,13 @@ module.exports = {
       id: id
     })
   },
-  reorder: function(id, from, to, at){
+  reorder: function(id, from, to, position){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.REORDER_PLAYLIST,
       id: id,
       from: from,
       to: to,
-      at: at
+      position: position
     })
   }
 }

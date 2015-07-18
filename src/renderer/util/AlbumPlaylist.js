@@ -79,7 +79,7 @@ module.exports = class AlbumPlaylist{
   }
   addFolderAtPosition(folder, positionId){
     return playa.fileLoader.loadFolder(folder).bind(this).then((files)=>{
-      return this._process(files, { insertAfter: positionId })
+      return this._process(files, { insertAt: positionId })
     })
   }
   clear(){
@@ -89,26 +89,31 @@ module.exports = class AlbumPlaylist{
   indexOf(id){
     return _.findIndex(this.getItems(), { id: id })
   }
-  reorder(albumFrom, albumTo){
-    var items = this.getItems()
-    var albumIds = items.map( i => i.id )
-    var indexFrom = albumIds.indexOf(albumFrom)
-    var indexTo = albumIds.indexOf(albumTo)
-    albumIds.splice(indexTo, 0, albumIds.splice(indexFrom, 1)[0])
-    this.items = new DoublyLinkedList()
-    albumIds.forEach((id)=>{
-      this.items.add(_.findWhere(items, { id: id }))
-    })
+  reorder(albumFromId, albumToId, position){
+    var albumFrom = this.getAlbumById(albumFromId)
+    var indexFrom = this.indexOf(albumFromId)
+    var indexTo = this.indexOf(albumToId)
+
+    if(position == 'after'){
+      indexTo++
+    }
+    if(indexTo >= this.items.getLength()){
+      this.items.add(albumFrom)
+    }else{
+      this.items.addAt(albumFrom, indexTo)
+    }
+    if(indexFrom > indexTo){
+      this.items.removeAt(indexFrom+1)
+    }else{
+      this.items.removeAt(indexFrom)
+    }
   }
   _process(files, opts){
     var albums = _.groupBy(files, (file)=>{
       return file.metadata.album ? file.metadata.album.toLowerCase() : '_noalbum'
     })
-    if(opts && opts.insertAfter){
-      var positionIndex = this.indexOf(opts.insertAfter)
-      var [previousAlbums, nextAlbums] =  _.partition(this.getItems(), (item, index)=>{
-        return index < positionIndex
-      })
+    if(opts && opts.insertAt){
+      var positionIndex = this.indexOf(opts.insertAt)
       var processedAlbums =  _.map(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         return new Album({
@@ -116,11 +121,7 @@ module.exports = class AlbumPlaylist{
           tracks: tracks
         })
       })
-      this.items = new DoublyLinkedList()
-      _.uniq(
-        previousAlbums.concat(processedAlbums, nextAlbums),
-        (album => album.id)
-      ).forEach( a => this.items.add(a) )
+      this.items.addArrayAt(processedAlbums, positionIndex)
     }else{
       _.forEach(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )

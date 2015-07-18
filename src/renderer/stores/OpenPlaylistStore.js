@@ -156,7 +156,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.REORDER_PLAYLIST:
         var playlist = _.findWhere(_playlists, { id: action.id })
         if(playlist){
-          playlist.reorder(action.from, action.to)
+          playlist.reorder(action.from, action.to, action.position)
           OpenPlaylistStore.emitChange()
         }
         break

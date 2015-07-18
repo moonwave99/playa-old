@@ -28,8 +28,7 @@ var AlbumPlaylist = React.createClass({
   },
   getInitialState: function(){
     return _.extend({
-      openMenu: null,
-      dragHover: null,
+      openMenu: null
     }, getPlayerState())
   },
   componentDidMount: function(){
@@ -53,7 +52,6 @@ var AlbumPlaylist = React.createClass({
           focusParent={this.props.focusParent}
           handleClick={this.handleClick}
           handleMenuLinkClick={this.handleMenuLinkClick}
-          handleDragHover={this.handleDragHover}
           handleFolderDrop={this.handleFolderDrop}
           playTrack={this.playTrack}
           currentItem={this.state.currentItem}
@@ -62,8 +60,7 @@ var AlbumPlaylist = React.createClass({
           isOpened={isOpened}
           isSelected={isSelected}
           isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}
-          isMenuOpened={this.state.openMenu == album.id}
-          isDragHover={this.state.dragHover == album.id}/>
+          isMenuOpened={this.state.openMenu == album.id}/>
       )
     })
 
@@ -82,16 +79,13 @@ var AlbumPlaylist = React.createClass({
       openMenu: item.props.itemKey
     })
   },
-  handleDragHover: function(item){
-    this.setState({
-      dragHover: item.props.album.id
-    })
-  },
   handleFolderDrop: function(folder, afterId){
     OpenPlaylistActions.addFolderAtPosition(folder, afterId)
   },
-  moveAlbum: function(id, afterId){
-    OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId)
+  moveAlbum: function(id, afterId, position){
+    if(id != afterId){
+      OpenPlaylistActions.reorder(this.props.playlist.id, id, afterId, position)
+    }
   },
   playTrack: function(album, trackId){
     OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
