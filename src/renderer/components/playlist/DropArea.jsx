@@ -35,7 +35,7 @@ var DropArea = React.createClass({
     })
     return this.props.connectDropTarget(
       <div className={classes}>
-        <span className="text">Drop your content here!</span>
+        <span className="text">Drop albums here!</span>
       </div>
     )
   }
