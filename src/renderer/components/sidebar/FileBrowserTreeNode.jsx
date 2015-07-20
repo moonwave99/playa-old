@@ -65,7 +65,8 @@ var FileBrowserTreeNode = React.createClass({
         style={style}
         className={classes}
         onClick={this.handleClick}
-        onDoubleClick={this.handleDoubleClick}>
+        onDoubleClick={this.handleDoubleClick}
+        onContextMenu={this.handleContextMenu}>
         { node.isDirectory() ? this.renderNodeArrow() : null }
         { this.renderNodeLabel() }
       </li>
@@ -76,6 +77,9 @@ var FileBrowserTreeNode = React.createClass({
   },
   handleDoubleClick(event){
     this.props.handleDoubleClick && this.props.handleDoubleClick(event, this)
+  },
+  handleContextMenu(event){
+    this.props.handleContextMenu && this.props.handleContextMenu(event, this)
   },
   handleArrowClick(event){
     event.stopPropagation()

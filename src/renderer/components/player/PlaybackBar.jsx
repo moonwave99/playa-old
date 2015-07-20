@@ -119,6 +119,8 @@ module.exports = React.createClass({
     this.setState(getPlayerState())
     this.state.album && playa.coverLoader.load(this.state.album)
       .then(this.updateCover)
-      .catch((err)=>{})
+      .catch((err)=>{
+        this.updateCover(false)
+      })
   }
 })

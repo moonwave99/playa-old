@@ -3,7 +3,9 @@
 var _ = require('lodash')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var key = require('keymaster')
+
+var KeyboardFocusStore = require('../stores/KeyboardFocusStore')
+var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
 
 module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
   getSelectedIds = getSelectedIds || function(component){
@@ -37,66 +39,39 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       }
     },
     componentDidMount() {
-      key('backspace, del', scopeName, this.handleDelKeyPress)
-      key('enter', scopeName, this.handleEnterKeyPress)
-      key('command+a', scopeName, this.handleSelectAllKeyPress)
-      if(this.props.allowMultipleSelection){
-        key('up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down', scopeName, this.handleArrowKeyPress)
-      }else{
-        key('up, down, alt+up, alt+down', scopeName, this.handleArrowKeyPress)
-      }
-      key('left, right', scopeName, this.handleLeftRightKeyPress)
-      key.setScope(scopeName)
+      KeyboardFocusStore.addChangeListener(this._onKeyboardFocusChange)
     },
     componentWillUnmount() {
-      key.unbind('backspace', scopeName)
-      key.unbind('del', scopeName)
-      key.unbind('enter', scopeName)
-      key.unbind('command+a', scopeName)
-      key.unbind('up', scopeName)
-      key.unbind('down', scopeName)
-      key.unbind('left', scopeName)
-      key.unbind('right', scopeName)
-      key.unbind('alt+up', scopeName)
-      key.unbind('alt+down', scopeName)
-      if(this.props.allowMultipleSelection){
-        key.unbind('shift+up', scopeName)
-        key.unbind('shift+down', scopeName)
-        key.unbind('shift+alt+up', scopeName)
-        key.unbind('shift+alt+down', scopeName)
-      }
+      KeyboardFocusStore.removeChangeListener(this._onKeyboardFocusChange)
     },
-    componentWillUpdate(nextProps, nextState){
-      this.props.handleScrollToElement(nextState, this.getIdList())
-      if(nextProps.isFocused){
-        this.focus()
+    componentDidUpdate(prevProps, prevState){
+      this.props.handleScrollToElement(this.state, this.getIdList())
+      if(this.props.isFocused){
+        this.onFocusRequest()
       }
     },
     render() {
       return (
-        <div onClick={this.handleFocusClick}>
-          <Component
-            handleClick={this.handleClick}
-            focusParent={this.focus}
-            closeElements={this.closeElements}
-            {...this.props}
-            {...this.state} />
-        </div>
+        <Component
+          handleClick={this.handleClick}
+          focusParent={this.onFocusRequest}
+          closeElements={this.closeElements}
+          {...this.props}
+          {...this.state} />
       )
     },
-    handleFocusClick(event){
-      this.focus()
-    },
-    focus(params = {}){
-      key.setScope(scopeName)
+    onFocusRequest(params = {}){
       if(params.id && params.direction){
         var ids = this.getIdList()
         var currentIndex = ids.indexOf(params.id)
         if(currentIndex < ids.length -1 && currentIndex > -1){
           this.setState({
-            selection : [ids[currentIndex + (params.direction == 'up' ? -1 : 1)]]
+            selection : [ids[currentIndex + (params.direction == 'up' ? 0 : 1)]]
           })
         }
+      }
+      if(params.requestFocus){
+        KeyboardFocusActions.setFocus(this.getHandlers(), scopeName)
       }
     },
     handleClick(event, item) {
@@ -134,9 +109,10 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       ]
       var newLow = low
       var newHi = hi
+      var direction = 0
       switch(event.which){
         case 38: // up
-          this.setState({ direction: -1 })
+          direction = -1
           if(event.shiftKey && event.altKey){
             newLow = 0
           }else if(event.shiftKey){
@@ -149,7 +125,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           }
           break
         case 40: // down
-          this.setState({ direction: 1 })
+          direction = 1
           if(event.shiftKey && event.altKey){
             newHi = ids.length-1
           }else if(event.shiftKey){
@@ -163,7 +139,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
           break
       }
       this.setState({
-        selection: ids.slice(newLow, newHi+1)
+        selection: ids.slice(newLow, newHi+1),
+        direction: direction
       })
     },
     handleLeftRightKeyPress(event){
@@ -198,6 +175,26 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
         openElements: _.difference(this.state.openElements, ids)
       })
       this.props.handleClose && this.props.handleClose(ids)
+    },
+    getHandlers(){
+      var handlers = {
+        'backspace, del'  : this.handleDelKeyPress.bind,
+        'enter'           : this.handleEnterKeyPress,
+        'command+a'       : this.handleSelectAllKeyPress,
+        'left, right'     : this.handleLeftRightKeyPress
+      }
+      if(this.props.allowMultipleSelection){
+        handlers['up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down'] = this.handleArrowKeyPress
+      }else{
+        handlers['up, down, alt+up, alt+down'] = this.handleArrowKeyPress
+      }
+      return handlers
+    },
+    _onKeyboardFocusChange: function(){
+      var currentScopeName = KeyboardFocusStore.getCurrentScopeName()
+      if(scopeName == currentScopeName){
+        KeyboardFocusActions.setFocus(this.getHandlers(), scopeName)
+      }
     }
   })
 

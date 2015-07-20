@@ -10,7 +10,11 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var NavGenerator = require('../../generators/Navigable.jsx')
 
-var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, 'albumPlaylist',
+var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
+var KeyboardFocusConstants = require('../../constants/KeyboardFocusConstants')
+var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+
+var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConstants.ALBUM_PLAYLIST,
   function(component){
     return component.props.playlist.getIds()
   },
@@ -41,11 +45,11 @@ var Playlist = React.createClass({
   },
   render: function() {
     var classes = cx({
-      'playlist'    : true,
-      'sidebar-open': !!this.props.isSidebarOpen
+      'playlist'      : true,
+      'sidebar-open'  : !!this.props.isSidebarOpen
     })
     return (
-      <div className={classes}>
+      <div className={classes} onClick={this.handleGlobalClick}>
         <AlbumPlaylistOnSteroids
           allowMultipleSelection={true}
           playlist={this.props.playlist}
@@ -55,6 +59,9 @@ var Playlist = React.createClass({
           handleScrollToElement={this.handleScrollToElement}/>
       </div>
     )
+  },
+  handleGlobalClick: function(event){
+    KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.ALBUM_PLAYLIST)
   },
   handleDelKeyPress: function(event, item, tracksToRemove){
     OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist)

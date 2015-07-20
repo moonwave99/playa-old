@@ -12,7 +12,10 @@ var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var NavGenerator = require('../../generators/Navigable.jsx')
 var AlbumPlaylist = require('../../util/AlbumPlaylist')
 
-var FileBrowserOnSteroids = NavGenerator(FileBrowser, 'playlistBrowser',
+var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
+var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+
+var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   function(component){
     return component.props.tree.map( i => i.id )
   },
@@ -35,18 +38,23 @@ var PlaylistBrowserTab = React.createClass({
   },
   render: function() {
     return (
-      <FileBrowserOnSteroids
-        allowMultipleSelection={true}
-        handleDelKeyPress={this.handleDelKeyPress}
-        handleEnterKeyPress={this.handleEnterKeyPress}
-        handleScrollToElement={this.handleScrollToElement}
-        handleDoubleClick={this.handleDoubleClick}
-        handleArrowClick={this.handleArrowClick}
-        handleOpen={this.handleOpen}
-        handleClose={this.handleClose}
-        isFocused={this.props.isFocused}
-        tree={this.state.playlistTree}/>
+      <div onClick={this.handleGlobalClick}>
+        <FileBrowserOnSteroids
+          allowMultipleSelection={true}
+          handleDelKeyPress={this.handleDelKeyPress}
+          handleEnterKeyPress={this.handleEnterKeyPress}
+          handleScrollToElement={this.handleScrollToElement}
+          handleDoubleClick={this.handleDoubleClick}
+          handleArrowClick={this.handleArrowClick}
+          handleOpen={this.handleOpen}
+          handleClose={this.handleClose}
+          isFocused={this.props.isFocused}
+          tree={this.state.playlistTree}/>
+      </div>
     )
+  },
+  handleGlobalClick: function(event){
+    KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.PLAYLIST_BROWSER)
   },
   handleDelKeyPress: function(event, item, elementsToRemove){
 

@@ -25,6 +25,7 @@ var FileBrowser = React.createClass({
         handleClick={this.handleClick}
         handleDoubleClick={this.handleDoubleClick}
         handleArrowClick={this.handleArrowClick}
+        handleContextMenu={this.handleContextMenu}
         isSelected={this.props.selection.indexOf(node.id) > -1}
         collapsed={node.isLeaf()}/>
     )
@@ -48,6 +49,9 @@ var FileBrowser = React.createClass({
   },
   handleDoubleClick: function(event, item){
     this.props.handleDoubleClick && this.props.handleDoubleClick(event, item)
+  },
+  handleContextMenu: function(event, item){
+    this.props.handleContextMenu && this.props.handleContextMenu(event, item)
   }
 })
 

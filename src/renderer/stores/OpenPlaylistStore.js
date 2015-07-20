@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var md5 = require('MD5')
 var assign = require('object-assign')
 var groove = require('groove')
 var uid = require('uid')
@@ -146,11 +147,18 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         if(playlist){
           playlist.clear()
           _playlists = _playlists.filter((p)=>{
-            return p !== playlist
+            return p.id !== playlist.id
           })
-          var nexPlaylist = _getAt(_selectedIndex -1)
-          if(nexPlaylist){
-            _selectPlaylist(nexPlaylist, _selectedIndex-1)
+
+          if(!_playlists.length){
+            _playlists.push(
+              new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
+            )
+          }
+
+          var nextPlaylist = _getAt(Math.max(_selectedIndex -1, 0))
+          if(nextPlaylist){
+            _selectPlaylist(nextPlaylist, Math.max(_selectedIndex -1, 0))
           }else{
             OpenPlaylistStore.emitChange()
           }

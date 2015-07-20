@@ -7,3 +7,4 @@ window.playa = new Playa
 
 playa.init()
 playa.render()
+playa.postRender()

@@ -41,9 +41,8 @@ var AlbumPlaylist = React.createClass({
   },
   render: function() {
     var albums = this.props.playlist.getItems().map( (album, index)=> {
-      var isOpened = this.props.openElements.indexOf(album.id) > -1
-      var isSelected = this.props.selection.indexOf(album.id) > -1
-
+      var isOpened    = this.props.openElements.indexOf(album.id) > -1
+      var isSelected  = this.props.selection.indexOf(album.id) > -1
       return (
         <AlbumPlaylistItem
           key={album.id}
@@ -114,7 +113,7 @@ var AlbumPlaylist = React.createClass({
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
-  },
+  }
 })
 
 module.exports = AlbumPlaylist

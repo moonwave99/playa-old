@@ -9,7 +9,10 @@ var FileBrowserActions = require('../../actions/FileBrowserActions')
 var FileBrowserStore = require('../../stores/FileBrowserStore')
 var NavGenerator = require('../../generators/Navigable.jsx')
 
-var FileBrowserOnSteroids = NavGenerator(FileBrowser, 'fileBrowser',
+var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
+var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+
+var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.FILE_BROWSER,
   function(component){
     return component.props.tree.map( i => i.id )
   },
@@ -48,17 +51,23 @@ var FileBrowserTab = React.createClass({
   },
   render: function() {
     return (
-      <FileBrowserOnSteroids
-        allowMultipleSelection={true}
-        handleDelKeyPress={this.handleDelKeyPress}
-        handleEnterKeyPress={this.handleEnterKeyPress}
-        handleScrollToElement={this.handleScrollToElement}
-        handleArrowClick={this.handleArrowClick}
-        handleOpen={this.handleOpen}
-        handleClose={this.handleClose}
-        isFocused={this.props.isFocused}
-        tree={this.state.fileTree}/>
+      <div onClick={this.handleGlobalClick}>
+        <FileBrowserOnSteroids
+          allowMultipleSelection={true}
+          handleDelKeyPress={this.handleDelKeyPress}
+          handleEnterKeyPress={this.handleEnterKeyPress}
+          handleScrollToElement={this.handleScrollToElement}
+          handleArrowClick={this.handleArrowClick}
+          handleContextMenu={this.handleContextMenu}
+          handleOpen={this.handleOpen}
+          handleClose={this.handleClose}
+          isFocused={this.props.isFocused}
+          tree={this.state.fileTree}/>
+      </div>
     )
+  },
+  handleGlobalClick: function(event){
+    KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.FILE_BROWSER)
   },
   handleDelKeyPress: function(event, item, elementsToRemove){
 
@@ -75,6 +84,9 @@ var FileBrowserTab = React.createClass({
     }else{
       FileBrowserActions.collapseNodes([item.props.node])
     }
+  },
+  handleContextMenu: function(event, item){
+
   },
   handleOpen: function(ids){
     FileBrowserActions.expandNodes(this.state.fileTree.filter((node)=>{

@@ -1,28 +1,31 @@
-_                         = require 'lodash'
-md5                       = require 'md5'
-ipc                       = require 'ipc'
-path                      = require 'path'
-React                     = require 'react'
-Main                      = require './renderer/components/Main.jsx'
-Player                    = require './renderer/util/Player'
-AlbumPlaylist             = require './renderer/util/AlbumPlaylist'
-FileBrowser               = require './renderer/util/FileBrowser'
-PlaylistLoader            = require './renderer/util/PlaylistLoader'
-FileLoader                = require './renderer/util/FileLoader'
-CoverLoader               = require './renderer/util/CoverLoader'
-WaveformLoader            = require './renderer/util/WaveformLoader'
-AppDispatcher             = require './renderer/dispatcher/AppDispatcher'
-PlayerConstants           = require './renderer/constants/PlayerConstants'
-FileBrowserConstants      = require './renderer/constants/FileBrowserConstants'
-PlaylistBrowserConstants  = require './renderer/constants/PlaylistBrowserConstants'
-OpenPlaylistConstants     = require './renderer/constants/OpenPlaylistConstants'
-SidebarConstants          = require './renderer/constants/SidebarConstants'
-PlayerStore               = require './renderer/stores/PlayerStore'
-OpenPlaylistStore         = require './renderer/stores/OpenPlaylistStore'
-SidebarStore              = require './renderer/stores/SidebarStore'
-OpenPlaylistActions       = require './renderer/actions/OpenPlaylistActions'
+_                           = require 'lodash'
+md5                         = require 'md5'
+ipc                         = require 'ipc'
+path                        = require 'path'
+React                       = require 'react'
+Main                        = require './renderer/components/Main.jsx'
+Player                      = require './renderer/util/Player'
+AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
+FileBrowser                 = require './renderer/util/FileBrowser'
+PlaylistLoader              = require './renderer/util/PlaylistLoader'
+FileLoader                  = require './renderer/util/FileLoader'
+CoverLoader                 = require './renderer/util/CoverLoader'
+WaveformLoader              = require './renderer/util/WaveformLoader'
+AppDispatcher               = require './renderer/dispatcher/AppDispatcher'
+PlayerConstants             = require './renderer/constants/PlayerConstants'
+FileBrowserConstants        = require './renderer/constants/FileBrowserConstants'
+PlaylistBrowserConstants    = require './renderer/constants/PlaylistBrowserConstants'
+OpenPlaylistConstants       = require './renderer/constants/OpenPlaylistConstants'
+KeyboardFocusConstants      = require './renderer/constants/KeyboardFocusConstants'
+SidebarConstants            = require './renderer/constants/SidebarConstants'
+PlayerStore                 = require './renderer/stores/PlayerStore'
+OpenPlaylistStore           = require './renderer/stores/OpenPlaylistStore'
+SidebarStore                = require './renderer/stores/SidebarStore'
+OpenPlaylistActions         = require './renderer/actions/OpenPlaylistActions'
+KeyboardFocusActions        = require './renderer/actions/KeyboardFocusActions'
+KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceConstants'
 
-FileTree                  = require './renderer/util/FileTree'
+FileTree                    = require './renderer/util/FileTree'
 
 require('dotenv').load()
 
@@ -91,11 +94,13 @@ module.exports = class Playa
     @loadPlaylists()
 
   loadPlaylists: ->
-    if @options.sessionSettings.openPlaylists.length
+    playlists = []
+    if @options.sessionSettings.openPlaylists
       playlists = @options.sessionSettings.openPlaylists.map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
-    else
-      playlists = [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
+
+    if playlists.length == 0
+      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
@@ -116,17 +121,29 @@ module.exports = class Playa
       folder: @options.settings.fileBrowserRoot
 
   initIPC: ->
+    tabToFocus = ''
     ipc.on 'sidebar:show', (tab)=>
       switch tab
         when 'playlists'
           @loadSidebarPlaylists()
+          tabToFocus = KeyboardNameSpaceConstants.PLAYLIST_BROWSER
         when 'files'
           @loadSidebarFileBrowser()
+          tabToFocus = KeyboardNameSpaceConstants.FILE_BROWSER
         when 'settings' then true
 
       AppDispatcher.dispatch
         actionType: SidebarConstants.SELECT_TAB
         tab: tab
+
+      if SidebarStore.getSidebarInfo().isOpen
+        AppDispatcher.dispatch
+          actionType: KeyboardFocusConstants.REQUEST_FOCUS
+          scopeName:  KeyboardNameSpaceConstants[tabToFocus]
+      else
+        AppDispatcher.dispatch
+          actionType: KeyboardFocusConstants.REQUEST_FOCUS
+          scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
     ipc.on 'playback:prev', ->
       AppDispatcher.dispatch
@@ -143,6 +160,9 @@ module.exports = class Playa
     ipc.on 'sidebar:toggle', ->
       AppDispatcher.dispatch
         actionType: SidebarConstants.TOGGLE
+      AppDispatcher.dispatch
+        actionType: KeyboardFocusConstants.REQUEST_FOCUS
+        scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
@@ -165,8 +185,17 @@ module.exports = class Playa
   render: ->
     React.render React.createElement(Main), document.getElementById('main')
 
+  postRender: ->
+    AppDispatcher.dispatch
+      actionType: KeyboardFocusConstants.REQUEST_FOCUS
+      scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+
   _onOpenPlaylistChange: ->
     playlists = OpenPlaylistStore.getAll().filter((i) -> !i.isNew() ).map (i) -> i.path
     selectedPlaylist = OpenPlaylistStore.getSelectedIndex()
     if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlists
-    if selectedPlaylist > -1 then ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylist
+    if selectedPlaylist > -1
+      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylist
+      AppDispatcher.dispatch
+        actionType: KeyboardFocusConstants.REQUEST_FOCUS
+        scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST

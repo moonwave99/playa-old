@@ -15,6 +15,8 @@ var DragDropConstants = require('../../constants/DragDropConstants')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 
+var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
+
 const albumSource = {
   beginDrag(props) {
     return {
@@ -64,11 +66,9 @@ var AlbumPlaylistItem = React.createClass({
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
   },
-  componentWillReceiveProps: function(nextProps){
-    if(nextProps.isKeyFocused){
-      !this.props.isKeyFocused && this.focus()
-    }else{
-      this.blur()
+  componentDidUpdate: function(prevProps, prevState){
+    if(this.props.isKeyFocused){
+      !prevProps.isKeyFocused && this.focus()
     }
   },
   componentWillMount: function(){
@@ -183,27 +183,30 @@ var AlbumPlaylistItem = React.createClass({
     switch(event.which){
       case 37: // left
         this.props.closeElements([this.props.album.id])
-        this.props.focusParent()
+        this.props.focusParent({ requestFocus: true })
         break
       case 38: // up
+        if(this.state.selectedTrack <= 0){
+          this.props.focusParent({
+            id: this.props.album.id,
+            direction: 'up',
+            requestFocus: true
+          })
+        }
         this.setState({
           selectedTrack: this.state.selectedTrack-1
         })
-        if(this.state.selectedTrack < -1){
-          this.props.focusParent({
-            id: this.props.album.id,
-            direction: 'up'
-          })
-        }
         break
       case 40: // down
-        this.setState({
-          selectedTrack: this.state.selectedTrack+1
-        })
-        if(this.state.selectedTrack > this.props.album.tracks.length -1){
+        if(this.state.selectedTrack >= this.props.album.tracks.length -1){
           this.props.focusParent({
             id: this.props.album.id,
-            direction: 'down'
+            direction: 'down',
+            requestFocus: true
+          })
+        }else{
+          this.setState({
+            selectedTrack: this.state.selectedTrack+1
           })
         }
         break
@@ -215,28 +218,19 @@ var AlbumPlaylistItem = React.createClass({
     }
   },
   focus: function(){
-    var scope = 'album_tracklist_' + this.props.album.id
-    if(scope !== key.getScope()){
-      key('up, down, left', scope, this.handleArrowKeyPress)
-      key('enter', scope, this.handleEnterKeyPress)
-      key.setScope(scope)
-    }
+    KeyboardFocusActions.setFocus(this.getHandlers(), 'ALBUM_TRACKLIST_' + this.props.album.id)
     this.setState({
       selectedTrack: this.props.direction == -1 ? this.props.album.tracks.length-1 : -1
     })
   },
-  blur: function(){
-    var scope = 'album_tracklist_' + this.props.album.id
-    key.unbind('up', scope)
-    key.unbind('down', scope)
-    key.unbind('left', scope)
-    key.unbind('enter', scope)
-  },
-  openLink: function(base){
-    shell.openExternal(base + encodeURIComponent(this.props.album.getArtist() + ' ' + this.props.album.getTitle()))
-  },
   updateCover: function(cover){
     this.setState({ cover: cover })
+  },
+  getHandlers: function(){
+    return {
+      'up, down, left'  : this.handleArrowKeyPress,
+      'enter'           : this.handleEnterKeyPress
+    }
   }
 })
 

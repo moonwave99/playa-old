@@ -22,6 +22,9 @@ var SidebarStore = require('../stores/SidebarStore')
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
 var PlayerActions = require('../actions/PlayerActions')
 
+var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
+var KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
+
 function getSidebarState(){
   return SidebarStore.getSidebarInfo()
 }
@@ -49,6 +52,11 @@ var Main = React.createClass({
     SidebarStore.removeChangeListener(this._onSidebarChange)
     key.unbind('space')
     _.range(9).forEach( n => key.unbind('⌘+' + n))
+  },
+  componentDidUpdate: function(prevProps, prevState) {
+    if(prevState.selectedIndex !== this.state.selectedIndex){
+      KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.ALBUM_PLAYLIST)
+    }
   },
   render: function() {
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
