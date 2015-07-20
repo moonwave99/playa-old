@@ -1,8 +1,7 @@
 .context-menu
   position absolute
-  top 3.5rem
-  right 4rem
-  width size($albumContextMenuWidth)
+  min-width size($albumContextMenuMinWidth)
+  max-width size($albumContextMenuMaxWidth)
   background-color $albumContextMenuBgColor
   border-radius .5rem
   line-height 2rem
@@ -11,11 +10,20 @@
   z-index 1050
   margin 0
   padding 0
+  display none
+  &.visible
+    display block
   li
     vertical-align middle
     box-shadow inset 0 -1px rgba($mainColor, .1)
+    ellipsed()
+    &:first-child
+      border-top-left-radius .5rem
+      border-top-right-radius .5rem
     &:last-child
       box-shadow none
+      border-bottom-left-radius .5rem
+      border-bottom-right-radius .5rem
     a
       display block
       padding 0 1rem
