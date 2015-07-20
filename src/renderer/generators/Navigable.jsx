@@ -178,7 +178,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     getHandlers(){
       var handlers = {
-        'backspace, del'  : this.handleDelKeyPress.bind,
+        'backspace, del'  : this.handleDelKeyPress,
         'enter'           : this.handleEnterKeyPress,
         'command+a'       : this.handleSelectAllKeyPress,
         'left, right'     : this.handleLeftRightKeyPress
