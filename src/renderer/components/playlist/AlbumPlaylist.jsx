@@ -30,7 +30,7 @@ var AlbumPlaylist = React.createClass({
   },
   getInitialState: function(){
     return _.extend({
-      openMenu: null
+
     }, getPlayerState())
   },
   componentDidMount: function(){
@@ -52,7 +52,6 @@ var AlbumPlaylist = React.createClass({
           closeElements={this.props.closeElements}
           focusParent={this.props.focusParent}
           handleClick={this.handleClick}
-          handleMenuLinkClick={this.handleMenuLinkClick}
           handleFolderDrop={this.handleFolderDrop}
           handleDragEnd={this.handleDragEnd}
           playTrack={this.playTrack}
@@ -61,8 +60,7 @@ var AlbumPlaylist = React.createClass({
           direction={this.props.direction}
           isOpened={isOpened}
           isSelected={isSelected}
-          isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}
-          isMenuOpened={this.state.openMenu == album.id}/>
+          isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}/>
       )
     })
 
@@ -81,11 +79,6 @@ var AlbumPlaylist = React.createClass({
   },
   handleClick: function(event, item){
     this.props.handleClick(event, item)
-  },
-  handleMenuLinkClick: function(event, item){
-    this.setState({
-      openMenu: item.props.itemKey
-    })
   },
   handleFolderDrop: function(folder, afterId){
     if(!afterId){

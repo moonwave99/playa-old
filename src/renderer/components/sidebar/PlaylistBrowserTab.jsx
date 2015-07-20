@@ -14,6 +14,8 @@ var AlbumPlaylist = require('../../util/AlbumPlaylist')
 
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
 var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+var ContextMenuActions = require('../../actions/ContextMenuActions')
+var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 
 var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   function(component){
@@ -46,6 +48,7 @@ var PlaylistBrowserTab = React.createClass({
           handleScrollToElement={this.handleScrollToElement}
           handleDoubleClick={this.handleDoubleClick}
           handleArrowClick={this.handleArrowClick}
+          handleContextMenu={this.handleContextMenu}
           handleOpen={this.handleOpen}
           handleClose={this.handleClose}
           isFocused={this.props.isFocused}
@@ -78,6 +81,9 @@ var PlaylistBrowserTab = React.createClass({
       PlaylistBrowserActions.collapseNodes([item.props.node])
     }
   },
+  handleContextMenu: function(event, item){
+    ContextMenuActions.show(this.getContextMenuActions(item), { top: event.clientY, left: event.clientX }, event)
+  },
   handleOpen: function(ids){
     var nodes = this._getNodesById(ids)
     nodes.length && PlaylistBrowserActions.expandNodes(nodes)
@@ -100,6 +106,17 @@ var PlaylistBrowserTab = React.createClass({
     return this.state.playlistTree.filter((node)=>{
       return _.contains(ids, node.id) && node.isDirectory()
     })
+  },
+  getContextMenuActions: function(item){
+    return [
+      {
+        'label'   : 'Load playlist',
+        'handler' : function(event){
+          event.stopPropagation()
+          this._openPlaylist(item.props.node.path)
+        }.bind(this)
+      }
+    ]
   }
 })
 

@@ -2,6 +2,7 @@
 
 var _ = require('lodash')
 var cx = require('classnames')
+var shell = require('shell')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var FileBrowser = require('./FileBrowser.jsx')
@@ -11,6 +12,8 @@ var NavGenerator = require('../../generators/Navigable.jsx')
 
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
 var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+var ContextMenuActions = require('../../actions/ContextMenuActions')
+var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 
 var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.FILE_BROWSER,
   function(component){
@@ -61,6 +64,7 @@ var FileBrowserTab = React.createClass({
           handleContextMenu={this.handleContextMenu}
           handleOpen={this.handleOpen}
           handleClose={this.handleClose}
+          handleContextMenu={this.handleContextMenu}
           isFocused={this.props.isFocused}
           tree={this.state.fileTree}/>
       </div>
@@ -86,7 +90,7 @@ var FileBrowserTab = React.createClass({
     }
   },
   handleContextMenu: function(event, item){
-
+    ContextMenuActions.show(this.getContextMenuActions(item), { top: event.clientY, left: event.clientX }, event)
   },
   handleOpen: function(ids){
     FileBrowserActions.expandNodes(this.state.fileTree.filter((node)=>{
@@ -102,6 +106,24 @@ var FileBrowserTab = React.createClass({
     this.setState({
       fileTree: FileBrowserStore.getFileTree()
     })
+  },
+  getContextMenuActions: function(item){
+    return [
+      {
+        'label'   : 'Reveal in Finder',
+        'handler' : function(event){
+          event.stopPropagation()
+          shell.openExternal('file://' + item.props.node.path)
+        }.bind(this)
+      },
+      {
+        'label'   : 'Add ' + item.props.node.name + ' to current playlist',
+        'handler' : function(event){
+          event.stopPropagation()
+          OpenPlaylistActions.addFolder(item.props.node.path)
+        }.bind(this)
+      }
+    ]
   }
 })
 

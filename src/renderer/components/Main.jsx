@@ -11,19 +11,26 @@ var Tabs = require('react-simpletabs')
 var DragDropContext = require('react-dnd').DragDropContext
 var HTML5Backend = require('react-dnd/modules/backends/HTML5')
 
+var ContextMenu = require('./ContextMenu.jsx')
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
 var Sidebar = require('./Sidebar/Sidebar.jsx')
 var Footer = require('./Footer.jsx')
 
+var ContextMenuStore = require('../stores/ContextMenuStore')
 var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
 var SidebarStore = require('../stores/SidebarStore')
 
+var ContextMenuActions = require('../actions/ContextMenuActions')
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
 var PlayerActions = require('../actions/PlayerActions')
 
 var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
 var KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
+
+function getContextMenuState(){
+  return ContextMenuStore.getInfo()
+}
 
 function getSidebarState(){
   return SidebarStore.getSidebarInfo()
@@ -39,17 +46,24 @@ function getOpenPlaylistState(){
 
 var Main = React.createClass({
   getInitialState: function() {
-    return _.merge({ sidebar: getSidebarState() }, getOpenPlaylistState())
+    return _.merge({
+      sidebar: getSidebarState(),
+      contextMenu: getContextMenuState(),
+    }, getOpenPlaylistState())
   },
   componentDidMount: function() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
+    ContextMenuStore.addChangeListener(this._onContextMenuChange)
+
     key('space', this.handleSpacePress)
     key(_.range(9).map( n => '⌘+' + n).join(', '), this.handleCommandNumberPress)
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
+    ContextMenuStore.removeChangeListener(this._onContextMenuChange)
+
     key.unbind('space')
     _.range(9).forEach( n => key.unbind('⌘+' + n))
   },
@@ -71,7 +85,7 @@ var Main = React.createClass({
       'sidebar-open' : this.state.sidebar.isOpen
     })
     return (
-      <div className={classes}>
+      <div className={classes} onClick={this.handleGlobalClick}>
         <PlaybackBar/>
         <Sidebar {...this.state.sidebar}/>
         <div className="playa-main-wrapper">
@@ -82,8 +96,12 @@ var Main = React.createClass({
           </Tabs>
         </div>
         <Footer selectedPlaylist={this.state.selectedPlaylist} />
+        <ContextMenu {...this.state.contextMenu}/>
       </div>
     )
+  },
+  handleGlobalClick: function(event){
+    ContextMenuActions.hide()
   },
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu) {
     OpenPlaylistActions.select(selectedIndex-1)
@@ -104,6 +122,9 @@ var Main = React.createClass({
   },
   _onSidebarChange: function(){
     this.setState({ sidebar: getSidebarState()})
+  },
+  _onContextMenuChange: function(){
+    this.setState({ contextMenu: getContextMenuState()})
   }
 })
 
