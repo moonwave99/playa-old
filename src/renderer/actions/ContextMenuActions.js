@@ -4,12 +4,13 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var ContextMenuConstants = require('../constants/ContextMenuConstants')
 
 var ContextMenuActions = {
-  show: function(actions, position, event){
+  show: function(actions, position, event, prevContext){
     AppDispatcher.dispatch({
       actionType: ContextMenuConstants.CONTEXT_MENU_SHOW,
       actions: actions,
       position: position,
-      event: event
+      event: event,
+      prevContext: prevContext
     })
   },
   hide: function(){

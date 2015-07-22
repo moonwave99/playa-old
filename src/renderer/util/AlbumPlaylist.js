@@ -15,7 +15,8 @@ module.exports = class AlbumPlaylist{
     this.items = new DoublyLinkedList()
     this.id = options.id || uid()
     this.path = options.path
-    this.title = this.isNew() ? 'Untitled' : path.basename(this.path, '.m3u')
+    this.ext = '.m3u'
+    this.title = this.isNew() ? 'Untitled' : path.basename(this.path, this.ext)
     this.loaded = false
     this.lastScrolledAlbum = null
   }
@@ -113,6 +114,23 @@ module.exports = class AlbumPlaylist{
     }else{
       this.items.removeAt(indexFrom)
     }
+  }
+  rename(to){
+    var newPath = path.join(
+      path.dirname(this.path),
+      to + this.ext
+    )
+    return new Promise((resolve, reject)=>{
+      fs.statAsync(newPath).bind(this).then((stats)=>{
+        reject(new Error('File already exists'))
+      }).catch((error)=>{
+        fs.moveAsync(this.path, newPath).bind(this).then(()=>{
+          this.title = to
+          this.path = newPath
+          resolve()
+        })
+      })
+    })
   }
   _process(files, opts){
     var albums = _.groupBy(files, (file)=>{

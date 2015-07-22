@@ -60,6 +60,7 @@
     "season": "^1.0.2",
     "semver": "2.2.1",
     "serializable": "^1",
+    "tcomb-form": "^0.6.3",
     "temp": "0.7.0",
     "uid": "0.0.2",
     "underscore-plus": "^1.6.1",

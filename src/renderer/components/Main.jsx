@@ -11,16 +11,19 @@ var Tabs = require('react-simpletabs')
 var DragDropContext = require('react-dnd').DragDropContext
 var HTML5Backend = require('react-dnd/modules/backends/HTML5')
 
+var Modal = require('./Modal.jsx')
 var ContextMenu = require('./ContextMenu.jsx')
 var PlaybackBar = require('./player/PlaybackBar.jsx')
 var Playlist = require('./playlist/Playlist.jsx')
 var Sidebar = require('./Sidebar/Sidebar.jsx')
 var Footer = require('./Footer.jsx')
 
+var ModalStore = require('../stores/ModalStore')
 var ContextMenuStore = require('../stores/ContextMenuStore')
 var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
 var SidebarStore = require('../stores/SidebarStore')
 
+var ModalActions = require('../actions/ModalActions')
 var ContextMenuActions = require('../actions/ContextMenuActions')
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
 var PlayerActions = require('../actions/PlayerActions')
@@ -28,12 +31,16 @@ var PlayerActions = require('../actions/PlayerActions')
 var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
 var KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
 
+function getModalState(){
+  return ModalStore.getInfo()
+}
+
 function getContextMenuState(){
   return ContextMenuStore.getInfo()
 }
 
 function getSidebarState(){
-  return SidebarStore.getSidebarInfo()
+  return SidebarStore.getInfo()
 }
 
 function getOpenPlaylistState(){
@@ -49,23 +56,24 @@ var Main = React.createClass({
     return _.merge({
       sidebar: getSidebarState(),
       contextMenu: getContextMenuState(),
+      modal: getModalState()
     }, getOpenPlaylistState())
   },
   componentDidMount: function() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange)
     SidebarStore.addChangeListener(this._onSidebarChange)
     ContextMenuStore.addChangeListener(this._onContextMenuChange)
+    ModalStore.addChangeListener(this._onModalChange)
 
-    key('space', this.handleSpacePress)
-    key(_.range(9).map( n => '⌘+' + n).join(', '), this.handleCommandNumberPress)
+    this._registerCommonKeyHandler()
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
     SidebarStore.removeChangeListener(this._onSidebarChange)
     ContextMenuStore.removeChangeListener(this._onContextMenuChange)
+    ModalStore.removeChangeListener(this._onModalChange)
 
-    key.unbind('space')
-    _.range(9).forEach( n => key.unbind('⌘+' + n))
+    this._unregisterCommonKeyHandler()
   },
   componentDidUpdate: function(prevProps, prevState) {
     if(prevState.selectedIndex !== this.state.selectedIndex){
@@ -86,6 +94,7 @@ var Main = React.createClass({
     })
     return (
       <div className={classes} onClick={this.handleGlobalClick}>
+        <Modal {...this.state.modal}/>
         <PlaybackBar/>
         <Sidebar {...this.state.sidebar}/>
         <div className="playa-main-wrapper">
@@ -121,10 +130,21 @@ var Main = React.createClass({
     this.setState(getOpenPlaylistState())
   },
   _onSidebarChange: function(){
-    this.setState({ sidebar: getSidebarState()})
+    this.setState({ sidebar: getSidebarState() })
   },
   _onContextMenuChange: function(){
-    this.setState({ contextMenu: getContextMenuState()})
+    this.setState({ contextMenu: getContextMenuState() })
+  },
+  _onModalChange: function(){
+    this.setState({ modal: getModalState() })
+  },
+  _registerCommonKeyHandler: function(){
+    key('space', this.handleSpacePress)
+    key(_.range(9).map( n => '⌘+' + n).join(', '), this.handleCommandNumberPress)
+  },
+  _unregisterCommonKeyHandler: function(){
+    key.unbind('space')
+    _.range(9).forEach( n => key.unbind('⌘+' + n))
   }
 })
 

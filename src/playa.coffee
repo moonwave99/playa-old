@@ -33,7 +33,7 @@ module.exports = class Playa
   constructor: (options) ->
     @options = options
     @options.settings =
-      fileBrowserRoot:  path.join process.env.HOME, 'Downloads', '_muzak'
+      fileBrowserRoot:  path.join process.env.HOME, 'Downloads'
       playlistRoot:     path.join @options.userDataFolder, 'Playlists'
 
     @fileBrowser = new FileBrowser()
@@ -113,7 +113,7 @@ module.exports = class Playa
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
       actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT
-      foldere: @options.settings.playlistRoot
+      folder: @options.settings.playlistRoot
 
   loadSidebarFileBrowser: =>
     AppDispatcher.dispatch
@@ -136,7 +136,7 @@ module.exports = class Playa
         actionType: SidebarConstants.SELECT_TAB
         tab: tab
 
-      if SidebarStore.getSidebarInfo().isOpen
+      if SidebarStore.getInfo().isOpen
         AppDispatcher.dispatch
           actionType: KeyboardFocusConstants.REQUEST_FOCUS
           scopeName:  KeyboardNameSpaceConstants[tabToFocus]
