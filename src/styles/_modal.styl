@@ -13,8 +13,9 @@
   transition opacity .2s ease-in
   background-color $modalBgColor
   &.isVisible
-    opacity 1
     display block
+  &.in
+    opacity 1
   .modal-inner
     background-color $modalInnerBgColor
     width size($modalWidth)

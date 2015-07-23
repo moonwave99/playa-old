@@ -8,11 +8,24 @@ var cx = require('classnames')
 var ModalActions = require('../actions/ModalActions')
 
 var Modal = React.createClass({
-  componentDidMount: function(){
-    this.props.isDismissable && key('esc', this.handleEscKeyPress)
+  getInitialState: function(){
+    return {
+      isKeyBound: false
+    }
   },
   componentWillUnmount: function(){
-    this.props.isDismissable && key.unbind('esc', this.handleEscKeyPress)
+    this.unbindKeyHandler();
+  },
+  componentDidUpdate: function(prevProps, prevState){
+    if(prevProps.isVisible !== this.props.isVisible){
+      if(this.props.isVisible){
+        React.findDOMNode(this.refs.modal).classList.add('in')
+        if(this.props.isDismissable && !this.state.isKeyBound){
+          this.bindKeyHandler()
+          this.setState({ isKeyBound: true})
+        }
+      }
+    }
   },
   render: function() {
     var classes = cx({
@@ -22,13 +35,19 @@ var Modal = React.createClass({
     if(this.props.params.component){
       var Component = require('./modal/' + this.props.params.component + '.jsx')
       return (
-        <div className={classes} onClick={this.props.isDismissable ? this.handleBackgroundClick : null}>
+        <div className={classes} onClick={this.props.isDismissable ? this.handleBackgroundClick : null} ref="modal">
           <div className="modal-inner" onClick={this.props.isDismissable ? this.handleInnerClick : null}><Component {...this.props.params}/></div>
         </div>
       )
     }else{
       return null
     }
+  },
+  bindKeyHandler: function(){
+    key('esc', this.handleEscKeyPress)
+  },
+  unbindKeyHandler: function(){
+    key.unbind('esc', this.handleEscKeyPress)
   },
   handleEscKeyPress: function(event){
     ModalActions.hide()
