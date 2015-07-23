@@ -34,6 +34,12 @@ var _getAt = function(index){
   return _playlists[index]
 }
 
+var _findBy = function(key, value){
+  var query = {}
+  query[key] = value
+  return _.find(_playlists, query)
+}
+
 var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function(){
     return _playlists
@@ -41,6 +47,10 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
 
   getAt: function(index){
     return _getAt(index)
+  },
+
+  findBy: function(key, value){
+    return _findBy(key, value)
   },
 
   getSelectedIndex: function(){
@@ -75,6 +85,15 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
 
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
+      case OpenPlaylistConstants.UPDATE_PLAYLIST:
+        var playlist = _findBy('id', action.id)
+        if(playlist){
+          _.forEach(action.values, (value, key)=>{
+            playlist[key] = value
+          })
+          OpenPlaylistStore.emitChange()
+        }
+        break
       case OpenPlaylistConstants.SELECT_PLAYLIST:
         var playlist = _getAt(action.selected)
         if(playlist){

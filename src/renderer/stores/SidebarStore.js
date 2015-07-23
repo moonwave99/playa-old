@@ -15,7 +15,7 @@ var _tabs = ['playlists', 'files', 'settings']
 
 var SidebarStore = assign({}, EventEmitter.prototype, {
 
-  getSidebarInfo: function(){
+  getInfo: function(){
     return {
       isOpen: _isOpen,
       selectedTab: _selectedTab,

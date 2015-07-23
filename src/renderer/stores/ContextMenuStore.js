@@ -7,11 +7,15 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var ContextMenuConstants = require('../constants/ContextMenuConstants')
 
+var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
+var KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
+
 var CHANGE_EVENT = 'change'
 
 var _isVisible = false
 var _actions = []
 var _position = {}
+var _prevContext = null
 
 var ContextMenuStore = assign({}, EventEmitter.prototype, {
   getInfo: function(){
@@ -45,12 +49,16 @@ var ContextMenuStore = assign({}, EventEmitter.prototype, {
       case ContextMenuConstants.CONTEXT_MENU_SHOW:
         _actions = action.actions
         _position = action.position
+        _prevContext = action.prevContext
         _isVisible = true
+        KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.CONTEXT_MENU)
         ContextMenuStore.emitChange()
         break
       case ContextMenuConstants.CONTEXT_MENU_HIDE:
         _actions = []
         _isVisible = false
+        _prevContext && KeyboardFocusActions.requestFocus(_prevContext)
+        _prevContext = null
         ContextMenuStore.emitChange()
         break
     }

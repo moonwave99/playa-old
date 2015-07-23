@@ -111,15 +111,13 @@ var FileBrowserTab = React.createClass({
     return [
       {
         'label'   : 'Reveal in Finder',
-        'handler' : function(event){
-          event.stopPropagation()
+        'handler' : function(){
           shell.openExternal('file://' + item.props.node.path)
         }.bind(this)
       },
       {
         'label'   : 'Add ' + item.props.node.name + ' to current playlist',
-        'handler' : function(event){
-          event.stopPropagation()
+        'handler' : function(){
           OpenPlaylistActions.addFolder(item.props.node.path)
         }.bind(this)
       }

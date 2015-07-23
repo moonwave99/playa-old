@@ -15,6 +15,7 @@ var DragDropConstants = require('../../constants/DragDropConstants')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
 var ContextMenuActions = require('../../actions/ContextMenuActions')
+var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
 
 const albumSource = {
   beginDrag(props) {
@@ -107,7 +108,7 @@ var AlbumPlaylistItem = React.createClass({
       'selected'  : this.props.isSelected,
       'open'      : this.props.isOpened
     })
-    var opacity = this.props.isDragging ? 0 : 1
+    var opacity = this.props.isDragging ? 0.4 : 1
     var coverStyle = this.state.cover ? { backgroundImage: 'url(' + encodeURI(this.state.cover) + ')'} : {}
     var coverClasses = cx({
       'cover'       : true,
@@ -129,7 +130,12 @@ var AlbumPlaylistItem = React.createClass({
   },
   handleMenuLinkClick: function(event){
     event.stopPropagation()
-    ContextMenuActions.show(this.getContextMenuActions(), { top: event.clientY, left: event.clientX }, event)
+    ContextMenuActions.show(
+      this.getContextMenuActions(),
+      { top: event.clientY, left: event.clientX },
+      event,
+      KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+    )
   },
   handleTracklistDoubleClick: function(event, item){
     event.stopPropagation()
@@ -199,29 +205,25 @@ var AlbumPlaylistItem = React.createClass({
     return [
       {
         'label': 'Reveal in Finder',
-        'handler': function(event){
-          event.stopPropagation()
+        'handler': function(){
           shell.openExternal('file://' + this.props.album.getFolder())
         }.bind(this)
       },
       {
         'label': 'Search on Discogs',
-        'handler': function(event){
-          event.stopPropagation()
+        'handler': function(){
           this.openLink('http://www.discogs.com/search?type=release&q=')
         }.bind(this)
       },
       {
         'label': 'Search on RYM',
-        'handler': function(event){
-          event.stopPropagation()
+        'handler': function(){
           this.openLink('https://rateyourmusic.com/search?searchtype=l&searchterm=')
         }.bind(this)
       },
       {
         'label': 'Search on Last.fm',
-        'handler': function(event){
-          event.stopPropagation()
+        'handler': function(){
           this.openLink('http://www.last.fm/search?type=album&q=')
         }.bind(this)
       }
@@ -229,7 +231,7 @@ var AlbumPlaylistItem = React.createClass({
   },
   openLink: function(base){
     shell.openExternal(base + encodeURIComponent(this.props.album.getArtist() + ' ' + this.props.album.getTitle()))
-  }  
+  }
 })
 
 AlbumPlaylistItem = DropTarget([

@@ -3,19 +3,23 @@
 var _ = require('lodash')
 var cx = require('classnames')
 var md5 = require('MD5')
+var path = require('path')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var FileBrowser = require('./FileBrowser.jsx')
-var PlaylistBrowserStore = require('../../stores/PlaylistBrowserStore')
-var PlaylistBrowserActions = require('../../actions/PlaylistBrowserActions')
-var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var NavGenerator = require('../../generators/Navigable.jsx')
 var AlbumPlaylist = require('../../util/AlbumPlaylist')
+
+var PlaylistBrowserStore = require('../../stores/PlaylistBrowserStore')
+var PlaylistBrowserActions = require('../../actions/PlaylistBrowserActions')
+
+var OpenPlaylistStore = require('../../stores/OpenPlaylistStore')
+var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
 var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
 var ContextMenuActions = require('../../actions/ContextMenuActions')
-var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
+var ModalActions = require('../../actions/ModalActions')
 
 var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   function(component){
@@ -82,7 +86,12 @@ var PlaylistBrowserTab = React.createClass({
     }
   },
   handleContextMenu: function(event, item){
-    ContextMenuActions.show(this.getContextMenuActions(item), { top: event.clientY, left: event.clientX }, event)
+    ContextMenuActions.show(
+      this.getContextMenuActions(item),
+      { top: event.clientY, left: event.clientX },
+      event,
+      KeyboardNameSpaceConstants.PLAYLIST_BROWSER
+    )
   },
   handleOpen: function(ids){
     var nodes = this._getNodesById(ids)
@@ -111,12 +120,41 @@ var PlaylistBrowserTab = React.createClass({
     return [
       {
         'label'   : 'Load playlist',
-        'handler' : function(event){
-          event.stopPropagation()
+        'handler' : function(){
           this._openPlaylist(item.props.node.path)
+        }.bind(this)
+      },
+      {
+        'label'   : 'Rename playlist',
+        'handler' : function(){
+          ModalActions.show({
+            component: 'Rename',
+            item: item.props.node,
+            handleSubmit: this.handleRename,
+            isDismissable: true
+          })
         }.bind(this)
       }
     ]
+  },
+  handleRename: function(item, newName){
+    if(item.name !== newName){
+      var playlist = OpenPlaylistStore.findBy('title', item.name) || new AlbumPlaylist({
+        title: item.name,
+        path: item.path,
+        id: md5(item.path)
+      })
+      playlist.rename(newName).then(()=>{
+        OpenPlaylistActions.update(playlist.id, {
+          title: playlist.title,
+          path:  playlist.path
+        })
+        PlaylistBrowserActions.loadRoot()
+        ModalActions.hide()
+      }).catch((err)=>{
+        alert('File already exists!')
+      })
+    }
   }
 })
 

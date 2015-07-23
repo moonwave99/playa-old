@@ -67,11 +67,13 @@ var Sidebar = React.createClass({
   },
   handleAfter: function(selectedIndex, $selectedPanel, $selectedTabMenu){
     SidebarActions.select(this.props.tabs[selectedIndex-1])
-    KeyboardFocusActions.requestFocus(
-      KeyboardNameSpaceConstants[
-        selectedIndex == 1 ? 'PLAYLIST_BROWSER' : 'FILE_BROWSER'
-      ]
-    )
+    setTimeout(()=>{
+      KeyboardFocusActions.requestFocus(
+        KeyboardNameSpaceConstants[
+          selectedIndex == 1 ? 'PLAYLIST_BROWSER' : 'FILE_BROWSER'
+        ]
+      )      
+    }, 100)
   },
   handleScrollToElement: function(state, list){
     var wrapper = React.findDOMNode(this).querySelector('.tab-panel')

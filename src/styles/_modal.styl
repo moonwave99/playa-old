@@ -1,0 +1,34 @@
+.modal
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  z-index 1090
+  display none
+  overflow hidden
+  -webkit-overflow-scrolling touch
+  outline 0
+  opacity 0
+  transition opacity .2s ease-in
+  background-color $modalBgColor
+  &.isVisible
+    display block
+  &.in
+    opacity 1
+  .modal-inner
+    background-color $modalInnerBgColor
+    width size($modalWidth)
+    margin 0 auto
+    padding 1rem 2rem
+    border-bottom-left-radius .5rem
+    border-bottom-right-radius .5rem
+    box-shadow 0 0 50px rgba(black, .8)
+    border 1px solid rgba(white, .15)
+    border-top none
+    h2
+      margin 0 0 2rem 0
+    .form-group
+      margin 0
+      fieldset
+        border none
