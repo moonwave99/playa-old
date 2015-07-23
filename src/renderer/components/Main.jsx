@@ -4,6 +4,7 @@ var _ = require('lodash')
 var ipc = require('ipc')
 var cx = require('classnames')
 var key = require('keymaster')
+var enquire = require('enquire.js')
 
 var React = require('react')
 var Tabs = require('react-simpletabs')
@@ -26,6 +27,7 @@ var SidebarStore = require('../stores/SidebarStore')
 var ModalActions = require('../actions/ModalActions')
 var ContextMenuActions = require('../actions/ContextMenuActions')
 var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
+var SidebarActions = require('../actions/SidebarActions')
 var PlayerActions = require('../actions/PlayerActions')
 
 var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
@@ -66,6 +68,7 @@ var Main = React.createClass({
     ModalStore.addChangeListener(this._onModalChange)
 
     this._registerCommonKeyHandler()
+    this._registerMediaQueryHandler()
   },
   componentWillUnmount: function() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange)
@@ -145,6 +148,14 @@ var Main = React.createClass({
   _unregisterCommonKeyHandler: function(){
     key.unbind('space')
     _.range(9).forEach( n => key.unbind('⌘+' + n))
+  },
+  _registerMediaQueryHandler: function(){
+    enquire.register('screen and (min-width:' + this.props.breakpoints.widescreen + ')', {
+      match: function(){
+        playa.toggleSidebar(true)
+      },
+      unmatch: function(){}
+    })
   }
 })
 

@@ -8,7 +8,7 @@ Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
 FileBrowser                 = require './renderer/util/FileBrowser'
 PlaylistLoader              = require './renderer/util/PlaylistLoader'
-MediaFileLoader                  = require './renderer/util/MediaFileLoader'
+MediaFileLoader             = require './renderer/util/MediaFileLoader'
 CoverLoader                 = require './renderer/util/CoverLoader'
 WaveformLoader              = require './renderer/util/WaveformLoader'
 AppDispatcher               = require './renderer/dispatcher/AppDispatcher'
@@ -28,6 +28,12 @@ KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceCon
 FileTree                    = require './renderer/util/FileTree'
 
 require('dotenv').load()
+
+_tabScopeNames = [
+  KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
+  KeyboardNameSpaceConstants.FILE_BROWSER,
+  KeyboardNameSpaceConstants.SETTINGS
+]
 
 module.exports = class Playa
   constructor: (options) ->
@@ -120,30 +126,33 @@ module.exports = class Playa
       actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT
       folder: @options.settings.fileBrowserRoot
 
+  selectTab: (tab, tabScopeName)=>
+    AppDispatcher.dispatch
+      actionType: SidebarConstants.SELECT_TAB
+      tab: tab
+
+    if SidebarStore.getInfo().isOpen
+      AppDispatcher.dispatch
+        actionType: KeyboardFocusConstants.REQUEST_FOCUS
+        scopeName:  tabScopeName
+    else
+      AppDispatcher.dispatch
+        actionType: KeyboardFocusConstants.REQUEST_FOCUS
+        scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+
   initIPC: ->
-    tabToFocus = ''
-    ipc.on 'sidebar:show', (tab)=>
-      switch tab
+    ipc.on 'sidebar:show', (tabName)=>
+      switch tabName
         when 'playlists'
           @loadSidebarPlaylists()
-          tabToFocus = KeyboardNameSpaceConstants.PLAYLIST_BROWSER
+          tab = 0
         when 'files'
           @loadSidebarFileBrowser()
-          tabToFocus = KeyboardNameSpaceConstants.FILE_BROWSER
-        when 'settings' then true
+          tab = 1
+        when 'settings'
+          tab = 2
 
-      AppDispatcher.dispatch
-        actionType: SidebarConstants.SELECT_TAB
-        tab: tab
-
-      if SidebarStore.getInfo().isOpen
-        AppDispatcher.dispatch
-          actionType: KeyboardFocusConstants.REQUEST_FOCUS
-          scopeName:  KeyboardNameSpaceConstants[tabToFocus]
-      else
-        AppDispatcher.dispatch
-          actionType: KeyboardFocusConstants.REQUEST_FOCUS
-          scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+      @selectTab(tab, _tabScopeNames[tab])
 
     ipc.on 'playback:prev', ->
       AppDispatcher.dispatch
@@ -157,12 +166,8 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: if @player.playing() then PlayerConstants.PAUSE else PlayerConstants.PLAY
 
-    ipc.on 'sidebar:toggle', ->
-      AppDispatcher.dispatch
-        actionType: SidebarConstants.TOGGLE
-      AppDispatcher.dispatch
-        actionType: KeyboardFocusConstants.REQUEST_FOCUS
-        scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+    ipc.on 'sidebar:toggle', =>
+      @toggleSidebar()
 
     ipc.on 'playlist:create', ->
       AppDispatcher.dispatch
@@ -182,8 +187,24 @@ module.exports = class Playa
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
 
+  toggleSidebar: =>
+    AppDispatcher.dispatch
+      actionType: SidebarConstants.TOGGLE
+
+    SidebarStatus = SidebarStore.getInfo()
+    if SidebarStatus.isOpen
+      switch SidebarStatus.selectedTab
+        when 0
+          @loadSidebarPlaylists()
+        when 1
+          @loadSidebarFileBrowser()
+
+  getMainProps: ->
+    breakpoints:
+      widescreen: '1500px'
+
   render: ->
-    React.render React.createElement(Main), document.getElementById('main')
+    React.render React.createElement(Main, @getMainProps()), document.getElementById('main')
 
   postRender: ->
     AppDispatcher.dispatch

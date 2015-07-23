@@ -4,9 +4,10 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var SidebarConstants = require('../constants/SidebarConstants')
 
 var SidebarActions = {
-  toggle: function(){
+  toggle: function(toggle){
     AppDispatcher.dispatch({
-      actionType: SidebarConstants.TOGGLE
+      actionType: SidebarConstants.TOGGLE,
+      toggle: toggle
     })
   },
   select: function(tab){

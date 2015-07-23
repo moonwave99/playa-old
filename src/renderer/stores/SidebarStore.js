@@ -1,7 +1,8 @@
 "use babel";
 
-var assign = require('object-assign')
+var _ = require('lodash')
 var ipc = require('ipc')
+var assign = require('object-assign')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
@@ -44,17 +45,16 @@ var SidebarStore = assign({}, EventEmitter.prototype, {
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
       case SidebarConstants.SELECT_TAB:
-        var targetTab = _tabs.indexOf(action.tab)
-        if(_isOpen && _selectedTab == targetTab){
+        if(_isOpen && _selectedTab == action.tab){
           _isOpen = false
         }else{
           _isOpen = true
-          _selectedTab = targetTab
+          _selectedTab = action.tab
         }
         SidebarStore.emitChange()
         break
       case SidebarConstants.TOGGLE:
-        _isOpen = !_isOpen
+        _isOpen = _.isBoolean(action.toggle) ? action.toggle : !_isOpen
         SidebarStore.emitChange()
         break
     }
