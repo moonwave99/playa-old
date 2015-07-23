@@ -9,10 +9,10 @@ var ModalActions = require('../actions/ModalActions')
 
 var Modal = React.createClass({
   componentDidMount: function(){
-    key('esc', this.handleEscKeyPress)
+    this.props.isDismissable && key('esc', this.handleEscKeyPress)
   },
   componentWillUnmount: function(){
-    key.unbind('esc', this.handleEscKeyPress)
+    this.props.isDismissable && key.unbind('esc', this.handleEscKeyPress)
   },
   render: function() {
     var classes = cx({
@@ -22,8 +22,8 @@ var Modal = React.createClass({
     if(this.props.params.component){
       var Component = require('./modal/' + this.props.params.component + '.jsx')
       return (
-        <div className={classes} onClick={this.handleBackgroundClick}>
-          <div className="modal-inner" onClick={this.handleInnerClick}><Component {...this.props.params}/></div>
+        <div className={classes} onClick={this.props.isDismissable ? this.handleBackgroundClick : null}>
+          <div className="modal-inner" onClick={this.props.isDismissable ? this.handleInnerClick : null}><Component {...this.props.params}/></div>
         </div>
       )
     }else{
@@ -31,10 +31,10 @@ var Modal = React.createClass({
     }
   },
   handleEscKeyPress: function(event){
-    this.props.isDismissable && ModalActions.hide()
+    ModalActions.hide()
   },
   handleBackgroundClick: function(event){
-    this.props.isDismissable && ModalActions.hide()
+    ModalActions.hide()
   },
   handleInnerClick: function(event){
     event.stopPropagation()
