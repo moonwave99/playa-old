@@ -65,7 +65,7 @@ module.exports = class AlbumPlaylist{
       if(this.loaded || this.isNew()){
         resolve(this)
       }else{
-        playa.fileLoader.loadFiles(files).bind(playa.fileLoader).then((files)=>{
+        playa.mediaFileLoader.loadFiles(files).bind(playa.mediaFileLoader).then((files)=>{
           this._process(files)
           this.loaded = true
           resolve(this)
@@ -80,12 +80,12 @@ module.exports = class AlbumPlaylist{
     })
   }
   addFolder(folder){
-    return playa.fileLoader.loadFolder(folder).bind(this).then((files)=>{
+    return playa.mediaFileLoader.loadFolder(folder).bind(this).then((files)=>{
       return this._process(files)
     })
   }
   addFolderAtPosition(folder, positionId){
-    return playa.fileLoader.loadFolder(folder).bind(this).then((files)=>{
+    return playa.mediaFileLoader.loadFolder(folder).bind(this).then((files)=>{
       return this._process(files, { insertAt: positionId })
     })
   }

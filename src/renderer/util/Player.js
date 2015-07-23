@@ -11,7 +11,7 @@ groove.setLogging(groove.LOG_ERROR)
 module.exports = class Player extends EventEmitter{
   constructor(options) {
     super(options)
-    this.fileLoader = options.fileLoader
+    this.mediaFileLoader = options.mediaFileLoader
     this.player = groove.createPlayer()
     this.groovePlaylist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
@@ -113,7 +113,7 @@ module.exports = class Player extends EventEmitter{
     return {
       position: info.pos,
       playing: info.item && this.groovePlaylist.playing(),
-      item: info.item ? this.fileLoader.getFromPool(info.item.file.filename) : {},
+      item: info.item ? this.mediaFileLoader.getFromPool(info.item.file.filename) : {},
       album: this.currentAlbum
     }
   }

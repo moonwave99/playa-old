@@ -8,7 +8,7 @@ Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
 FileBrowser                 = require './renderer/util/FileBrowser'
 PlaylistLoader              = require './renderer/util/PlaylistLoader'
-FileLoader                  = require './renderer/util/FileLoader'
+MediaFileLoader                  = require './renderer/util/MediaFileLoader'
 CoverLoader                 = require './renderer/util/CoverLoader'
 WaveformLoader              = require './renderer/util/WaveformLoader'
 AppDispatcher               = require './renderer/dispatcher/AppDispatcher'
@@ -58,7 +58,7 @@ module.exports = class Playa
       root: @options.settings.playlistRoot
       playlistExtension: 'm3u'
 
-    @fileLoader = new FileLoader
+    @mediaFileLoader = new MediaFileLoader
       fileExtensions: ['mp3', 'mp4', 'flac', 'ogg']
 
     @coverLoader = new CoverLoader
@@ -79,7 +79,7 @@ module.exports = class Playa
         'png-color-outer'   : '77777733'
 
     @player = new Player
-      fileLoader: @fileLoader
+      mediaFileLoader: @mediaFileLoader
 
     @player.on 'nowplaying', ->
       PlayerStore.emitChange()

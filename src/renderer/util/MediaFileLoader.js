@@ -13,9 +13,10 @@ var Promise = require('bluebird')
 var MetaDoctor = require('./MetaDoctor')
 var PlaylistItem = require('./PlaylistItem')
 
-module.exports = class FileLoader {
+module.exports = class MediaFileLoader {
   constructor(options) {
     this.fileExtensions = options.fileExtensions
+    this.fileAmountThreshold = options.fileAmountThreshold
     this.cache = {}
   }
   loadFiles(files) {
