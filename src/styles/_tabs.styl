@@ -33,6 +33,13 @@
     width "calc(100vw - %s)" % size($sidebarClosedWidth)
     .tabs-menu
       width "calc(100vw - %s)" % size($sidebarClosedWidth)
+      .tabs-menu-item
+        a
+          padding 0 1rem
+          transition width .2s ease-in-out
+        &.is-active
+          a
+            width size(1.5 * $tabsWidth)
 .sidebar-open
   .playa-main-wrapper
     .tabs-navigation
