@@ -10,12 +10,14 @@ var ModalConstants = require('../constants/ModalConstants')
 var CHANGE_EVENT = 'change'
 
 var _isVisible = false
+var _isDismissable = false
 var _params = {}
 
 var ModalStore = assign({}, EventEmitter.prototype, {
   getInfo: function() {
     return {
       isVisible: _isVisible,
+      isDismissable: _isDismissable,
       params: _params
     }
   },
@@ -43,11 +45,13 @@ var ModalStore = assign({}, EventEmitter.prototype, {
       case ModalConstants.MODAL_SHOW:
         _params = action.params
         _isVisible = true
+        _isDismissable = !!action.params.isDismissable
         ModalStore.emitChange()
         break
       case ModalConstants.MODAL_HIDE:
         _params = {}
         _isVisible = false
+        _isDismissable = false
         ModalStore.emitChange()
         break
     }

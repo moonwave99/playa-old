@@ -130,7 +130,8 @@ var PlaylistBrowserTab = React.createClass({
           ModalActions.show({
             component: 'Rename',
             item: item.props.node,
-            handleSubmit: this.handleRename
+            handleSubmit: this.handleRename,
+            isDismissable: true
           })
         }.bind(this)
       }

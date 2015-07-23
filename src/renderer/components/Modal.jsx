@@ -31,10 +31,10 @@ var Modal = React.createClass({
     }
   },
   handleEscKeyPress: function(event){
-    ModalActions.hide()
+    this.props.isDismissable && ModalActions.hide()
   },
   handleBackgroundClick: function(event){
-    ModalActions.hide()
+    this.props.isDismissable && ModalActions.hide()
   },
   handleInnerClick: function(event){
     event.stopPropagation()
