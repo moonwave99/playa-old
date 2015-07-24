@@ -10,6 +10,8 @@ require("moment-duration-format")
 var PlayerStore = require('../../stores/PlayerStore')
 var PlayerActions = require('../../actions/PlayerActions')
 
+var ProgressBar = require('./ProgressBar.jsx')
+
 function getPlayerState(){
   return PlayerStore.getPlaybackInfo()
 }
@@ -26,15 +28,6 @@ module.exports = React.createClass({
   updateCover: function(cover){
     this.setState({ cover: cover })
   },
-  updateWaveform: function(waveform){
-    var wrapper = React.findDOMNode(this.refs.waveform)
-    if(waveform){
-      wrapper.style.backgroundImage = "url('file://" + encodeURI(waveform) + "')"
-      wrapper.classList.add('loaded')
-    }else{
-      wrapper.classList.remove('loaded')
-    }
-  },
   prev: function(){
     PlayerActions.prevTrack()
   },
@@ -49,18 +42,6 @@ module.exports = React.createClass({
   },
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
-  },
-  componentWillUpdate: function(nextProps, nextState){
-    if(!nextState.item){
-      this.updateWaveform(null)
-    }else if(nextState.item.id !== this.state.item.id){
-      this.updateWaveform(null)
-      nextState.item.id && playa.waveformLoader.load(nextState.item)
-        .then(this.updateWaveform)
-        .catch((err)=>{
-          console.error(err, err.stack)
-        })
-    }
   },
   render: function() {
     var wrapperClasses = cx({
@@ -82,17 +63,21 @@ module.exports = React.createClass({
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
-          <div className="waveform" ref="waveform"></div>
           {this.renderCover()}
-          <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>{this.formatTime(this.state.currentTime)}</span>
+          <ProgressBar
+            seekTo={this.seekTo}
+            {...this.state}
+            />          
+          <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>
+            {this.formatTime(this.state.currentTime)}
+          </span>
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ this.state.metadata.title }</span>
             <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
           </div>
-          <span className="playback-time-indicator time-remaining" onClick={this.handleTimeIndicatorClick}>-{this.formatTime(this.state.remainingTime)}</span>
-          <div className="progress-area" onClick={this.handleProgressAreaClick}>
-            <progress value={this.state.currentTime} max={this.state.totalTime}></progress>
-          </div>
+          <span className="playback-time-indicator time-remaining" onClick={this.handleTimeIndicatorClick}>
+            -{this.formatTime(this.state.remainingTime)}
+          </span>
         </div>
       </div>
     )
@@ -106,14 +91,13 @@ module.exports = React.createClass({
       return null
     }
   },
-  handleProgressAreaClick: function(event){
-    var bounds = event.target.getBoundingClientRect()
-    PlayerActions.seek((event.clientX - bounds.left) / bounds.width)
-  },
   handleTimeIndicatorClick: function(event){
     this.setState({
       showRemaining: !this.state.showRemaining
     })
+  },
+  seekTo: function(position){
+    PlayerActions.seek(position)
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

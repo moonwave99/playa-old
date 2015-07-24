@@ -81,8 +81,8 @@ module.exports = class Playa
         'png-width'         : 1600,
         'png-height'        : 160,
         'png-color-bg'      : '00000000',
-        'png-color-center'  : '777777AA',
-        'png-color-outer'   : '77777733'
+        'png-color-center'  : '505050FF',
+        'png-color-outer'   : '505050FF'
 
     @player = new Player
       mediaFileLoader: @mediaFileLoader
@@ -187,9 +187,10 @@ module.exports = class Playa
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
 
-  toggleSidebar: =>
+  toggleSidebar: (toggle)=>
     AppDispatcher.dispatch
       actionType: SidebarConstants.TOGGLE
+      toggle: toggle
 
     SidebarStatus = SidebarStore.getInfo()
     if SidebarStatus.isOpen

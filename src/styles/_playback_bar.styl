@@ -36,6 +36,7 @@
           font-size size($playbackBarButtonCompactSize)
       &:focus
         outline none
+
   .playback-track-info-wrapper
     flex 1 100%
     display flex
@@ -51,35 +52,41 @@
             display none
           &.time-remaining
             display block
-    .waveform
+
+    .progress-wrapper
       position absolute
       top 0
       right 0
       bottom 0
-      left 0
-      background-size calc(100% - 5rem) 10rem
-      background-repeat no-repeat
-      background-position-x right
-      opacity 0
-      transition opacity .4s ease-in-out
-      z-index -1
-      &.loaded
-        opacity 1
-    .playback-track-cover
-      flex 0 0 5rem
-      overflow hidden
-      img
+      left $playbackBarCoverWidth
+      .waveform
         width 100%
         height 100%
-    .progress-area
-      position absolute
-      bottom 0
-      left 0
-      right 0
-      height size(3 * $playbackBarProgressIndicatorHeight)
-      cursor pointer
+        background-size 100% size(2 * $playbackBarHeight)
+        background-repeat no-repeat
+        background-position-x right
+        opacity 0
+        transition opacity .4s ease-in-out
+        z-index -1
+        &.loaded
+          opacity 1
+      .waveform-progress
+        height size($playbackBarHeight - $playbackBarProgressIndicatorHeight)
+        position absolute
+        top 0
+        right 0
+        background-color $playbackBarProgressBgColor
+      .progress-cursor
+        height size($playbackBarHeight)
+        width 1px
+        background-color $playbackBarProgressCursorColor
+        position absolute
+        left -1px
+        top 0
+        transition opacity .2s ease-in-out
+        opacity 1
       progress
-        background-color $playbackBarProgressIndicatorBgColor
+        background-color $playbackBarProgressIndicatorColor
         vertical-align middle
         position absolute
         bottom 0
@@ -87,13 +94,33 @@
         height size($playbackBarProgressIndicatorHeight)
         &::-webkit-progress-bar-value
         &::-webkit-progress-value
-          background-color $playbackBarProgressIndicatorColor
-          transition width .1s ease-in
+          background-color $playbackBarProgressIndicatorBgColor
+
+    .playback-track-cover
+      flex 0 0 $playbackBarCoverWidth
+      overflow hidden
+      position relative
+      img
+        width 100%
+        height 100%
+      &:after
+        content: ''
+        position absolute
+        bottom 0
+        left 0
+        right 0
+        height size($playbackBarProgressIndicatorHeight)
+        z-index 1050
+        background-color darken($playbackBarProgressIndicatorColor, 10%)
+        border-right 1px solid rgba(white, .5)
+
     .playback-track-info
       font-size 1.1rem
       flex 1 100%
       text-align center
       cursor default
+      z-index 1100
+      pointer-events none
       @media(max-width: 640px)
         order 1
       .playback-track-info-artist,
@@ -107,12 +134,16 @@
           color $playbackBarTitleColor
         &.playback-track-info-artist
           font-size size($playbackBarArtistSize)
+
     .playback-time-indicator
       vertical-align middle
       text-align center
       font-size .9rem
       flex 0 0 5rem
       cursor default
+      z-index 1100
+      pointer-events none
+      text-shadow 0 0 2px rgba(white, .5)
       @media(max-width: 640px)
         flex 0 0 4rem
         order 2

@@ -134,6 +134,14 @@ var PlaylistBrowserTab = React.createClass({
             isDismissable: true
           })
         }.bind(this)
+      },
+      {
+        'label'   : 'Delete playlist',
+        'handler' : function(){
+          if(confirm('Are you sure to delete ' + item.props.node.name +'?')){
+
+          }
+        }.bind(this)
       }
     ]
   },
