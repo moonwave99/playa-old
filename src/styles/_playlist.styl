@@ -2,18 +2,11 @@
   height "calc(100vh - %s - %s - %s)" % (size($tabsBarHeight) size($playbackBarHeight) size($footerHeight))
   overflow-y auto
   user-select none
-  @media(max-width: 640px)
-    &.sidebar-open
-      .albums
-        .album
-          header
-            .menu-link
-              right 0
-            .year
-              opacity 0
-              z-index -1
-            .context-menu
-              right 1rem
+  .sidebar-offset
+    transition transform .2s linear
+  &.sidebar-open
+    .sidebar-offset
+      transform translateX(size(-1*$sidebarWidth))
 
   .albums
     position relative
@@ -62,6 +55,7 @@
         padding-left size($albumItemClosedHeight)
         overflow-x hidden
         transition background-color .1s ease-in
+        cursor pointer
         .cover
           height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
           width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 2px)
@@ -99,8 +93,6 @@
           position absolute
           right 0
           top size(($albumItemClosedHeight - $albumDateFontSize) * .5)
-          opacity 1
-          transition opacity .2s ease-in
         .menu-link
           margin-right 1rem
           position absolute
@@ -109,7 +101,6 @@
           border-radius 50%
           background-color $albumItemMenuLinkBgColor
           opacity 0
-          transition opacity .2s ease-in
 
       .tracklist
         padding 0

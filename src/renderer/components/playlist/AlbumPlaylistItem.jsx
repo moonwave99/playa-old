@@ -121,8 +121,8 @@ var AlbumPlaylistItem = React.createClass({
           <div className={coverClasses} style={coverStyle}></div>
           <span className="artist">{this.props.album.getArtist()}</span><br/>
           <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
-          <a href="#" className="menu-link" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
-          <span className="year">{this.props.album.getYear()}</span>
+          <a href="#" className="menu-link sidebar-offset" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
+          <span className="year sidebar-offset">{this.props.album.getYear()}</span>
         </header>
         { this.props.isOpened ? this.renderTracklist() : null }
       </li>

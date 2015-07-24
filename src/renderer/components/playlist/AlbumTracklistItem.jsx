@@ -40,7 +40,7 @@ var AlbumTracklistItem = React.createClass({
         <span className="track-playing-indicator">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
         <span className="track-number">{ track.metadata.track }.</span>
         { this.renderTrackTitle() }
-        <span className="track-duration">{ this.formatTime(track.duration) }</span>
+        <span className="track-duration sidebar-offset">{ this.formatTime(track.duration) }</span>
       </li>
     )
   },
