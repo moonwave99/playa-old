@@ -1,4 +1,5 @@
 _                           = require 'lodash'
+fs                          = require 'fs-extra'
 md5                         = require 'md5'
 ipc                         = require 'ipc'
 path                        = require 'path'
@@ -27,8 +28,6 @@ KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceCon
 
 FileTree                    = require './renderer/util/FileTree'
 
-require('dotenv').load()
-
 _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   KeyboardNameSpaceConstants.FILE_BROWSER,
@@ -39,8 +38,12 @@ module.exports = class Playa
   constructor: (options) ->
     @options = options
     @options.settings =
-      fileBrowserRoot:  path.join process.env.HOME, 'Downloads'
-      playlistRoot:     path.join @options.userDataFolder, 'Playlists'
+      fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
+      playlistRoot:       path.join @options.userDataFolder, 'Playlists'
+      fileExtensions:     ['mp3', 'mp4', 'flac', 'ogg']
+      playlistExtension:  'm3u'
+
+    @options.discogs = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
 
     @fileBrowser = new FileBrowser()
 
@@ -56,22 +59,23 @@ module.exports = class Playa
       fileBrowser:  @fileBrowser
       rootFolder:   @options.settings.playlistRoot
       rootName:     'Playlists'
-      filter:       'm3u'
+      filter:       @options.settings.playlistExtension
 
     @playlistTree.loadRoot()
 
     @playlistLoader = new PlaylistLoader
       root: @options.settings.playlistRoot
-      playlistExtension: 'm3u'
+      playlistExtension: @options.settings.playlistExtension
 
     @mediaFileLoader = new MediaFileLoader
-      fileExtensions: ['mp3', 'mp4', 'flac', 'ogg']
+      fileExtensions: @options.settings.fileExtensions
+
 
     @coverLoader = new CoverLoader
       root: path.join @options.userDataFolder, 'Covers'
       discogs:
-        key: process.env.DISCOGS_KEY
-        secret: process.env.DISCOGS_SECRET
+        key: @options.discogs.DISCOGS_KEY
+        secret: @options.discogs.DISCOGS_SECRET
         throttle: 1000
 
     @waveformLoader = new WaveformLoader
