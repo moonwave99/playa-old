@@ -7,6 +7,8 @@
   &.sidebar-open
     .sidebar-offset
       transform translateX(size(-1*$sidebarWidth))
+    .drop-area
+      width "calc(100vw - %s)" % size($sidebarWidth)
 
   .albums
     position relative
