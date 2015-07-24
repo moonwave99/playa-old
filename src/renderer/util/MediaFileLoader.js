@@ -27,7 +27,7 @@ module.exports = class MediaFileLoader {
   }
   loadFolder(folder) {
     return new Promise((resolve, reject)=>{
-      glob("**/*.{" + this.fileExtensions.join(',') + "}", { cwd: folder }, (err, files)=> {
+      glob("**/*.{" + this.fileExtensions.join(',') + "}", { cwd: folder, nocase: true }, (err, files)=> {
         if(err){
           reject(err)
         }else{
