@@ -69,8 +69,7 @@ var Playlist = React.createClass({
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
       var album = item.getSelectedElement()
-      OpenPlaylistActions.playAlbum(album, album.tracks[0].id, this.props.playlist)
-      PlayerActions.play()
+      OpenPlaylistActions.selectAlbum(album, album.tracks[0].id, this.props.playlist, true)
     }
   },
   handleScrollToElement: function(state, list){

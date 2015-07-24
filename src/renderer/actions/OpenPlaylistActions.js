@@ -40,19 +40,13 @@ module.exports = {
       positionId: positionId
     })
   },
-  playFile: function(id, playlist){
+  selectAlbum: function(album, trackId, playlist, play){
     AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.PLAY_FILE,
-      id: id,
-      playlist: playlist
-    })
-  },
-  playAlbum: function(album, trackId, playlist){
-    AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.PLAY_ALBUM,
+      actionType: OpenPlaylistConstants.SELECT_ALBUM,
       album: album,
       trackId: trackId,
-      playlist: playlist
+      playlist: playlist,
+      play: play
     })
   },
   select: function(index){

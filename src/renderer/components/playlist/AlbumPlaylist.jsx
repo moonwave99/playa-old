@@ -101,8 +101,7 @@ var AlbumPlaylist = React.createClass({
     }
   },
   playTrack: function(album, trackId){
-    OpenPlaylistActions.playAlbum(album, trackId, this.props.playlist)
-    PlayerActions.play()
+    OpenPlaylistActions.selectAlbum(album, trackId, this.props.playlist, true)
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

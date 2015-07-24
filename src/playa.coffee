@@ -36,12 +36,19 @@ _tabScopeNames = [
 
 module.exports = class Playa
   constructor: (options) ->
+
+    @firstPlaylistLoad = false
+
     @options = options
     @options.settings =
       fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
       playlistRoot:       path.join @options.userDataFolder, 'Playlists'
       fileExtensions:     ['mp3', 'mp4', 'flac', 'ogg']
       playlistExtension:  'm3u'
+
+    @options.mainProps =
+      breakpoints:
+        widescreen: '1500px'
 
     @options.discogs = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
 
@@ -53,29 +60,24 @@ module.exports = class Playa
       rootName:     path.basename @options.settings.fileBrowserRoot
       filter:       'directory'
 
-    @fileTree.loadRoot()
-
     @playlistTree = new FileTree
       fileBrowser:  @fileBrowser
       rootFolder:   @options.settings.playlistRoot
       rootName:     'Playlists'
       filter:       @options.settings.playlistExtension
 
-    @playlistTree.loadRoot()
-
     @playlistLoader = new PlaylistLoader
-      root: @options.settings.playlistRoot
-      playlistExtension: @options.settings.playlistExtension
+      root:               @options.settings.playlistRoot
+      playlistExtension:  @options.settings.playlistExtension
 
     @mediaFileLoader = new MediaFileLoader
       fileExtensions: @options.settings.fileExtensions
 
-
     @coverLoader = new CoverLoader
       root: path.join @options.userDataFolder, 'Covers'
       discogs:
-        key: @options.discogs.DISCOGS_KEY
-        secret: @options.discogs.DISCOGS_SECRET
+        key:      @options.discogs.DISCOGS_KEY
+        secret:   @options.discogs.DISCOGS_SECRET
         throttle: 1000
 
     @waveformLoader = new WaveformLoader
@@ -90,6 +92,7 @@ module.exports = class Playa
 
     @player = new Player
       mediaFileLoader: @mediaFileLoader
+      resolution: 1000
 
     @player.on 'nowplaying', ->
       PlayerStore.emitChange()
@@ -98,6 +101,7 @@ module.exports = class Playa
       PlayerStore.emitChange()
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
+    PlayerStore.addChangeListener @_onPlayerChange
 
   init: ->
     @initIPC()
@@ -143,6 +147,17 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+
+  toggleSidebar: (toggle)=>
+    AppDispatcher.dispatch
+      actionType: SidebarConstants.TOGGLE
+      toggle: toggle
+
+    SidebarStatus = SidebarStore.getInfo()
+    if SidebarStatus.isOpen
+      switch SidebarStatus.selectedTab
+        when 0 then @loadSidebarPlaylists()
+        when 1 then @loadSidebarFileBrowser()
 
   initIPC: ->
     ipc.on 'sidebar:show', (tabName)=>
@@ -191,37 +206,36 @@ module.exports = class Playa
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder: folder
 
-  toggleSidebar: (toggle)=>
-    AppDispatcher.dispatch
-      actionType: SidebarConstants.TOGGLE
-      toggle: toggle
-
-    SidebarStatus = SidebarStore.getInfo()
-    if SidebarStatus.isOpen
-      switch SidebarStatus.selectedTab
-        when 0
-          @loadSidebarPlaylists()
-        when 1
-          @loadSidebarFileBrowser()
-
-  getMainProps: ->
-    breakpoints:
-      widescreen: '1500px'
-
   render: ->
-    React.render React.createElement(Main, @getMainProps()), document.getElementById('main')
+    React.render React.createElement(Main, @options.mainProps), document.getElementById('main')
 
   postRender: ->
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
-  _onOpenPlaylistChange: ->
-    playlists = OpenPlaylistStore.getAll().filter((i) -> !i.isNew() ).map (i) -> i.path
-    selectedPlaylist = OpenPlaylistStore.getSelectedIndex()
-    if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlists
-    if selectedPlaylist > -1
-      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylist
+  _onOpenPlaylistChange: =>
+    playlists = OpenPlaylistStore.getAll()
+    playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
+    selectedPlaylistIndex = OpenPlaylistStore.getSelectedIndex()
+    if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlistPaths
+    if selectedPlaylistIndex > -1
+      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylistIndex
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
+
+    if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylistIndex > -1
+      @firstPlaylistLoad = true
+      selectedPlaylist = playlists[selectedPlaylistIndex]
+      selectedAlbum = selectedPlaylist.findAlbumByTrackId @options.sessionSettings.lastPlayedTrack
+      if selectedAlbum
+        AppDispatcher.dispatch
+          actionType: OpenPlaylistConstants.SELECT_ALBUM
+          album: selectedAlbum
+          trackId: @options.sessionSettings.lastPlayedTrack
+          playlist: selectedPlaylist
+
+  _onPlayerChange: ->
+    playbackInfo = PlayerStore.getPlaybackInfo()
+    if playbackInfo.item and playbackInfo.item.id then ipc.send 'session:save', key: 'lastPlayedTrack', value: playbackInfo.item.id

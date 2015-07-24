@@ -63,11 +63,10 @@ module.exports = React.createClass({
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
-          {this.renderCover()}
           <ProgressBar
             seekTo={this.seekTo}
-            {...this.state}
-            />          
+            {...this.state}/>
+          {this.renderCover()}
           <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>
             {this.formatTime(this.state.currentTime)}
           </span>

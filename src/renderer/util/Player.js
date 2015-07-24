@@ -12,6 +12,7 @@ module.exports = class Player extends EventEmitter{
   constructor(options) {
     super(options)
     this.mediaFileLoader = options.mediaFileLoader
+    this.resolution = options.resolution || 1000
     this.player = groove.createPlayer()
     this.groovePlaylist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
@@ -32,10 +33,9 @@ module.exports = class Player extends EventEmitter{
     if(this.timer){
       return
     }
-
     this.timer = setInterval(()=>{
       this.emit('playerTick')
-    }, 1000)
+    }, this.resolution)
   }
   clearTimer(){
     this.timer && clearInterval(this.timer)
@@ -49,8 +49,7 @@ module.exports = class Player extends EventEmitter{
         reject(new Error('No playlist set!'))
       }else{
         this.player.attach(this.groovePlaylist, (err)=>{
-          if(err){
-            reject(err)
+          if(err){ reject(err)
           }else{
             this.attached = true
             resolve(true)
@@ -67,8 +66,7 @@ module.exports = class Player extends EventEmitter{
         reject(new Error('No playlist to detach!'))
       }else{
         this.player.detach((err)=>{
-          if(err){
-            reject(err)
+          if(err){ reject(err)
           }else{
             this.attached = false
             resolve(true)
@@ -214,15 +212,12 @@ module.exports = class Player extends EventEmitter{
   playAlbum(album, trackId){
     if(!this.currentAlbum || (this.currentAlbum.id !== album.id)){
       this.loading = true
-      this.clearPlaylist().then(()=>{
+      return this.clearPlaylist().then(()=>{
         Promise.all(album.tracks.map((track)=>{
           return new Promise((resolve, reject)=>{
             groove.open(track.filename, (err, file)=>{
-              if(err){
-                reject(err)
-              }else{
-                resolve(file)
-              }
+              if(err){ reject(err)
+              }else{ resolve(file) }
             })
           })
         })).then((files)=>{
@@ -237,7 +232,7 @@ module.exports = class Player extends EventEmitter{
         })
       })
     }else{
-      this.gotoTrack(trackId)
+      return Promise.resolve(this.gotoTrack(trackId))
     }
   }
 }

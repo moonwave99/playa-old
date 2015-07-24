@@ -96,6 +96,9 @@ module.exports = class AlbumPlaylist{
   indexOf(id){
     return _.findIndex(this.getItems(), { id: id })
   }
+  findAlbumByTrackId(id){
+    return _.find(this.items.toArray(), album => album.contains(id) )
+  }
   reorder(albumFromId, albumToId, position){
     var albumFrom = this.getAlbumById(albumFromId)
     var indexFrom = this.indexOf(albumFromId)

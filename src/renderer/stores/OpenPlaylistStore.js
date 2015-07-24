@@ -9,6 +9,7 @@ var uid = require('uid')
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
 var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
+var PlayerActions = require('../actions/PlayerActions')
 
 var AlbumPlaylist = require('../util/AlbumPlaylist')
 
@@ -112,10 +113,6 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         _playlists = _playlists.concat(action.playlists.filter((p)=>{
           return newPlaylists.indexOf(p.id) > -1
         }))
-        // select first of added playlist set
-        if(newPlaylists.length){
-          _selectedIndex = _.findIndex(_playlists, { id: newPlaylists[0] })
-        }
         OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
@@ -147,13 +144,18 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           })
         }
         break
-      case OpenPlaylistConstants.PLAY_ALBUM:
+      case OpenPlaylistConstants.SELECT_ALBUM:
         var playlist = _playlists[action.playlist.id]
         if(action.playlist.id !== _activeIndex){
           _activeIndex = action.playlist.id
         }
         playa.player.userPlaylist = action.playlist
-        playa.player.playAlbum(action.album, action.trackId)
+        playa.player.playAlbum(action.album, action.trackId).then(()=>{
+          PlayerActions.play()
+          setTimeout(()=>{
+            !action.play && playa.player.pause()
+          }, 100)
+        })
         break
       case OpenPlaylistConstants.REMOVE_FILES:
         var playlist = _getSelectedPlaylist()
@@ -168,20 +170,17 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           _playlists = _playlists.filter((p)=>{
             return p.id !== playlist.id
           })
-
           if(!_playlists.length){
             _playlists.push(
               new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
             )
           }
-
           var nextPlaylist = _getAt(Math.max(_selectedIndex -1, 0))
           if(nextPlaylist){
             _selectPlaylist(nextPlaylist, Math.max(_selectedIndex -1, 0))
           }else{
             OpenPlaylistStore.emitChange()
           }
-
         }
         break
       case OpenPlaylistConstants.REORDER_PLAYLIST:
