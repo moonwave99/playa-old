@@ -100,9 +100,6 @@ module.exports = class Player extends EventEmitter{
       }
     }
   }
-  playing() {
-    return this.groovePlaylist && this.groovePlaylist.playing()
-  }
   playbackInfo() {
     if(!this.groovePlaylist){
       return null;
@@ -185,7 +182,7 @@ module.exports = class Player extends EventEmitter{
   }
   insert(file) {
     this.groovePlaylist.insert(file)
-    if(this.playing() && !this.attached){
+    if(this.playing && !this.attached){
       this.groovePlaylist.pause()
     }
   }

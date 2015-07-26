@@ -191,7 +191,7 @@ module.exports = class Playa
 
     ipc.on 'playback:toggle', =>
       AppDispatcher.dispatch
-        actionType: if @player.playing() then PlayerConstants.PAUSE else PlayerConstants.PLAY
+        actionType: if @player.playing then PlayerConstants.PAUSE else PlayerConstants.PLAY
 
     ipc.on 'sidebar:toggle', =>
       @toggleSidebar()
