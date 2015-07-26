@@ -72,7 +72,7 @@ module.exports = React.createClass({
           </span>
           <div className="playback-track-info">
             <span className="playback-track-info-title">{ this.state.metadata.title }</span>
-            <span className="playback-track-info-artist">{ this.state.metadata.artist } - { this.state.metadata.album }</span>
+            <span className="playback-track-info-artist">{ this.getArtistInfo() }</span>
           </div>
           <span className="playback-time-indicator time-remaining" onClick={this.handleTimeIndicatorClick}>
             -{this.formatTime(this.state.remainingTime)}
@@ -97,6 +97,11 @@ module.exports = React.createClass({
   },
   seekTo: function(position){
     PlayerActions.seek(position)
+  },
+  getArtistInfo: function(){
+    return this.state.metadata.album
+      ? this.state.metadata.artist + ' - ' + this.state.metadata.album
+      : this.state.metadata.artist
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
