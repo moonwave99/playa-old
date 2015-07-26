@@ -11,7 +11,7 @@ var PlaylistItem = require('../util/PlaylistItem')
 var CHANGE_EVENT = 'change'
 
 var PlayerStore = assign({}, EventEmitter.prototype, {
-  
+
   getPlaybackInfo: function(){
     var info = playa.player.playbackInfo()
     var totalTime = info.item.duration || 0
@@ -23,7 +23,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
       playing: !!info.playing,
       hideInfo: !info.item.duration,
       metadata: info.item.metadata || {},
-      item: info.item ? new PlaylistItem(info.item): {},
+      item: info.item || {},
       filename: info.item.filename || null,
       album: info.album
     }

@@ -14,20 +14,19 @@ module.exports = class Player extends EventEmitter{
     this.mediaFileLoader = options.mediaFileLoader
     this.resolution = options.resolution || 1000
     this.player = groove.createPlayer()
-    this.groovePlaylist = groove.createPlaylist()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
+    this.groovePlaylist = groove.createPlaylist()
     this.timer = null
-    this.userPlaylist = null
     this.attached = false
     this.loading = false
+    this.playing = false
+    this.currentPlaylist = null
     this.currentAlbum = null
+    this.currentTrack = null
     this.lastTrackPlayed = null
     this.lastAction = null
     this.playbackDirection = 0
-  }
-  getAll(){
-    return this.groovePlaylist ? this.groovePlaylist.items() : []
   }
   startTimer(){
     if(this.timer){
@@ -91,6 +90,7 @@ module.exports = class Player extends EventEmitter{
       if(!this.timer){
         this.startTimer()
       }
+      this.currentTrack = this.currentAlbum.findById(md5(current.item.file.filename))
       this.emit('nowplaying')
     }else{
       if(this.playbackDirection == 0){
@@ -110,19 +110,21 @@ module.exports = class Player extends EventEmitter{
     var info = this.groovePlaylist.position()
     return {
       position: info.pos,
-      playing: info.item && this.groovePlaylist.playing(),
-      item: info.item ? this.mediaFileLoader.getFromPool(info.item.file.filename) : {},
+      playing: this.playing,
+      item: this.currentTrack || {},
       album: this.currentAlbum
     }
   }
   play() {
     this.attach().then(()=>{
       this.startTimer()
+      this.playing = true
       this.groovePlaylist.play()
     })
   }
   pause() {
     this.groovePlaylist.pause()
+    this.playing = false
     this.clearTimer()
   }
   nextTrack() {
@@ -159,6 +161,8 @@ module.exports = class Player extends EventEmitter{
       return id == md5(item.file.filename)
     })
     if(item){
+      this.currentTrack = this.currentAlbum.findById(id)
+      this.emit('trackChange')
       this.groovePlaylist.seek(item, -1)
       !this.groovePlaylist.playing() && this.play()
     }
@@ -172,12 +176,12 @@ module.exports = class Player extends EventEmitter{
     current.item && this.groovePlaylist.seek(current.item, seekToSecond)
   }
   nextAlbum(){
-    var nextAlbum = this.userPlaylist.getNext(this.currentAlbum)
-    return nextAlbum && this.playAlbum(nextAlbum)
+    var nextAlbum = this.currentPlaylist.getNext(this.currentAlbum)
+    return nextAlbum && this.loadAlbum(nextAlbum)
   }
   prevAlbum(){
-    var prevAlbum = this.userPlaylist.getPrevious(this.currentAlbum)
-    return prevAlbum && this.playAlbum(prevAlbum)
+    var prevAlbum = this.currentPlaylist.getPrevious(this.currentAlbum)
+    return prevAlbum && this.loadAlbum(prevAlbum)
   }
   insert(file) {
     this.groovePlaylist.insert(file)
@@ -209,30 +213,34 @@ module.exports = class Player extends EventEmitter{
       file && this.groovePlaylist.insert(file)
     })
   }
-  playAlbum(album, trackId){
-    if(!this.currentAlbum || (this.currentAlbum.id !== album.id)){
-      this.loading = true
-      return this.clearPlaylist().then(()=>{
-        Promise.all(album.tracks.map((track)=>{
-          return new Promise((resolve, reject)=>{
-            groove.open(track.filename, (err, file)=>{
-              if(err){ reject(err)
-              }else{ resolve(file) }
+  loadAlbum(album){
+    return new Promise((resolve, reject)=>{
+      if(!this.currentAlbum || (this.currentAlbum.id !== album.id)){
+        this.loading = true
+        this.clearPlaylist().then(()=>{
+          Promise.all(album.tracks.map((track)=>{
+            return new Promise((resolve, reject)=>{
+              groove.open(track.filename, (err, file)=>{
+                if(err){ reject(err)
+                }else{ resolve(file) }
+              })
             })
+          })).then((files)=>{
+            this.currentAlbum = album
+            return this.append(files)
+          }).then(()=>{
+            this.loading = false
+            this.emit('trackChange')
+            resolve(album)
+          }).catch((err)=>{
+            console.error(err, err.stack)
+            reject(err)
           })
-        })).then((files)=>{
-          this.currentAlbum = album
-          return this.append(files)
-        }).then(()=>{
-          this.loading = false
-          this.gotoTrack(trackId)
-          return true
-        }).catch((err)=>{
-          console.error(err, err.stack)
         })
-      })
-    }else{
-      return Promise.resolve(this.gotoTrack(trackId))
-    }
+      }else{
+        this.emit('trackChange')
+        resolve(this.currentAlbum)
+      }
+    })
   }
 }

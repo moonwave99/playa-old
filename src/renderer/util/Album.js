@@ -22,6 +22,9 @@ module.exports = class Album{
   contains(id){
     return _(this.tracks).map(i => i.id).contains(id)
   }
+  findById(id){
+    return _.findWhere(this.tracks, { id: id })
+  }
   isCompilation(){
     return this._isCompilation
   }

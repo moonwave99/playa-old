@@ -26,6 +26,7 @@ OpenPlaylistActions         = require './renderer/actions/OpenPlaylistActions'
 KeyboardFocusActions        = require './renderer/actions/KeyboardFocusActions'
 KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceConstants'
 
+OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
 
 _tabScopeNames = [
@@ -94,14 +95,21 @@ module.exports = class Playa
       mediaFileLoader: @mediaFileLoader
       resolution: 1000
 
+    @openPlaylistManager = new OpenPlaylistManager
+      loader: @playlistLoader
+
+    @player.on 'trackChange', ->
+      PlayerStore.emitChange()
+
     @player.on 'nowplaying', ->
+      playbackInfo = PlayerStore.getPlaybackInfo()
+      if playbackInfo.item and playbackInfo.item.id then ipc.send 'session:save', key: 'lastPlayedTrack', value: playbackInfo.item.id
       PlayerStore.emitChange()
 
     @player.on 'playerTick', ->
       PlayerStore.emitChange()
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
-    PlayerStore.addChangeListener @_onPlayerChange
 
   init: ->
     @initIPC()
@@ -122,7 +130,7 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: @options.sessionSettings.selectedPlaylist or 0
+      selected: Math.max @options.sessionSettings.selectedPlaylist, 0
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
@@ -215,27 +223,24 @@ module.exports = class Playa
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
   _onOpenPlaylistChange: =>
-    playlists = OpenPlaylistStore.getAll()
+    playlists = @openPlaylistManager.playlists
     playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
-    selectedPlaylistIndex = OpenPlaylistStore.getSelectedIndex()
+    selectedPlaylistIndex = @openPlaylistManager.selectedIndex
     if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlistPaths
     if selectedPlaylistIndex > -1
-      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylistIndex
+      ipc.send 'session:save', key: 'selectedPlaylist', value: 0
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylistIndex > -1
       @firstPlaylistLoad = true
-      selectedPlaylist = playlists[selectedPlaylistIndex]
+      selectedPlaylist = @openPlaylistManager.getSelectedPlaylist()
       selectedAlbum = selectedPlaylist.findAlbumByTrackId @options.sessionSettings.lastPlayedTrack
       if selectedAlbum
         AppDispatcher.dispatch
           actionType: OpenPlaylistConstants.SELECT_ALBUM
+          playlist: selectedPlaylist
           album: selectedAlbum
           trackId: @options.sessionSettings.lastPlayedTrack
-          playlist: selectedPlaylist
-
-  _onPlayerChange: ->
-    playbackInfo = PlayerStore.getPlaybackInfo()
-    if playbackInfo.item and playbackInfo.item.id then ipc.send 'session:save', key: 'lastPlayedTrack', value: playbackInfo.item.id
+          play: false
