@@ -45,7 +45,7 @@ module.exports = class Playa
       fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
       playlistRoot:       path.join @options.userDataFolder, 'Playlists'
       fileExtensions:     ['mp3', 'mp4', 'flac', 'ogg']
-      playlistExtension:  'm3u'
+      playlistExtension:  '.yml'
 
     @options.mainProps =
       breakpoints:
@@ -115,14 +115,14 @@ module.exports = class Playa
     @initIPC()
     @loadPlaylists()
 
-  loadPlaylists: ->
+  loadPlaylists: =>
     playlists = []
     if @options.sessionSettings.openPlaylists
       playlists = @options.sessionSettings.openPlaylists.map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
 
     if playlists.length == 0
-      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
+      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) })
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
@@ -196,10 +196,10 @@ module.exports = class Playa
     ipc.on 'sidebar:toggle', =>
       @toggleSidebar()
 
-    ipc.on 'playlist:create', ->
+    ipc.on 'playlist:create', =>
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
+        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) }) ]
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch

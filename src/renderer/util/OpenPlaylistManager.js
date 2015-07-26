@@ -94,7 +94,7 @@ module.exports = class OpenPlaylistManager {
       this.playlists = this.playlists.filter( p => p.id !== playlist.id )
       if(!this.playlists.length){
         this.playlists.push(
-          new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
+          new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + playa.options.settings.playlistExtension) })
         )
       }
       var nextPlaylist = this.getAt(Math.max(this.selectedIndex -1, 0))

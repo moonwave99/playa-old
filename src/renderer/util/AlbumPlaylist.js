@@ -15,7 +15,7 @@ module.exports = class AlbumPlaylist{
     this.items = new DoublyLinkedList()
     this.id = options.id || uid()
     this.path = options.path
-    this.ext = '.m3u'
+    this.ext = this.isNew() ? '.yml' : path.extname(this.path)
     this.title = this.isNew() ? 'Untitled' : path.basename(this.path, this.ext)
     this.loaded = false
     this.lastScrolledAlbum = null
@@ -137,6 +137,12 @@ module.exports = class AlbumPlaylist{
         })
       })
     })
+  }
+  serialize(){
+    return {
+      title: this.title,
+      tracklist: this.getFileList()
+    }
   }
   _process(files, opts){
     var albums = _.groupBy(files, (file)=>{

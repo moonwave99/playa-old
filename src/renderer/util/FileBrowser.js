@@ -38,6 +38,6 @@ module.exports = class FileBrowser {
     })
   }
   loadFiles(folder, filter){
-    return glob.callAsync(this, path.join(folder, '*.' + filter))
+    return glob.callAsync(this, path.join(folder, '*' + filter))
   }
 }
