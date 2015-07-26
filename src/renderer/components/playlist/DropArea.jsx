@@ -33,8 +33,11 @@ var DropArea = React.createClass({
     var classes = cx({
       'drop-area' : true
     })
+    var style = {
+      height: this.props.height
+    }
     return this.props.connectDropTarget(
-      <div className={classes}>
+      <div className={classes} style={style}>
         <span className="text">Drop albums here!</span>
       </div>
     )

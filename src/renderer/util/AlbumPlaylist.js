@@ -38,6 +38,9 @@ module.exports = class AlbumPlaylist{
   getItems(){
     return this.items.toArray()
   }
+  getLength(){
+    return this.items.getLength()
+  }
   getIds(){
     return this.items.toArray().map( i => i.id )
   }

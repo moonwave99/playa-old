@@ -68,6 +68,7 @@ var AlbumPlaylist = React.createClass({
       <div onClick={this.handleGlobalClick}>
         <ol className="albums list-unstyled">{albums}</ol>
         <DropArea
+          height={this.calculateDropAreaHeight()}
           moveAlbum={this.moveAlbum}
           handleFolderDrop={this.handleFolderDrop}
           handleDragEnd={this.handleDragEnd}/>
@@ -102,6 +103,9 @@ var AlbumPlaylist = React.createClass({
   },
   playTrack: function(album, trackId){
     OpenPlaylistActions.selectAlbum(album, trackId, this.props.playlist, true)
+  },
+  calculateDropAreaHeight: function(){
+    return 'calc(100vh - 9rem - ' + (4 * this.props.playlist.getLength() ) + 'rem)'
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
