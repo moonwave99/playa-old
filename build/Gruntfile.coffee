@@ -222,5 +222,5 @@ module.exports = (grunt) ->
   ciTasks.push('codesign')
   grunt.registerTask('ci', ciTasks)
 
-  defaultTasks = ['bower:install', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
+  defaultTasks = ['bower:install', 'build-atom-shell', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
   grunt.registerTask('default', defaultTasks)
