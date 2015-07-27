@@ -6,7 +6,7 @@ var fs = Promise.promisifyAll(require('fs-extra'))
 var ipc = require('ipc')
 var md5 = require('MD5')
 var path = require('path')
-var groove = require('groove')
+var yaml = Promise.promisifyAll(require('js-yaml'))
 var glob = Promise.promisifyAll(require('glob'))
 
 var AlbumPlaylist = require('./AlbumPlaylist')
@@ -17,36 +17,21 @@ module.exports = class PlaylistLoader {
     this.playlistExtension = options.playlistExtension
     this.treeCache = []
   }
-  parseM3U(m3UPath){
-    return fs.readFileAsync(m3UPath, 'utf8').bind(this).then((data)=>{
-      return data.split('\n')
-    }).catch((err)=>{
-      console.error(err.stack)
-    })
-  }
-  loadTree(){
-    return new Promise((resolve, reject)=>{
-      if(this.treeCache.length){
-        resolve(this.treeCache)
-      }else{
-        glob.callAsync(this, path.join(this.root, '**', '*.' + this.playlistExtension)).bind(this).then((files)=>{
-          this.treeCache = files.map( file => new AlbumPlaylist({
-            id: md5(file),
-            path: file,
-            title: path.basename(file, '.' + this.playlistExtension)
-          }) )
-          resolve(this.treeCache)
-        }).catch(reject)
-      }
-    })
+  parse(playlistPath){
+    return fs.readFileAsync(playlistPath, 'utf8').bind(this)
+      .then(yaml.safeLoad)
+      .catch((err)=>{
+        console.error(err, err.stack)
+      })
   }
   load(playlist) {
     return new Promise((resolve, reject)=>{
       if(playlist.isNew()){
         resolve(playlist)
       }else{
-        resolve(this.parseM3U(playlist.path).then((files)=>{
-          return playlist.load(files)
+        resolve(this.parse(playlist.path).then((data)=>{
+          playlist.hydrate(data)
+          return playlist.load(data.tracklist)
         }))
       }
     })
@@ -58,16 +43,21 @@ module.exports = class PlaylistLoader {
         title: 'Save Playlist as',
         defaultPath: this.root,
         filters: [
-          { name: 'Playlist files', extensions: [this.playlistExtension] }
+          { name: 'Playlist files', extensions: [this.playlistExtension.replace('.', '')] }
         ]
       })
+      if(!targetPath){
+        return Promise.reject('Cancel save')
+      }else{
+        playlist.title = path.basename(targetPath.replace(this.root, ''), this.playlistExtension)
+      }
     }else{
-      targetPath = path.join(this.root, playlist.title + '.' + this.playlistExtension)
+      targetPath = path.join(this.root, playlist.title + this.playlistExtension)
     }
 
     return fs.outputFileAsync(
       targetPath,
-      playlist.getFileList().join("\n")
+      yaml.safeDump(playlist.serialize())
     ).then(()=>{
       playlist.path = targetPath
     })

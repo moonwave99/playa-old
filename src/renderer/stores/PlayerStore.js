@@ -14,18 +14,16 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
 
   getPlaybackInfo: function(){
     var info = playa.player.playbackInfo()
-    var totalTime = info.item.duration || 0
+    var totalTime = info.currentTrack ? info.currentTrack.duration : 0
     var currentTime = Math.round(info.position) || 0
     return{
       totalTime: totalTime,
       currentTime: currentTime,
       remainingTime: totalTime - currentTime,
       playing: !!info.playing,
-      hideInfo: !info.item.duration,
-      metadata: info.item.metadata || {},
-      item: info.item || {},
-      filename: info.item.filename || null,
-      album: info.album
+      hideInfo: !info.currentTrack,
+      currentTrack: info.currentTrack,
+      currentAlbum: info.currentAlbum
     }
   },
 
@@ -65,7 +63,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
       case PlayerConstants.NEXT_TRACK:
         var next = playa.player.nextTrack()
         if(next){
-          // PlayerStore.emitChange()
+          PlayerStore.emitChange()
         }
         break
       case PlayerConstants.PREV_TRACK:

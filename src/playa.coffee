@@ -45,7 +45,7 @@ module.exports = class Playa
       fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
       playlistRoot:       path.join @options.userDataFolder, 'Playlists'
       fileExtensions:     ['mp3', 'mp4', 'flac', 'ogg']
-      playlistExtension:  'm3u'
+      playlistExtension:  '.yml'
 
     @options.mainProps =
       breakpoints:
@@ -84,7 +84,7 @@ module.exports = class Playa
     @waveformLoader = new WaveformLoader
       root: path.join @options.userDataFolder, 'Waveforms'
       config:
-        'wait'              : 100,
+        'wait'              : 300,
         'png-width'         : 1600,
         'png-height'        : 160,
         'png-color-bg'      : '00000000',
@@ -103,7 +103,10 @@ module.exports = class Playa
 
     @player.on 'nowplaying', ->
       playbackInfo = PlayerStore.getPlaybackInfo()
-      if playbackInfo.item and playbackInfo.item.id then ipc.send 'session:save', key: 'lastPlayedTrack', value: playbackInfo.item.id
+      selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
+      selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id
+      selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id
+      OpenPlaylistActions.savePlaylist()
       PlayerStore.emitChange()
 
     @player.on 'playerTick', ->
@@ -115,14 +118,14 @@ module.exports = class Playa
     @initIPC()
     @loadPlaylists()
 
-  loadPlaylists: ->
+  loadPlaylists: =>
     playlists = []
     if @options.sessionSettings.openPlaylists
       playlists = @options.sessionSettings.openPlaylists.map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
 
     if playlists.length == 0
-      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') })
+      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) })
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
@@ -196,10 +199,10 @@ module.exports = class Playa
     ipc.on 'sidebar:toggle', =>
       @toggleSidebar()
 
-    ipc.on 'playlist:create', ->
+    ipc.on 'playlist:create', =>
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled.m3u') }) ]
+        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) }) ]
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
@@ -228,7 +231,7 @@ module.exports = class Playa
     selectedPlaylistIndex = @openPlaylistManager.selectedIndex
     if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlistPaths
     if selectedPlaylistIndex > -1
-      ipc.send 'session:save', key: 'selectedPlaylist', value: 0
+      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylistIndex
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
@@ -236,11 +239,11 @@ module.exports = class Playa
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylistIndex > -1
       @firstPlaylistLoad = true
       selectedPlaylist = @openPlaylistManager.getSelectedPlaylist()
-      selectedAlbum = selectedPlaylist.findAlbumByTrackId @options.sessionSettings.lastPlayedTrack
+      selectedAlbum = selectedPlaylist.getLastPlayedAlbum()
       if selectedAlbum
         AppDispatcher.dispatch
           actionType: OpenPlaylistConstants.SELECT_ALBUM
           playlist: selectedPlaylist
           album: selectedAlbum
-          trackId: @options.sessionSettings.lastPlayedTrack
+          trackId: selectedPlaylist.lastPlayedTrackId
           play: false

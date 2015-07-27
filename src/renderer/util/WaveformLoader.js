@@ -16,12 +16,14 @@ module.exports = class WaveformLoader {
     return new Promise((resolve, reject)=>{
       var waveformPath = this.getCached(track)
       if(waveformPath){
-        resolve(waveformPath)
+        setTimeout(()=>{
+          resolve(waveformPath)
+        }, this.config.wait)
       }else{
-        var targetPath = this.getWaveformPath(track)
+        waveformPath = this.getWaveformPath(track)
         waveform(track.filename, {
           'scan'              : false,
-          'png'               : targetPath,
+          'png'               : waveformPath,
           'png-width'         : this.config['png-width'],
           'png-height'        : this.config['png-height'],
           'png-color-bg'      : this.config['png-color-bg'],
@@ -31,9 +33,7 @@ module.exports = class WaveformLoader {
           if(err){
             reject(err)
           }else{
-            setTimeout(()=>{
-              resolve(targetPath)
-            }, this.config.wait)
+            resolve(waveformPath)
           }
         })
       }
