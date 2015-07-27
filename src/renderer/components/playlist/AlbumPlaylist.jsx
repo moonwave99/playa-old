@@ -15,7 +15,7 @@ var DropArea = require('./DropArea.jsx')
 function getPlayerState(){
   var playerState = PlayerStore.getPlaybackInfo()
   return {
-    currentItem: playerState.item
+    currentTrack: playerState.currentTrack
   }
 }
 
@@ -55,7 +55,7 @@ var AlbumPlaylist = React.createClass({
           handleFolderDrop={this.handleFolderDrop}
           handleDragEnd={this.handleDragEnd}
           playTrack={this.playTrack}
-          currentItem={this.state.currentItem}
+          currentTrack={this.state.currentTrack || {}}
           moveAlbum={this.moveAlbum}
           direction={this.props.direction}
           isOpened={isOpened}

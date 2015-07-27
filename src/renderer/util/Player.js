@@ -24,7 +24,7 @@ module.exports = class Player extends EventEmitter{
     this.currentPlaylist = null
     this.currentAlbum = null
     this.currentTrack = null
-    this.lastTrackPlayed = null
+    this.lastPlayedTrack = null
     this.lastAction = null
     this.playbackDirection = 0
   }
@@ -80,12 +80,12 @@ module.exports = class Player extends EventEmitter{
     }
     var current = this.groovePlaylist.position()
     if(current.item){
-      if(!this.lastTrackPlayed){
-        this.lastTrackPlayed = current.item.file.metadata()
+      if(!this.lastPlayedTrack){
+        this.lastPlayedTrack = current.item.file.metadata()
       }else{
-        var _lastTrackPlayed = current.item.file.metadata()
-        this.playbackDirection = this.lastTrackPlayed.track <= _lastTrackPlayed.track ? 1 : -1
-        this.lastTrackPlayed = _lastTrackPlayed
+        var _lastPlayedTrack = current.item.file.metadata()
+        this.playbackDirection = this.lastPlayedTrack.track <= _lastPlayedTrack.track ? 1 : -1
+        this.lastPlayedTrack = _lastPlayedTrack
       }
       if(!this.timer){
         this.startTimer()
@@ -108,8 +108,8 @@ module.exports = class Player extends EventEmitter{
     return {
       position: info.pos,
       playing: this.playing,
-      item: this.currentTrack || {},
-      album: this.currentAlbum
+      currentTrack: this.currentTrack,
+      currentAlbum: this.currentAlbum
     }
   }
   play() {

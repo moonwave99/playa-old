@@ -18,7 +18,8 @@ module.exports = class AlbumPlaylist{
     this.ext = this.isNew() ? '.yml' : path.extname(this.path)
     this.title = this.isNew() ? 'Untitled' : path.basename(this.path, this.ext)
     this.loaded = false
-    this.lastScrolledAlbum = null
+    this.lastPlayedAlbumId = null
+    this.lastPlayedTrackId = null
   }
   getFirst(){
     return this.items.getFirst()
@@ -47,8 +48,8 @@ module.exports = class AlbumPlaylist{
   getAlbumById(id){
     return _.findWhere(this.items.toArray(), { id: id })
   }
-  getDisplayMode(){
-    return 'albums'
+  getLastPlayedAlbum(){
+    return this.getAlbumById(this.lastPlayedAlbumId)
   }
   getStats(){
     var albums = this.getItems()
@@ -138,9 +139,16 @@ module.exports = class AlbumPlaylist{
       })
     })
   }
+  hydrate(data){
+    this.title = data.title
+    this.lastPlayedAlbumId = data.lastPlayedAlbumId
+    this.lastPlayedTrackId = data.lastPlayedTrackId
+  }
   serialize(){
     return {
       title: this.title,
+      lastPlayedAlbumId: this.lastPlayedAlbumId,
+      lastPlayedTrackId: this.lastPlayedTrackId,
       tracklist: this.getFileList()
     }
   }

@@ -54,6 +54,8 @@ module.exports = React.createClass({
       'playback-logo' : true,
       'hide-logo'     : !this.state.hideInfo
     })
+    var title = this.state.currentTrack ? this.state.currentTrack.metadata.title : null
+    var artistInfo = this.state.currentTrack ? this.getArtistInfo() : null
     return (
       <div className="playback-bar">
         <div className={logoClasses}>Playa.</div>
@@ -63,16 +65,14 @@ module.exports = React.createClass({
           <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
-          <ProgressBar
-            seekTo={this.seekTo}
-            {...this.state}/>
-          {this.renderCover()}
+          <ProgressBar seekTo={this.seekTo} {...this.state}/>
+          { this.renderCover() }
           <span className="playback-time-indicator time-progress" onClick={this.handleTimeIndicatorClick}>
             {this.formatTime(this.state.currentTime)}
           </span>
           <div className="playback-track-info">
-            <span className="playback-track-info-title">{ this.state.metadata.title }</span>
-            <span className="playback-track-info-artist">{ this.getArtistInfo() }</span>
+            <span className="playback-track-info-title">{ title }</span>
+            <span className="playback-track-info-artist">{ artistInfo }</span>
           </div>
           <span className="playback-time-indicator time-remaining" onClick={this.handleTimeIndicatorClick}>
             -{this.formatTime(this.state.remainingTime)}
@@ -99,13 +99,13 @@ module.exports = React.createClass({
     PlayerActions.seek(position)
   },
   getArtistInfo: function(){
-    return this.state.metadata.album
-      ? this.state.metadata.artist + ' - ' + this.state.metadata.album
-      : this.state.metadata.artist
+    return this.state.currentTrack.metadata.album
+      ? this.state.currentTrack.metadata.artist + ' - ' + this.state.currentTrack.metadata.album
+      : this.state.currentTrack.metadata.artist
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
-    this.state.album && playa.coverLoader.load(this.state.album)
+    this.state.currentAlbum && playa.coverLoader.load(this.state.currentAlbum)
       .then(this.updateCover)
       .catch((err)=>{
         this.updateCover(false)

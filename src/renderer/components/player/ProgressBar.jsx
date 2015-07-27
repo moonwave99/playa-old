@@ -6,12 +6,12 @@ var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
 
 module.exports = React.createClass({
-  componentWillUpdate: function(nextProps){
-    if(!nextProps.item){
+  componentDidUpdate: function(prevProps){
+    if(!this.props.currentTrack){
       this.updateWaveform(null)
-    }else if(nextProps.item.id !== this.props.item.id){
+    }else if(this.props.currentTrack && (!prevProps.currentTrack || prevProps.currentTrack.id !== this.props.currentTrack.id)){
       this.updateWaveform(null)
-      nextProps.item.id && playa.waveformLoader.load(nextProps.item)
+      playa.waveformLoader.load(this.props.currentTrack)
         .then(this.updateWaveform)
         .catch((err)=>{
           console.error(err, err.stack)

@@ -30,7 +30,7 @@ module.exports = class PlaylistLoader {
         resolve(playlist)
       }else{
         resolve(this.parse(playlist.path).then((data)=>{
-          playlist.title = data.title
+          playlist.hydrate(data)
           return playlist.load(data.tracklist)
         }))
       }

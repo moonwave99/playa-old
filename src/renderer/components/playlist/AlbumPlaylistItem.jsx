@@ -92,7 +92,7 @@ var AlbumPlaylistItem = React.createClass({
           track={track}
           index={index}
           selected={this.state.selectedTrack == index}
-          isPlaying={track.id == this.props.currentItem.id}
+          isPlaying={track.id == this.props.currentTrack.id}
           handleDoubleClick={this.handleTracklistDoubleClick}/>
       )
     })
@@ -101,7 +101,7 @@ var AlbumPlaylistItem = React.createClass({
     )
   },
   render: function() {
-    var isPlaying = this.props.album.contains(this.props.currentItem.id)
+    var isPlaying = this.props.album.contains(this.props.currentTrack.id)
     var classes = cx({
       'album'     : true,
       'playing'   : isPlaying,
