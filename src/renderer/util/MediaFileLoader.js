@@ -1,5 +1,6 @@
 "use babel"
 
+var _ = require('lodash')
 var ipc = require('ipc')
 var fs = require('fs-extra')
 var md5 = require('MD5')
@@ -26,17 +27,21 @@ module.exports = class MediaFileLoader {
     return Promise.all(loads)
   }
   loadFolder(folder) {
-    return new Promise((resolve, reject)=>{
-      glob("**/*.{" + this.fileExtensions.join(',') + "}", { cwd: folder, nocase: true }, (err, files)=> {
-        if(err){
-          reject(err)
-        }else{
-          resolve(files)
-        }
+    folder = _.isArray(folder) ? folder : [folder]
+    return Promise.all(folder.map((f)=>{
+      return new Promise((resolve, reject)=>{
+        var pattern = "**/*.{" + this.fileExtensions.join(',') + "}"
+        glob(pattern, { cwd: f, nocase: true }, (err, files)=> {
+          if(err){
+            reject(err)
+          }else{
+            resolve(files.map( file => path.join(f, file) ))
+          }
+        })
       })
-    })
+    }))
     .then((files)=>{
-      return Promise.all(files.map( f => this.openFile( path.join(folder, f) )))
+      return Promise.all(_.flatten(files).map( f => this.openFile(f) ))
     })
     .catch((err)=>{
       console.error(err, err.stack)

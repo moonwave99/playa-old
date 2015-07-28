@@ -1,5 +1,7 @@
 "use babel"
 
+var _ = require('lodash')
+var path = require('path')
 var shell = require('shell')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
@@ -11,8 +13,12 @@ var NativeTypes = require('react-dnd/modules/backends/HTML5').NativeTypes
 var DragDropConstants = require('../../constants/DragDropConstants')
 
 const _normaliseDroppedFolder = function(files){
-  var folders = files.filter( f => !f.type ).map( f => f.path )
-  return folders[0]
+  var folders
+  return _(files)
+    .filter( f => !f.type ).map( f => f.path )
+    .tap( f => folders = f )
+    .sortBy( f => f.split(path.sep).length )
+    .filter( f => folders.filter( _f => (_f.indexOf(f) == 0) && (f !== _f) ).length == 0 ).value()
 }
 
 const dropAreaTarget = {
