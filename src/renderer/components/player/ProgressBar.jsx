@@ -39,6 +39,9 @@ module.exports = React.createClass({
     React.findDOMNode(this.refs.cursor).style.opacity = '0'
   },
   handleClick: function(event){
+    if(!this.props.playing){
+      return
+    }
     var bounds = event.currentTarget.getBoundingClientRect()
     var position = (event.clientX - bounds.left) / bounds.width
     this.props.seekTo(position)
