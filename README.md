@@ -6,7 +6,7 @@
 
 ## Features
 
-- Plays `mp3`, `mp4`, `flac`, `ogg` files;
+- Plays `mp3`, `m4a`, `flac`, `ogg` files;
 - open playlists in multiple tabs;
 - displays track [waveform](https://github.com/andrewrk/waveform);
 - displays album cover art from [Discogs](https://www.discogs.com/developers/).
