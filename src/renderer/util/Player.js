@@ -13,6 +13,7 @@ module.exports = class Player extends EventEmitter{
     super(options)
     this.mediaFileLoader = options.mediaFileLoader
     this.resolution = options.resolution || 1000
+    this.scrobbleThreshold = options.scrobbleThreshold
     this.player = groove.createPlayer()
     this.player.useExactAudioFormat = true
     this.player.on('nowplaying', this.onNowplaying.bind(this))
@@ -21,24 +22,39 @@ module.exports = class Player extends EventEmitter{
     this.attached = false
     this.loading = false
     this.playing = false
+    this.alreadyScrobbled = false
     this.currentPlaylist = null
     this.currentAlbum = null
     this.currentTrack = null
     this.lastPlayedTrack = null
     this.lastAction = null
     this.playbackDirection = 0
+    this.currentTrackPlayedAmount = 0
   }
   startTimer(){
     if(this.timer){
       return
     }
     this.timer = setInterval(()=>{
+      this.checkScrobble()
       this.emit('playerTick')
     }, this.resolution)
   }
   clearTimer(){
     this.timer && clearInterval(this.timer)
+    this.currentTrackPlayedAmount = 0
+    this.alreadyScrobbled = false
     this.timer = null
+  }
+  checkScrobble(){
+    if(this.alreadyScrobbled){
+      return
+    }
+    var amount = this.currentTrackPlayedAmount++
+    if(amount >this.scrobbleThreshold.absolute || amount/this.currentTrack.duration > this.scrobbleThreshold.percent){
+      this.emit('scrobbleTrack', this.currentTrack, this.currentTrackPlayedAmount)
+      this.alreadyScrobbled = true
+    }
   }
   attach(){
     return new Promise((resolve, reject)=>{
@@ -80,6 +96,7 @@ module.exports = class Player extends EventEmitter{
     }
     var current = this.groovePlaylist.position()
     if(current.item){
+      this.alreadyScrobbled = false
       if(!this.lastPlayedTrack){
         this.lastPlayedTrack = current.item.file.metadata()
       }else{
@@ -132,6 +149,7 @@ module.exports = class Player extends EventEmitter{
       return item.id == current.item.id
     })
     if(currentIndex < items.length -1){
+      this.clearTimer()
       this.groovePlaylist.seek(items[currentIndex+1], -1)
       return true
     }else{
@@ -146,6 +164,7 @@ module.exports = class Player extends EventEmitter{
       return item.id == current.item.id
     })
     if(currentIndex > 0){
+      this.clearTimer()
       this.groovePlaylist.seek(items[currentIndex-1], -1)
       return true
     }else{
@@ -158,6 +177,7 @@ module.exports = class Player extends EventEmitter{
       return id == md5(item.file.filename)
     })
     if(item){
+      this.clearTimer()
       this.currentTrack = this.currentAlbum.findById(id)
       this.emit('trackChange')
       this.groovePlaylist.seek(item, -1)
@@ -168,6 +188,7 @@ module.exports = class Player extends EventEmitter{
     if(!this.groovePlaylist){
       return false;
     }
+    this.currentTrackPlayedAmount = 0
     var current = this.groovePlaylist.position()
     var seekToSecond = current.item.file.duration() * to
     current.item && this.groovePlaylist.seek(current.item, seekToSecond)
@@ -227,6 +248,7 @@ module.exports = class Player extends EventEmitter{
             return this.append(files)
           }).then(()=>{
             this.loading = false
+            this.clearTimer()
             this.emit('trackChange')
             resolve(album)
           }).catch((err)=>{
