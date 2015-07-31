@@ -107,11 +107,11 @@ module.exports = class Playa
       loader: @playlistLoader
 
     @lastFMClient = new LastFMClient
-      scrobbleEnabled:  @options.userSettings.get('scrobbleEnabled')
+      scrobbleEnabled:  @getSetting 'user', 'scrobbleEnabled'
       key:              @options.lastfm.LASTFM_KEY
       secret:           @options.lastfm.LASTFM_SECRET
       useragent:        @options.settings.useragent
-      sessionInfo:      @options.sessionSettings.get('lastFMSession')
+      sessionInfo:      @getSetting 'session', 'lastFMSession'
 
     @lastFMClient.on 'signout', ()=>
       console.info 'LastFM signout'
@@ -146,7 +146,7 @@ module.exports = class Playa
       PlayerStore.emitChange()
 
     @player.on 'scrobbleTrack', (track, after) =>
-      if @options.userSettings.get 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
+      if @getSetting 'user', 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
 
@@ -156,12 +156,16 @@ module.exports = class Playa
 
   loadPlaylists: =>
     playlists = []
-    if @options.sessionSettings.get('openPlaylists')
-      playlists = @options.sessionSettings.get('openPlaylists').map (i) ->
-        new AlbumPlaylist({ id: md5(i), path: i })
+    if @getSetting 'session', 'openPlaylists'
+      playlists = @getSetting('session', 'openPlaylists').map (i) ->
+        new AlbumPlaylist
+          id: md5(i)
+          path: i
 
     if playlists.length == 0
-      playlists.push new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) })
+      playlists.push new AlbumPlaylist
+        title:  'Untitled'
+        id: md5 'Untitled' + @options.settings.playlistExtension
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
@@ -169,7 +173,7 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: Math.max @options.sessionSettings.get('selectedPlaylist'), 0
+      selected: @getSetting('session', 'selectedPlaylist') || 0
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
@@ -266,6 +270,9 @@ module.exports = class Playa
     if not target = @options["#{domain}Settings"] then return
     target.set key, value
       .save()
+
+  getSetting: (domain, key) =>
+    if target = @options["#{domain}Settings"] then return target.get key
 
   _onOpenPlaylistChange: =>
     playlists = @openPlaylistManager.playlists

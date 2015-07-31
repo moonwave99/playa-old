@@ -61,7 +61,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.UPDATE_PLAYLIST:
         playa.openPlaylistManager.update(action.id, action.values) && OpenPlaylistStore.emitChange()
         break
-      case OpenPlaylistConstants.SELECT_PLAYLIST:
+      case OpenPlaylistConstants.SELECT_PLAYLIST:      
         playa.openPlaylistManager.selectByIndex(action.selected).then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
         break
       case OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID:
@@ -75,10 +75,20 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         playa.openPlaylistManager.save().then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
         break
       case OpenPlaylistConstants.ADD_FOLDER:
-        playa.openPlaylistManager.addFolder(action.folder).then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+        playa.openPlaylistManager.addFolder(action.folder).then(()=>{
+          if(playa.getSetting('user', 'autosave')){
+            playa.openPlaylistManager.save()
+          }
+          OpenPlaylistStore.emitChange()
+        })
         break
       case OpenPlaylistConstants.ADD_FOLDER_AT_POSITION:
-        playa.openPlaylistManager.addFolderAtPosition(action.folder, action.positionId).then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+        playa.openPlaylistManager.addFolderAtPosition(action.folder, action.positionId).then(()=>{
+          if(playa.getSetting('user', 'autosave')){
+            playa.openPlaylistManager.save()
+          }
+          OpenPlaylistStore.emitChange()
+        })
         break
       case OpenPlaylistConstants.SELECT_ALBUM:
         playa.player.currentPlaylist = action.playlist
@@ -89,12 +99,18 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         break
       case OpenPlaylistConstants.REMOVE_FILES:
         playa.openPlaylistManager.removeFiles(action.ids)
+        if(playa.getSetting('user', 'autosave')){
+          playa.openPlaylistManager.save()
+        }
         break
       case OpenPlaylistConstants.CLOSE_PLAYLIST:
         playa.openPlaylistManager.close().then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
         break
       case OpenPlaylistConstants.REORDER_PLAYLIST:
         playa.openPlaylistManager.reorder(action.id, action.from, action.to, action.position) && OpenPlaylistStore.emitChange()
+        if(playa.getSetting('user', 'autosave')){
+          playa.openPlaylistManager.save()
+        }
         break
     }
 

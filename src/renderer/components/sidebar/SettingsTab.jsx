@@ -6,6 +6,7 @@ var React = require('react')
 var ReactPropTypes = React.PropTypes
 
 var SettingsStore = require('../../stores/SettingsStore')
+var PlaylistSettings = require('./PlaylistSettings.jsx')
 var LastFMSettings = require('./LastFMSettings.jsx')
 
 var SettingsTab = React.createClass({
@@ -24,6 +25,7 @@ var SettingsTab = React.createClass({
     var lastFMClient = playa.lastFMClient
     return (
       <div className="settings">
+        <PlaylistSettings settings={this.state.settings}/>
         <LastFMSettings lastFMClient={lastFMClient} settings={this.state.settings}/>
       </div>
     )
