@@ -9,7 +9,6 @@ var LastFmNode = require('lastfm').LastFmNode
 module.exports = class LastFMClient extends EventEmitter{
   constructor(options) {
     super(options)
-    this.scrobbleEnabled = options.scrobbleEnabled
     this.key = options.key
     this.secret = options.secret
     this.sessionInfo = options.sessionInfo
@@ -20,35 +19,39 @@ module.exports = class LastFMClient extends EventEmitter{
       secret:     this.secret,
       useragent:  this.useragent
     })
-    this.authorised = false
     this.token = null
-    this.session = null
-  }
-  isAuthorized(){
-    return this.session && this.session.isAuthorised()
-  }
-  authorise(){
+
     if(this.sessionInfo){
       this.session = this.lastfm.session({
         user: this.sessionInfo.user,
         key: this.sessionInfo.key
       })
     }else{
-      this.requestToken()
-        .then((data)=>{
-          this.token = data.token
-          this.openAuthPage()
-          this.session = this.lastfm.session({
-            token: this.token,
-            handlers: {
-              success: (data)=>{ this.emit('authorised') }
-            }
-          })
-        })
-        .catch((error)=>{
-          console.error(error, error.stack)
-        })
+      this.session = null
     }
+  }
+  isAuthorised(){
+    return this.session && this.session.isAuthorised()
+  }
+  signout(){
+    this.session = null
+    this.emit('signout')
+  }
+  authorise(){
+    return this.requestToken()
+      .then((data)=>{
+        this.token = data.token
+        this.openAuthPage()
+        this.session = this.lastfm.session({
+          token: this.token,
+          handlers: {
+            success: (data)=>{ this.emit('authorised') }
+          }
+        })
+      })
+      .catch((error)=>{
+        console.error(error, error.stack)
+      })
   }
   requestToken(){
     return new Promise((resolve, reject)=>{
@@ -64,7 +67,7 @@ module.exports = class LastFMClient extends EventEmitter{
     shell.openExternal(this.authURL + '?api_key=' + this.key + '&token=' + this.token)
   }
   scrobble(track, after) {
-    if(!this.scrobbleEnabled || !this.isAuthorized()){
+    if(!this.isAuthorised()){
       return
     }
     this.lastfm.update('scrobble', this.session, {

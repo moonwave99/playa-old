@@ -29,6 +29,7 @@ KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceCon
 
 OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
+SettingsBag                 = require './SettingsBag'
 
 _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
@@ -52,8 +53,10 @@ module.exports = class Playa
         percent:  0.5
         absolute: 4 * 60
 
-    @options.userSettings =
-      scrobbleEnabled:  true
+    @options.userSettings = new SettingsBag
+      path: path.join @options.userDataFolder, 'user_settings.json'
+
+    @options.userSettings.load()
 
     @options.mainProps =
       breakpoints:
@@ -104,15 +107,19 @@ module.exports = class Playa
       loader: @playlistLoader
 
     @lastFMClient = new LastFMClient
-      scrobbleEnabled:  @options.userSettings.scrobbleEnabled
+      scrobbleEnabled:  @options.userSettings.get('scrobbleEnabled')
       key:              @options.lastfm.LASTFM_KEY
       secret:           @options.lastfm.LASTFM_SECRET
       useragent:        @options.settings.useragent
-      sessionInfo:      @options.sessionSettings.lastFMSession
+      sessionInfo:      @options.sessionSettings.get('lastFMSession')
+
+    @lastFMClient.on 'signout', ()=>
+      console.info 'LastFM signout'
+      @saveSetting 'session', 'lastFMSession', null
 
     @lastFMClient.on 'authorised', (options = {})=>
       console.info 'LastFM authorisation succesful', @lastFMClient.session
-      ipc.send 'session:save', key: 'lastFMSession', value:
+      @saveSetting 'session', 'lastFMSession',
         key:  @lastFMClient.session.key
         user: @lastFMClient.session.user
 
@@ -139,19 +146,18 @@ module.exports = class Playa
       PlayerStore.emitChange()
 
     @player.on 'scrobbleTrack', (track, after) =>
-      @lastFMClient.scrobble(track, after)
+      if @options.userSettings.get 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
 
   init: ->
     @initIPC()
     @loadPlaylists()
-    @lastFMClient.authorise()
 
   loadPlaylists: =>
     playlists = []
-    if @options.sessionSettings.openPlaylists
-      playlists = @options.sessionSettings.openPlaylists.map (i) ->
+    if @options.sessionSettings.get('openPlaylists')
+      playlists = @options.sessionSettings.get('openPlaylists').map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
 
     if playlists.length == 0
@@ -163,7 +169,7 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: Math.max @options.sessionSettings.selectedPlaylist, 0
+      selected: Math.max @options.sessionSettings.get('selectedPlaylist'), 0
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
@@ -249,19 +255,25 @@ module.exports = class Playa
 
   render: ->
     React.render React.createElement(Main, @options.mainProps), document.getElementById('main')
+    @postRender()
 
   postRender: ->
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
+  saveSetting: (domain, key, value) =>
+    if not target = @options["#{domain}Settings"] then return
+    target.set key, value
+      .save()
+
   _onOpenPlaylistChange: =>
     playlists = @openPlaylistManager.playlists
     playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
     selectedPlaylistIndex = @openPlaylistManager.selectedIndex
-    if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlistPaths
+    if playlists.length then @saveSetting 'session', 'openPlaylists', playlistPaths
     if selectedPlaylistIndex > -1
-      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylistIndex
+      @saveSetting 'session', 'selectedPlaylist', selectedPlaylistIndex
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
