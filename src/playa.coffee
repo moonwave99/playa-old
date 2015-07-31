@@ -12,6 +12,7 @@ PlaylistLoader              = require './renderer/util/PlaylistLoader'
 MediaFileLoader             = require './renderer/util/MediaFileLoader'
 CoverLoader                 = require './renderer/util/CoverLoader'
 WaveformLoader              = require './renderer/util/WaveformLoader'
+LastFMClient                = require './renderer/util/LastFMClient'
 AppDispatcher               = require './renderer/dispatcher/AppDispatcher'
 PlayerConstants             = require './renderer/constants/PlayerConstants'
 FileBrowserConstants        = require './renderer/constants/FileBrowserConstants'
@@ -28,6 +29,7 @@ KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceCon
 
 OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
+SettingsBag                 = require './SettingsBag'
 
 _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
@@ -46,12 +48,22 @@ module.exports = class Playa
       playlistRoot:       path.join @options.userDataFolder, 'Playlists'
       fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
       playlistExtension:  '.yml'
+      useragent:          'playa/v0.1'
+      scrobbleThreshold:
+        percent:  0.5
+        absolute: 4 * 60
+
+    @options.userSettings = new SettingsBag
+      path: path.join @options.userDataFolder, 'user_settings.json'
+
+    @options.userSettings.load()
 
     @options.mainProps =
       breakpoints:
         widescreen: '1500px'
 
-    @options.discogs = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
+    @options.discogs  = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
+    @options.lastfm   = fs.readJsonSync path.join __dirname, '..',  'settings', 'lastfm.json'
 
     @fileBrowser = new FileBrowser()
 
@@ -91,12 +103,33 @@ module.exports = class Playa
         'png-color-center'  : '505050FF',
         'png-color-outer'   : '505050FF'
 
+    @openPlaylistManager = new OpenPlaylistManager
+      loader: @playlistLoader
+
+    @lastFMClient = new LastFMClient
+      scrobbleEnabled:  @options.userSettings.get('scrobbleEnabled')
+      key:              @options.lastfm.LASTFM_KEY
+      secret:           @options.lastfm.LASTFM_SECRET
+      useragent:        @options.settings.useragent
+      sessionInfo:      @options.sessionSettings.get('lastFMSession')
+
+    @lastFMClient.on 'signout', ()=>
+      console.info 'LastFM signout'
+      @saveSetting 'session', 'lastFMSession', null
+
+    @lastFMClient.on 'authorised', (options = {})=>
+      console.info 'LastFM authorisation succesful', @lastFMClient.session
+      @saveSetting 'session', 'lastFMSession',
+        key:  @lastFMClient.session.key
+        user: @lastFMClient.session.user
+
+    @lastFMClient.on 'scrobbledTrack', (track)=>
+      console.info 'LastFM scrobbled:', track
+
     @player = new Player
       mediaFileLoader: @mediaFileLoader
       resolution: 1000
-
-    @openPlaylistManager = new OpenPlaylistManager
-      loader: @playlistLoader
+      scrobbleThreshold: @options.settings.scrobbleThreshold
 
     @player.on 'trackChange', ->
       PlayerStore.emitChange()
@@ -112,6 +145,9 @@ module.exports = class Playa
     @player.on 'playerTick', ->
       PlayerStore.emitChange()
 
+    @player.on 'scrobbleTrack', (track, after) =>
+      if @options.userSettings.get 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
+
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
 
   init: ->
@@ -120,8 +156,8 @@ module.exports = class Playa
 
   loadPlaylists: =>
     playlists = []
-    if @options.sessionSettings.openPlaylists
-      playlists = @options.sessionSettings.openPlaylists.map (i) ->
+    if @options.sessionSettings.get('openPlaylists')
+      playlists = @options.sessionSettings.get('openPlaylists').map (i) ->
         new AlbumPlaylist({ id: md5(i), path: i })
 
     if playlists.length == 0
@@ -133,7 +169,7 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: Math.max @options.sessionSettings.selectedPlaylist, 0
+      selected: Math.max @options.sessionSettings.get('selectedPlaylist'), 0
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
@@ -219,19 +255,25 @@ module.exports = class Playa
 
   render: ->
     React.render React.createElement(Main, @options.mainProps), document.getElementById('main')
+    @postRender()
 
   postRender: ->
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
+  saveSetting: (domain, key, value) =>
+    if not target = @options["#{domain}Settings"] then return
+    target.set key, value
+      .save()
+
   _onOpenPlaylistChange: =>
     playlists = @openPlaylistManager.playlists
     playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
     selectedPlaylistIndex = @openPlaylistManager.selectedIndex
-    if playlists.length then ipc.send 'session:save', key: 'openPlaylists', value: playlistPaths
+    if playlists.length then @saveSetting 'session', 'openPlaylists', playlistPaths
     if selectedPlaylistIndex > -1
-      ipc.send 'session:save', key: 'selectedPlaylist', value: selectedPlaylistIndex
+      @saveSetting 'session', 'selectedPlaylist', selectedPlaylistIndex
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST

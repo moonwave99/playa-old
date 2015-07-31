@@ -15,7 +15,7 @@ _ = require 'underscore-plus'
 
 AppMenu = require './appmenu'
 AppWindow = require './appwindow'
-SessionSettings = require './session_settings'
+SettingsBag = require '../SettingsBag'
 
 module.exports =
 class Application
@@ -28,7 +28,7 @@ class Application
 
     @pkgJson = require '../../package.json'
     @windows = []
-    @sessionSettings = new SessionSettings
+    @sessionSettings = new SettingsBag
       path: path.join app.getPath('userData'), 'session_settings.json'
     @sessionSettings.load()
     options.sessionSettings = @sessionSettings
@@ -154,9 +154,8 @@ class Application
     ipc.on 'request:app:path', (event, params) =>
       event.returnValue = app.getPath params.key
 
-    ipc.on 'request:session:settings', (event, params) =>
-      params||={}
-      event.returnValue = if params.key then @sessionSettings.get(params.key) or false else @sessionSettings.all()
+    ipc.on 'request:session:settings', (event) =>
+      event.returnValue = @sessionSettings
 
     ipc.on 'session:save', (event, params) =>
       @sessionSettings.set params.key, params.value

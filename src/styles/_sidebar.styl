@@ -25,6 +25,7 @@
         .fa
           color $sidebarIconColor
           font-size size($sidebarIconSize)
+
   .tab-panel
     height "calc(100vh - %s - %s - %s)" % (size($playbackBarHeight) size($tabsBarHeight) size($footerHeight))
     overflow auto
@@ -58,3 +59,11 @@
         .node-arrow
           &:after
             transform rotate(-90deg)
+
+  .settings
+    padding 1rem
+    .radio
+    .checkbox
+    p
+      margin-top 0
+      margin-bottom 1rem
