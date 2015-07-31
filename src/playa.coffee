@@ -65,6 +65,8 @@ module.exports = class Playa
     @options.discogs  = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
     @options.lastfm   = fs.readJsonSync path.join __dirname, '..',  'settings', 'lastfm.json'
 
+    @generateFolders ['Covers', 'Waveforms', 'Playlists']
+    
     @fileBrowser = new FileBrowser()
 
     @fileTree = new FileTree
@@ -273,6 +275,10 @@ module.exports = class Playa
 
   getSetting: (domain, key) =>
     if target = @options["#{domain}Settings"] then return target.get key
+
+  generateFolders: (folders = []) =>
+    folders.forEach (f)=>
+      fs.ensureDirSync path.join @options.userDataFolder, f
 
   _onOpenPlaylistChange: =>
     playlists = @openPlaylistManager.playlists
