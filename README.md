@@ -26,7 +26,7 @@ As I haven't found a way to pack it with the app itself yet, you have to install
 
     $ brew install libgroove
 
-Then either download the latest build from here, or build manually (warning: it takes ages, because it has to build the whole Electron):
+Then either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually (warning: it takes ages, because it has to build the whole Electron):
 
     // NOTE: you should run everything w/ node 0.10.36, nvm is your friend
     $ script/bootstrap
