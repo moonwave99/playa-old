@@ -88,7 +88,9 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
         playa.openPlaylistManager.save()
-          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+          .then((playlist)=>{
+            OpenPlaylistStore.emitChange()
+          })
           .catch((error)=>{
             console.error(error, error.stack)
           })
@@ -97,9 +99,12 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         playa.openPlaylistManager.addFolder(action.folder)
           .then(()=>{
             if(playa.getSetting('user', 'autosave')){
-              playa.openPlaylistManager.save()
+              playa.openPlaylistManager.save().then((playlist)=>{
+                OpenPlaylistStore.emitChange()
+              })
+            }else{
+              OpenPlaylistStore.emitChange()
             }
-            OpenPlaylistStore.emitChange()
           })
           .catch((error)=>{
             console.error(error, error.stack)
@@ -109,9 +114,12 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         playa.openPlaylistManager.addFolderAtPosition(action.folder, action.positionId)
           .then(()=>{
             if(playa.getSetting('user', 'autosave')){
-              playa.openPlaylistManager.save()
+              playa.openPlaylistManager.save().then((playlist)=>{
+                OpenPlaylistStore.emitChange()
+              })
+            }else{
+              OpenPlaylistStore.emitChange()
             }
-            OpenPlaylistStore.emitChange()
           })
           .catch((error)=>{
             console.error(error, error.stack)

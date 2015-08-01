@@ -60,6 +60,8 @@ module.exports = class PlaylistLoader {
       yaml.safeDump(playlist.serialize())
     ).then(()=>{
       playlist.path = targetPath
+      playlist.id = md5(targetPath)
+      return playlist
     })
   }
 }

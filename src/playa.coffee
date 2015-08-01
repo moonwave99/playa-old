@@ -301,7 +301,7 @@ module.exports = class Playa
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
-    if playlists.length then @saveSetting 'session', 'openPlaylists', playlistPaths
+    if playlistPaths.length then @saveSetting 'session', 'openPlaylists', playlistPaths
 
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true

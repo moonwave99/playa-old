@@ -83,8 +83,9 @@ module.exports = class OpenPlaylistManager {
   save(playlist){
     playlist = playlist || this.getSelectedPlaylist()
     if(playlist){
-      return this.loader.save(playlist).then((file)=>{
-        console.info('Saved ' + playlist.id)
+      return this.loader.save(playlist).then((playlist)=>{
+        console.info('Saved ' + playlist.id, playlist)
+        return playlist
       })
     }else{
       return Promise.reject('Could not save playlist.')
