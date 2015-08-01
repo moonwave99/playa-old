@@ -64,7 +64,11 @@ var PlaylistBrowserTab = React.createClass({
     KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.PLAYLIST_BROWSER)
   },
   handleDelKeyPress: function(event, item, elementsToRemove){
-
+    if(elementsToRemove.length > 1){
+      return
+    }
+    var node = _.find(this.state.playlistTree, n => n.id == elementsToRemove[0] )
+    node && this.handleDelete(node)
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
@@ -141,16 +145,17 @@ var PlaylistBrowserTab = React.createClass({
       },
       {
         'label'   : 'Delete playlist',
-        'handler' : function(){
-          var openPlaylist = playa.openPlaylistManager.findBy('title', item.props.node.name)
-          if(openPlaylist){
-            alert('You cannot delete an open playlist!')
-          }else if(confirm('Are you sure to delete ' + item.props.node.name +'?')){
-            PlaylistBrowserActions.deletePlaylist(item.props.node)
-          }
-        }.bind(this)
+        'handler' : this.handleDelete.bind(this, item.props.node)
       }
     ]
+  },
+  handleDelete: function(node){
+    var openPlaylist = playa.openPlaylistManager.findBy('title', node.name)
+    if(openPlaylist){
+      alert('You cannot delete an open playlist!')
+    }else if(confirm('Are you sure to delete ' + node.name +'?')){
+      PlaylistBrowserActions.deletePlaylist(node)
+    }
   },
   handleRename: function(item, newName){
     if(item.name !== newName){
