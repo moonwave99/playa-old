@@ -138,8 +138,11 @@ var PlaylistBrowserTab = React.createClass({
       {
         'label'   : 'Delete playlist',
         'handler' : function(){
-          if(confirm('Are you sure to delete ' + item.props.node.name +'?')){
-
+          var openPlaylist = playa.openPlaylistManager.findBy('title', item.props.node.name)
+          if(openPlaylist){
+            alert('You cannot delete an open playlist!')
+          }else if(confirm('Are you sure to delete ' + item.props.node.name +'?')){
+            PlaylistBrowserActions.deletePlaylist(item.props.node)
           }
         }.bind(this)
       }

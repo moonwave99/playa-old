@@ -49,6 +49,17 @@ var PlaylistBrowserStore = assign({}, EventEmitter.prototype, {
         playa.playlistTree.collapse(action.nodes)
         PlaylistBrowserStore.emitChange()
         break
+      case PlaylistBrowserConstants.DELETE_PLAYLIST:
+        action.node.delete()
+          .then(()=>{
+            return playa.playlistTree.loadRoot()
+          })
+          .then(()=>{
+            PlaylistBrowserStore.emitChange()
+          }).catch((error)=>{
+            console.error(error, error.stack)
+          })
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.

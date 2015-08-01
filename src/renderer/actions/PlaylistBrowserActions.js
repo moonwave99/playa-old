@@ -27,6 +27,12 @@ var PlaylistBrowserActions = {
       parent: parent
     })
   },
+  deletePlaylist: function(node){
+    AppDispatcher.dispatch({
+      actionType: PlaylistBrowserConstants.DELETE_PLAYLIST,
+      node: node
+    })
+  },
   createFolder: function(parent){
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.CREATE_FOLDER,
