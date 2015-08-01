@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var fs = require('fs-extra')
 var md5 = require('MD5')
 var path = require('path')
 
@@ -31,5 +32,13 @@ module.exports = class FileTreeNode {
   }
   collapse(){
     this.children = []
+  }
+  delete(){
+    return new Promise((resolve, reject)=>{
+      fs.remove(this.path, (error)=>{
+        if(error){ reject(error)
+        }else{ resolve(this) }
+      })
+    })
   }
 }

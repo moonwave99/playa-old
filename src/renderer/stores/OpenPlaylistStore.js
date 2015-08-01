@@ -19,7 +19,7 @@ var CHANGE_EVENT = 'change'
 
 var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   getAll: function(){
-    return playa.openPlaylistManager.playlists
+    return playa.openPlaylistManager.getAll()
   },
 
   getAt: function(index){
@@ -61,41 +61,80 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.UPDATE_PLAYLIST:
         playa.openPlaylistManager.update(action.id, action.values) && OpenPlaylistStore.emitChange()
         break
-      case OpenPlaylistConstants.SELECT_PLAYLIST:      
-        playa.openPlaylistManager.selectByIndex(action.selected).then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+      case OpenPlaylistConstants.SELECT_PLAYLIST:
+        playa.openPlaylistManager.selectByIndex(action.selected)
+          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID:
-        playa.openPlaylistManager.selectById(action.id).then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+        var id = action.id
+        if(!id){
+          var firstPlaylist = playa.openPlaylistManager.getAt(0)
+          id = firstPlaylist ? firstPlaylist.id : null
+        }
+        id && playa.openPlaylistManager.selectById(id)
+          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.ADD_PLAYLIST:
         playa.openPlaylistManager.add(action.playlists)
-        OpenPlaylistStore.emitChange()
+        if(!action.params || !action.params.silent){
+          OpenPlaylistStore.emitChange()
+        }
         break
       case OpenPlaylistConstants.SAVE_PLAYLIST:
-        playa.openPlaylistManager.save().then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+        playa.openPlaylistManager.save()
+          .then((playlist)=>{
+            OpenPlaylistStore.emitChange()
+          })
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.ADD_FOLDER:
-        playa.openPlaylistManager.addFolder(action.folder).then(()=>{
-          if(playa.getSetting('user', 'autosave')){
-            playa.openPlaylistManager.save()
-          }
-          OpenPlaylistStore.emitChange()
-        })
+        playa.openPlaylistManager.addFolder(action.folder)
+          .then(()=>{
+            if(playa.getSetting('user', 'autosave')){
+              playa.openPlaylistManager.save().then((playlist)=>{
+                OpenPlaylistStore.emitChange()
+              })
+            }else{
+              OpenPlaylistStore.emitChange()
+            }
+          })
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.ADD_FOLDER_AT_POSITION:
-        playa.openPlaylistManager.addFolderAtPosition(action.folder, action.positionId).then(()=>{
-          if(playa.getSetting('user', 'autosave')){
-            playa.openPlaylistManager.save()
-          }
-          OpenPlaylistStore.emitChange()
-        })
+        playa.openPlaylistManager.addFolderAtPosition(action.folder, action.positionId)
+          .then(()=>{
+            if(playa.getSetting('user', 'autosave')){
+              playa.openPlaylistManager.save().then((playlist)=>{
+                OpenPlaylistStore.emitChange()
+              })
+            }else{
+              OpenPlaylistStore.emitChange()
+            }
+          })
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.SELECT_ALBUM:
         playa.player.currentPlaylist = action.playlist
-        playa.player.loadAlbum(action.album, action.trackId).then((album)=>{
-          action.trackId && playa.player.gotoTrack(action.trackId)
-          action.play && PlayerActions.play()
-        })
+        playa.player.loadAlbum(action.album, action.trackId)
+          .then((album)=>{
+            action.trackId && playa.player.gotoTrack(action.trackId)
+            action.play && PlayerActions.play()
+          })
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.REMOVE_FILES:
         playa.openPlaylistManager.removeFiles(action.ids)
@@ -104,7 +143,11 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         }
         break
       case OpenPlaylistConstants.CLOSE_PLAYLIST:
-        playa.openPlaylistManager.close().then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+        playa.openPlaylistManager.close()
+          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
         break
       case OpenPlaylistConstants.REORDER_PLAYLIST:
         playa.openPlaylistManager.reorder(action.id, action.from, action.to, action.position) && OpenPlaylistStore.emitChange()

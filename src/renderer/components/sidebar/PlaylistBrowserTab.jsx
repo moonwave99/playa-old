@@ -64,7 +64,11 @@ var PlaylistBrowserTab = React.createClass({
     KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.PLAYLIST_BROWSER)
   },
   handleDelKeyPress: function(event, item, elementsToRemove){
-
+    if(elementsToRemove.length > 1){
+      return
+    }
+    var node = _.find(this.state.playlistTree, n => n.id == elementsToRemove[0] )
+    node && this.handleDelete(node)
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
@@ -76,7 +80,9 @@ var PlaylistBrowserTab = React.createClass({
     this.props.handleScrollToElement(state, list)
   },
   handleDoubleClick: function(event, item){
-    this._openPlaylist(item.props.node.path)
+    if(!item.props.node.isDirectory()){
+      this._openPlaylist(item.props.node.path)
+    }
   },
   handleArrowClick: function(event, item){
     if(item.props.collapsed){
@@ -108,7 +114,7 @@ var PlaylistBrowserTab = React.createClass({
   },
   _openPlaylist: function(playlistPath){
     var playlist = new AlbumPlaylist({ id: md5(playlistPath), path: playlistPath })
-    OpenPlaylistActions.add([playlist])
+    OpenPlaylistActions.add([playlist], { silent: true })
     OpenPlaylistActions.selectById(playlist.id)
   },
   _getNodesById: function(ids){
@@ -121,7 +127,9 @@ var PlaylistBrowserTab = React.createClass({
       {
         'label'   : 'Load playlist',
         'handler' : function(){
-          this._openPlaylist(item.props.node.path)
+          if(!item.props.node.isDirectory()){
+            this._openPlaylist(item.props.node.path)
+          }
         }.bind(this)
       },
       {
@@ -137,17 +145,21 @@ var PlaylistBrowserTab = React.createClass({
       },
       {
         'label'   : 'Delete playlist',
-        'handler' : function(){
-          if(confirm('Are you sure to delete ' + item.props.node.name +'?')){
-
-          }
-        }.bind(this)
+        'handler' : this.handleDelete.bind(this, item.props.node)
       }
     ]
   },
+  handleDelete: function(node){
+    var openPlaylist = playa.openPlaylistManager.findBy('title', node.name)
+    if(openPlaylist){
+      alert('You cannot delete an open playlist!')
+    }else if(confirm('Are you sure to delete ' + node.name +'?')){
+      PlaylistBrowserActions.deletePlaylist(node)
+    }
+  },
   handleRename: function(item, newName){
     if(item.name !== newName){
-      var playlist = OpenPlaylistStore.findBy('title', item.name) || new AlbumPlaylist({
+      var playlist = playa.openPlaylistManager.findBy('title', item.name) || new AlbumPlaylist({
         title: item.name,
         path: item.path,
         id: md5(item.path)
@@ -159,7 +171,7 @@ var PlaylistBrowserTab = React.createClass({
         })
         PlaylistBrowserActions.loadRoot()
         ModalActions.hide()
-      }).catch((err)=>{
+      }).catch((error)=>{
         alert('File already exists!')
       })
     }
