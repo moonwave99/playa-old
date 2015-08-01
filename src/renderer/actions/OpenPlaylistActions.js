@@ -4,10 +4,11 @@ var AppDispatcher = require('../dispatcher/AppDispatcher')
 var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
 
 module.exports = {
-  add: function(playlists){
+  add: function(playlists, params){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.ADD_PLAYLIST,
-      playlists: playlists
+      playlists: playlists,
+      params: params
     })
   },
   savePlaylist: function(index){

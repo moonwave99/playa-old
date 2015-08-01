@@ -22,6 +22,9 @@ module.exports = class OpenPlaylistManager {
   getSelectedPlaylist(){
     return this.playlists[this.selectedIndex]
   }
+  getAll(){
+    return this.playlists
+  }
   getAt(index){
     return this.playlists[index]
   }
@@ -106,6 +109,9 @@ module.exports = class OpenPlaylistManager {
     }
   }
   _select(playlist, index){
+    if(!playlist){
+      return Promise.reject('Playlist not found')
+    }
     var index = _.isNumber(index) ? index : _.findIndex(this.playlists, p => p.id == playlist.id)
     if(index < 0){
       return Promise.reject('Could not select playlist at index: ' + index)

@@ -1,5 +1,6 @@
 _                           = require 'lodash'
 fs                          = require 'fs-extra'
+fsPlus                      = require 'fs-plus'
 md5                         = require 'md5'
 ipc                         = require 'ipc'
 path                        = require 'path'
@@ -159,10 +160,13 @@ module.exports = class Playa
   loadPlaylists: =>
     playlists = []
     if @getSetting 'session', 'openPlaylists'
-      playlists = @getSetting('session', 'openPlaylists').map (i) ->
-        new AlbumPlaylist
-          id: md5(i)
-          path: i
+      playlists = @getSetting('session', 'openPlaylists')
+        .filter (file) ->
+          fsPlus.existsSync(file)
+        .map (file) ->
+          new AlbumPlaylist
+            id: md5(file)
+            path: file
 
     if playlists.length == 0
       playlists.push new AlbumPlaylist
@@ -171,11 +175,13 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
-      playlists: playlists
+      playlists:  playlists
+      params:
+        silent:   true
 
     AppDispatcher.dispatch
-      actionType: OpenPlaylistConstants.SELECT_PLAYLIST
-      selected: @getSetting('session', 'selectedPlaylist') || 0
+      actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID
+      id: @getSetting 'session', 'selectedPlaylist'
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
@@ -269,6 +275,7 @@ module.exports = class Playa
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
   saveSetting: (domain, key, value) =>
+    if domain is 'session' then return @_saveSessionSetting key, value
     if not target = @options["#{domain}Settings"] then return
     target.set key, value
       .save()
@@ -280,20 +287,24 @@ module.exports = class Playa
     folders.forEach (f)=>
       fs.ensureDirSync path.join @options.userDataFolder, f
 
+  _saveSessionSetting: (key, value) =>
+    ipc.send 'session:save', key: key, value: value
+
   _onOpenPlaylistChange: =>
-    playlists = @openPlaylistManager.playlists
+    playlists = @openPlaylistManager.getAll()
     playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
-    selectedPlaylistIndex = @openPlaylistManager.selectedIndex
-    if playlists.length then @saveSetting 'session', 'openPlaylists', playlistPaths
-    if selectedPlaylistIndex > -1
-      @saveSetting 'session', 'selectedPlaylist', selectedPlaylistIndex
+    selectedPlaylist = @openPlaylistManager.getSelectedPlaylist()
+
+    if selectedPlaylist
+      @saveSetting 'session', 'selectedPlaylist', selectedPlaylist.id
       AppDispatcher.dispatch
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
-    if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylistIndex > -1
+    if playlists.length then @saveSetting 'session', 'openPlaylists', playlistPaths
+
+    if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true
-      selectedPlaylist = @openPlaylistManager.getSelectedPlaylist()
       selectedAlbum = selectedPlaylist.getLastPlayedAlbum()
       if selectedAlbum
         AppDispatcher.dispatch

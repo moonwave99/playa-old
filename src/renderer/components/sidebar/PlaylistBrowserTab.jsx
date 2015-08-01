@@ -76,7 +76,9 @@ var PlaylistBrowserTab = React.createClass({
     this.props.handleScrollToElement(state, list)
   },
   handleDoubleClick: function(event, item){
-    this._openPlaylist(item.props.node.path)
+    if(!item.props.node.isDirectory()){
+      this._openPlaylist(item.props.node.path)
+    }
   },
   handleArrowClick: function(event, item){
     if(item.props.collapsed){
@@ -108,7 +110,7 @@ var PlaylistBrowserTab = React.createClass({
   },
   _openPlaylist: function(playlistPath){
     var playlist = new AlbumPlaylist({ id: md5(playlistPath), path: playlistPath })
-    OpenPlaylistActions.add([playlist])
+    OpenPlaylistActions.add([playlist], { silent: true })
     OpenPlaylistActions.selectById(playlist.id)
   },
   _getNodesById: function(ids){
@@ -121,7 +123,9 @@ var PlaylistBrowserTab = React.createClass({
       {
         'label'   : 'Load playlist',
         'handler' : function(){
-          this._openPlaylist(item.props.node.path)
+          if(!item.props.node.isDirectory()){
+            this._openPlaylist(item.props.node.path)
+          }
         }.bind(this)
       },
       {
@@ -150,7 +154,7 @@ var PlaylistBrowserTab = React.createClass({
   },
   handleRename: function(item, newName){
     if(item.name !== newName){
-      var playlist = OpenPlaylistStore.findBy('title', item.name) || new AlbumPlaylist({
+      var playlist = playa.openPlaylistManager.findBy('title', item.name) || new AlbumPlaylist({
         title: item.name,
         path: item.path,
         id: md5(item.path)
@@ -162,7 +166,7 @@ var PlaylistBrowserTab = React.createClass({
         })
         PlaylistBrowserActions.loadRoot()
         ModalActions.hide()
-      }).catch((err)=>{
+      }).catch((error)=>{
         alert('File already exists!')
       })
     }
