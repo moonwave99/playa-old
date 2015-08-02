@@ -40,64 +40,79 @@ _tabScopeNames = [
 
 module.exports = class Playa
   constructor: (options) ->
+    @settings = {}
+    @settings.pkg = new SettingsBag
+      readOnly: true
+      data:     require '../package.json'
 
-    @firstPlaylistLoad = false
+    @settings.common = new SettingsBag
+      readOnly: true
+      data:
+        userDataFolder:     options.userDataFolder
+        fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
+        playlistRoot:       path.join options.userDataFolder, 'Playlists'
+        fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
+        playlistExtension:  '.yml'
+        useragent:          "playa/v#{@getSetting 'pkg', 'version'}"
+        scrobbleThreshold:
+          percent:  0.5
+          absolute: 4 * 60
+        storeFolders:
+          covers:     'Covers'
+          waveforms:  'Waveforms'
+          playlists:  'Playlists'
 
-    @options = options
-    @options.settings =
-      fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
-      playlistRoot:       path.join @options.userDataFolder, 'Playlists'
-      fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
-      playlistExtension:  '.yml'
-      useragent:          'playa/v0.1'
-      scrobbleThreshold:
-        percent:  0.5
-        absolute: 4 * 60
+    @settings.session = new SettingsBag
+      data: options.sessionInfo.data
+      path: options.sessionInfo.path
 
-    @options.userSettings = new SettingsBag
-      path: path.join @options.userDataFolder, 'user_settings.json'
+    @settings.ui = new SettingsBag
+      readOnly: true
+      data:
+        breakpoints:
+          widescreen: '1500px'
 
-    @options.userSettings.load()
+    @settings.user = new SettingsBag
+      path: path.join options.userDataFolder, 'user_settings.json'
 
-    @options.mainProps =
-      breakpoints:
-        widescreen: '1500px'
+    @settings.user.load()
 
-    @options.discogs  = fs.readJsonSync path.join __dirname, '..',  'settings', 'discogs.json'
-    @options.lastfm   = fs.readJsonSync path.join __dirname, '..',  'settings', 'lastfm.json'
+    ['discogs', 'lastfm'].forEach (x) =>
+      @settings[x] = new SettingsBag
+        readOnly: true
+        path:     path.join __dirname, '..',  'settings', "#{x}.json"
+      @settings[x].load()
 
-    @generateFolders ['Covers', 'Waveforms', 'Playlists']
-    
     @fileBrowser = new FileBrowser()
 
     @fileTree = new FileTree
       fileBrowser:  @fileBrowser
-      rootFolder:   @options.settings.fileBrowserRoot
-      rootName:     path.basename @options.settings.fileBrowserRoot
+      rootFolder:   @getSetting 'common', 'fileBrowserRoot'
+      rootName:     path.basename @getSetting 'common', 'fileBrowserRoot'
       filter:       'directory'
 
     @playlistTree = new FileTree
       fileBrowser:  @fileBrowser
-      rootFolder:   @options.settings.playlistRoot
-      rootName:     'Playlists'
-      filter:       @options.settings.playlistExtension
+      rootFolder:   @getSetting 'common', 'playlistRoot'
+      rootName:     @getSetting('common', 'storeFolders').playlists
+      filter:       @getSetting 'common', 'playlistExtension'
 
     @playlistLoader = new PlaylistLoader
-      root:               @options.settings.playlistRoot
-      playlistExtension:  @options.settings.playlistExtension
+      root:               @getSetting 'common', 'playlistRoot'
+      playlistExtension:  @getSetting 'common', 'playlistExtension'
 
     @mediaFileLoader = new MediaFileLoader
-      fileExtensions: @options.settings.fileExtensions
+      fileExtensions: @getSetting 'common', 'fileExtensions'
 
     @coverLoader = new CoverLoader
-      root: path.join @options.userDataFolder, 'Covers'
+      root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').covers
       discogs:
-        key:      @options.discogs.DISCOGS_KEY
-        secret:   @options.discogs.DISCOGS_SECRET
+        key:      @getSetting 'discogs', 'DISCOGS_KEY'
+        secret:   @getSetting 'discogs', 'DISCOGS_SECRET'
         throttle: 1000
 
     @waveformLoader = new WaveformLoader
-      root: path.join @options.userDataFolder, 'Waveforms'
+      root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').waveforms
       config:
         'wait'              : 300,
         'png-width'         : 1600,
@@ -111,28 +126,32 @@ module.exports = class Playa
 
     @lastFMClient = new LastFMClient
       scrobbleEnabled:  @getSetting 'user', 'scrobbleEnabled'
-      key:              @options.lastfm.LASTFM_KEY
-      secret:           @options.lastfm.LASTFM_SECRET
-      useragent:        @options.settings.useragent
+      key:              @getSetting 'lastfm', 'LASTFM_KEY'
+      secret:           @getSetting 'lastfm', 'LASTFM_SECRET'
+      useragent:        @getSetting 'common', 'useragent'
       sessionInfo:      @getSetting 'session', 'lastFMSession'
 
-    @lastFMClient.on 'signout', ()=>
+    @player = new Player
+      mediaFileLoader: @mediaFileLoader
+      resolution: 1000
+      scrobbleThreshold: @getSetting 'common', 'scrobbleThreshold'
+
+  init: ->
+    @firstPlaylistLoad = false
+    @ensureFolders _.map @getSetting('common', 'storeFolders'), (value, key) -> value
+
+    @lastFMClient.on 'signout', =>
       console.info 'LastFM signout'
       @saveSetting 'session', 'lastFMSession', null
 
-    @lastFMClient.on 'authorised', (options = {})=>
+    @lastFMClient.on 'authorised', (options = {}) =>
       console.info 'LastFM authorisation succesful', @lastFMClient.session
       @saveSetting 'session', 'lastFMSession',
         key:  @lastFMClient.session.key
         user: @lastFMClient.session.user
 
-    @lastFMClient.on 'scrobbledTrack', (track)=>
+    @lastFMClient.on 'scrobbledTrack', (track) =>
       console.info 'LastFM scrobbled:', track
-
-    @player = new Player
-      mediaFileLoader: @mediaFileLoader
-      resolution: 1000
-      scrobbleThreshold: @options.settings.scrobbleThreshold
 
     @player.on 'trackChange', ->
       PlayerStore.emitChange()
@@ -153,25 +172,24 @@ module.exports = class Playa
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
 
-  init: ->
     @initIPC()
     @loadPlaylists()
 
   loadPlaylists: =>
     playlists = []
     if @getSetting 'session', 'openPlaylists'
-      playlists = @getSetting('session', 'openPlaylists')
+      playlists = @getSetting 'session', 'openPlaylists'
         .filter (file) ->
           fsPlus.existsSync(file)
         .map (file) ->
           new AlbumPlaylist
-            id: md5(file)
+            id:   md5(file)
             path: file
 
     if playlists.length == 0
       playlists.push new AlbumPlaylist
         title:  'Untitled'
-        id: md5 'Untitled' + @options.settings.playlistExtension
+        id: md5 "Untitled#{@getSetting 'common', 'playlistExtension'}"
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.ADD_PLAYLIST
@@ -181,22 +199,22 @@ module.exports = class Playa
 
     AppDispatcher.dispatch
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID
-      id: @getSetting 'session', 'selectedPlaylist'
+      id:         @getSetting 'session', 'selectedPlaylist'
 
   loadSidebarPlaylists: =>
     AppDispatcher.dispatch
       actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT
-      folder: @options.settings.playlistRoot
+      folder:     @getSetting 'session', 'playlistRoot'
 
   loadSidebarFileBrowser: =>
     AppDispatcher.dispatch
       actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT
-      folder: @options.settings.fileBrowserRoot
+      folder:     @getSetting 'session', 'fileBrowserRoot'
 
-  selectTab: (tab, tabScopeName)=>
+  selectTab: (tab, tabScopeName) =>
     AppDispatcher.dispatch
       actionType: SidebarConstants.SELECT_TAB
-      tab: tab
+      tab:        tab
 
     if SidebarStore.getInfo().isOpen
       AppDispatcher.dispatch
@@ -219,7 +237,7 @@ module.exports = class Playa
         when 1 then @loadSidebarFileBrowser()
 
   initIPC: ->
-    ipc.on 'sidebar:show', (tabName)=>
+    ipc.on 'sidebar:show', (tabName) =>
       switch tabName
         when 'playlists'
           @loadSidebarPlaylists()
@@ -250,7 +268,7 @@ module.exports = class Playa
     ipc.on 'playlist:create', =>
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists: [ new AlbumPlaylist({ title: 'Untitled', id: md5('Untitled' + @options.settings.playlistExtension) }) ]
+        playlists:  [ new AlbumPlaylist title: 'Untitled', id: md5 "Untitled#{@getSetting 'common', 'playlistExtension'}" ]
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch
@@ -263,37 +281,38 @@ module.exports = class Playa
     ipc.on 'open:folder', (folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
-        folder: folder
+        folder:     folder
 
   render: ->
-    React.render React.createElement(Main, @options.mainProps), document.getElementById('main')
+    React.render React.createElement(Main, @settings.ui.all()), document.getElementById('main')
     @postRender()
 
-  postRender: ->
+  postRender: =>
+    console.info "Welcome to Playa v#{@getSetting 'pkg', 'version'}"
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
   saveSetting: (domain, key, value) =>
     if domain is 'session' then return @_saveSessionSetting key, value
-    if not target = @options["#{domain}Settings"] then return
+    if not target = @settings[domain] then return
     target.set key, value
       .save()
 
   getSetting: (domain, key) =>
-    if target = @options["#{domain}Settings"] then return target.get key
+    if target = @settings[domain] then return target.get key
 
-  generateFolders: (folders = []) =>
+  ensureFolders: (folders = []) =>
     folders.forEach (f)=>
-      fs.ensureDirSync path.join @options.userDataFolder, f
+      fs.ensureDirSync path.join @getSetting('common', 'userDataFolder'), f
 
   _saveSessionSetting: (key, value) =>
     ipc.send 'session:save', key: key, value: value
 
   _onOpenPlaylistChange: =>
-    playlists = @openPlaylistManager.getAll()
-    playlistPaths = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
-    selectedPlaylist = @openPlaylistManager.getSelectedPlaylist()
+    playlists         = @openPlaylistManager.getAll()
+    playlistPaths     = playlists.filter((i) -> !i.isNew() ).map (i) -> i.path
+    selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
 
     if selectedPlaylist
       @saveSetting 'session', 'selectedPlaylist', selectedPlaylist.id
@@ -309,7 +328,7 @@ module.exports = class Playa
       if selectedAlbum
         AppDispatcher.dispatch
           actionType: OpenPlaylistConstants.SELECT_ALBUM
-          playlist: selectedPlaylist
-          album: selectedAlbum
-          trackId: selectedPlaylist.lastPlayedTrackId
-          play: false
+          playlist:   selectedPlaylist
+          album:      selectedAlbum
+          trackId:    selectedPlaylist.lastPlayedTrackId
+          play:       false

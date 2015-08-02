@@ -40,7 +40,7 @@ var FileBrowserTreeNode = React.createClass({
       'fa' : true,
       'fa-fw' : true,
       'fa-folder': this.props.node.isDirectory(),
-      'fa-file-audio-o' : this.props.node.extension == playa.options.settings.playlistExtension
+      'fa-file-audio-o' : this.props.node.extension == playa.getSetting('common', 'playlistExtension')
     })
     return (
       <span className={classes}>

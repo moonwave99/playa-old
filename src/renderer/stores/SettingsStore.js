@@ -14,8 +14,8 @@ var SettingsStore = assign({}, EventEmitter.prototype, {
 
   getSettings: function(){
     return {
-      user: playa.options.userSettings.all(),
-      session: playa.options.sessionSettings.all()
+      user: playa.settings.user.all(),
+      session: playa.settings.session.all()
     }
   },
 
