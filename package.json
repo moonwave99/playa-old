@@ -1,8 +1,8 @@
 {
   "name": "playa",
   "productName": "Playa",
-  "version": "0.0.1",
-  "description": "The final audio player.",
+  "version": "0.1.1",
+  "description": "The Audio Player that thinks in albums.",
   "main": "./src/browser/main.js",
   "author": "moonwave99 <diego.caponera@gmail.com>",
   "repository": {
