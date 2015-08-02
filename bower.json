@@ -1,6 +1,6 @@
 {
   "name": "playa",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "homepage": "https://github.com/moonwave99/playa",
   "authors": [
     "moonwave99 <diego.caponera@gmail.com>"
@@ -16,7 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "font-awesome": "~4.3.0"
+    "font-awesome": "~4.4.0"
   },
   "overrides": {
     "font-awesome": {
@@ -25,5 +25,5 @@
         "css"
       ]
     }
-  }  
+  }
 }
