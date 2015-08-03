@@ -50,7 +50,7 @@ module.exports = class Player extends EventEmitter{
     if(this.alreadyScrobbled){
       return
     }
-    var amount = this.currentTrackPlayedAmount++
+    var amount = this.currentTrackPlayedAmount += (this.resolution * 0.001)
     if(amount >this.scrobbleThreshold.absolute || amount/this.currentTrack.duration > this.scrobbleThreshold.percent){
       this.emit('scrobbleTrack', this.currentTrack, this.currentTrackPlayedAmount)
       this.alreadyScrobbled = true
