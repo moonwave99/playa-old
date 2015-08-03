@@ -59,17 +59,11 @@ const albumTarget = {
 var AlbumPlaylistItem = React.createClass({
   getInitialState: function(){
     return {
-      cover: null,
-      selectedTrack: -1
+      cover: null
     }
   },
   formatTime: function(time){
     return moment.duration(time, "seconds").format("mm:ss", { trim: false })
-  },
-  componentDidUpdate: function(prevProps, prevState){
-    if(this.props.isKeyFocused){
-      !prevProps.isKeyFocused && this.focus()
-    }
   },
   componentWillMount: function(){
     playa.coverLoader.load(this.props.album)
@@ -88,11 +82,13 @@ var AlbumPlaylistItem = React.createClass({
       renderedTracklist.push(
         <AlbumTracklistItem
           key={track.id}
+          itemKey={track.id}
           album={this.props.album}
           track={track}
           index={index}
-          selected={this.state.selectedTrack == index}
+          selected={this.props.selection.indexOf(track.id) > -1}
           isPlaying={track.id == this.props.currentTrack.id}
+          handleClick={this.handleTracklistClick}
           handleDoubleClick={this.handleTracklistDoubleClick}/>
       )
     })
@@ -105,7 +101,7 @@ var AlbumPlaylistItem = React.createClass({
     var classes = cx({
       'album'     : true,
       'playing'   : isPlaying,
-      'selected'  : this.props.isSelected,
+      'selected'  : this.props.selection.indexOf(this.props.album.id) > -1,
       'open'      : this.props.isOpened
     })
     var opacity = this.props.isDragging ? 0.4 : 1
@@ -137,6 +133,10 @@ var AlbumPlaylistItem = React.createClass({
       KeyboardNameSpaceConstants.ALBUM_PLAYLIST
     )
   },
+  handleTracklistClick: function(event, item){
+    event.stopPropagation()
+    this.props.handleClick(event, item)
+  },
   handleTracklistDoubleClick: function(event, item){
     event.stopPropagation()
     this.props.playTrack(this.props.album, item.props.track.id)
@@ -148,58 +148,13 @@ var AlbumPlaylistItem = React.createClass({
   handleClick: function(event){
     this.props.handleClick(event, this)
   },
-  handleArrowKeyPress: function(event){
-    switch(event.which){
-      case 37: // left
-        this.props.closeElements([this.props.album.id])
-        this.props.focusParent({ requestFocus: true })
-        break
-      case 38: // up
-        if(this.state.selectedTrack <= 0){
-          this.props.focusParent({
-            id: this.props.album.id,
-            direction: 'up',
-            requestFocus: true
-          })
-        }
-        this.setState({
-          selectedTrack: this.state.selectedTrack-1
-        })
-        break
-      case 40: // down
-        if(this.state.selectedTrack >= this.props.album.tracks.length -1){
-          this.props.focusParent({
-            id: this.props.album.id,
-            direction: 'down',
-            requestFocus: true
-          })
-        }else{
-          this.setState({
-            selectedTrack: this.state.selectedTrack+1
-          })
-        }
-        break
-    }
-  },
   handleEnterKeyPress: function(event){
     if(this.state.selectedTrack > -1){
       this.props.playTrack(this.props.album, this.props.album.tracks[this.state.selectedTrack].id)
     }
   },
-  focus: function(){
-    KeyboardFocusActions.setFocus(this.getHandlers(), 'ALBUM_TRACKLIST_' + this.props.album.id)
-    this.setState({
-      selectedTrack: this.props.direction == -1 ? this.props.album.tracks.length-1 : -1
-    })
-  },
   updateCover: function(cover){
     this.setState({ cover: cover })
-  },
-  getHandlers: function(){
-    return {
-      'up, down, left'  : this.handleArrowKeyPress,
-      'enter'           : this.handleEnterKeyPress
-    }
   },
   getContextMenuActions: function(){
     return [

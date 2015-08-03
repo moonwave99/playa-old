@@ -41,8 +41,7 @@ var AlbumPlaylist = React.createClass({
   },
   render: function() {
     var albums = this.props.playlist.getItems().map( (album, index)=> {
-      var isOpened    = this.props.openElements.indexOf(album.id) > -1
-      var isSelected  = this.props.selection.indexOf(album.id) > -1
+      var isOpened = this.props.openElements.indexOf(album.id) > -1
       return (
         <AlbumPlaylistItem
           key={album.id}
@@ -50,7 +49,6 @@ var AlbumPlaylist = React.createClass({
           itemKey={album.id}
           album={album}
           closeElements={this.props.closeElements}
-          focusParent={this.props.focusParent}
           handleClick={this.handleClick}
           handleFolderDrop={this.handleFolderDrop}
           handleDragEnd={this.handleDragEnd}
@@ -58,9 +56,8 @@ var AlbumPlaylist = React.createClass({
           currentTrack={this.state.currentTrack || {}}
           moveAlbum={this.moveAlbum}
           direction={this.props.direction}
-          isOpened={isOpened}
-          isSelected={isSelected}
-          isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}/>
+          selection={this.props.selection}
+          isOpened={isOpened}/>
       )
     })
 

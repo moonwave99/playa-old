@@ -48,6 +48,13 @@ module.exports = class AlbumPlaylist{
   getAlbumById(id){
     return _.findWhere(this.items.toArray(), { id: id })
   }
+  getTrackById(id){
+    var tracks = _.flatten(this.items.toArray().map( i => i.tracks ))
+    return _.findWhere(tracks, { id: id })
+  }
+  getAlbumByTrackId(id){
+    return _.find(this.items.toArray(), a => a.contains(id))
+  }
   getLastPlayedAlbum(){
     return this.getAlbumById(this.lastPlayedAlbumId)
   }

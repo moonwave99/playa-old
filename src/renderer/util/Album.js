@@ -20,7 +20,7 @@ module.exports = class Album{
     this._isMultiple = _.uniq(this.tracks.map( t => t.metadata.disk.no )).length > 1
   }
   contains(id){
-    return _(this.tracks).map(i => i.id).contains(id)
+    return this.tracks.map(i => i.id).indexOf(id) > -1
   }
   findById(id){
     return _.findWhere(this.tracks, { id: id })

@@ -16,10 +16,28 @@ var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConst
 
 var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConstants.ALBUM_PLAYLIST,
   function(component){
-    return component.props.playlist.getIds()
+    var ids = _.reduce(component.props.playlist.getItems(), (memo, album)=>{
+      memo.push(album.id)
+      if(_.contains(component.state.openElements, album.id)){
+        memo = memo.concat(album.tracks.map( t => t.id ))
+      }
+      return memo;
+    }, []);
+    return ids
   },
   function(component){
-    return component.props.playlist.getAlbumById(component.state.selection[0])
+    if(component.state.selection[0].startsWith('a_')){
+      var album = component.props.playlist.getAlbumById(component.state.selection[0])
+      return {
+        album: album,
+        trackId: album.tracks[0].id
+      }
+    }else{
+      return {
+        album: component.props.playlist.getAlbumByTrackId(component.state.selection[0]),
+        trackId: component.state.selection[0]
+      }
+    }
   }
 )
 
@@ -68,8 +86,8 @@ var Playlist = React.createClass({
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
-      var album = item.getSelectedElement()
-      OpenPlaylistActions.selectAlbum(album, album.tracks[0].id, this.props.playlist, true)
+      var whatToPlay = item.getSelectedElement()
+      OpenPlaylistActions.selectAlbum(whatToPlay.album, whatToPlay.trackId, this.props.playlist, true)
     }
   },
   handleScrollToElement: function(state, list){
