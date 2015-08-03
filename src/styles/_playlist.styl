@@ -6,6 +6,7 @@
     transition transform .2s linear
   &.sidebar-open
     .sidebar-offset
+    .tracklist .selected:after
     .album.selected header:after
       transform translateX(size(-1*$sidebarWidth))
     .drop-area
@@ -128,6 +129,7 @@
           font-size .9rem
           padding-left 5rem
         .track
+          position relative
           &:nth-child(odd)
             background-color rgba(white, .03)
           &:nth-child(even)
@@ -136,8 +138,15 @@
             background-color rgba(white, .08)
           &.selected
             background-color rgba(white, .09)
-          &.playing
-            background-color rgba(white, .1)
+            &:after
+              position absolute
+              content ''
+              background-color $mainColor
+              width .25rem
+              height 100%
+              right 0
+              top 0
+              transition transform .2s linear
           .track-artist
             color $albumArtistColor
           .separator
