@@ -161,7 +161,7 @@ module.exports = class AlbumPlaylist{
       var processedAlbums =  _.map(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         return new Album({
-          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
           tracks: tracks
         })
       })
@@ -170,7 +170,7 @@ module.exports = class AlbumPlaylist{
       _.forEach(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         this.items.add(new Album({
-          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
           tracks: tracks
         }))
       })

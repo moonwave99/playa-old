@@ -107,7 +107,7 @@ module.exports = class Player extends EventEmitter{
       if(!this.timer){
         this.startTimer()
       }
-      this.currentTrack = this.currentAlbum.findById(md5(current.item.file.filename))
+      this.currentTrack = this.currentAlbum.findById('t_' + md5(current.item.file.filename))
       this.emit('nowplaying')
     }else{
       if(this.playbackDirection == 0){
@@ -174,7 +174,7 @@ module.exports = class Player extends EventEmitter{
   gotoTrack(id) {
     id = id || this.currentAlbum.tracks[0].id
     var item = _.find(this.groovePlaylist.items(), (item)=>{
-      return id == md5(item.file.filename)
+      return id == 't_' + md5(item.file.filename)
     })
     if(item){
       this.clearTimer()

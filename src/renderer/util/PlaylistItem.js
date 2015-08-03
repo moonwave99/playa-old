@@ -7,6 +7,6 @@ module.exports = class PlaylistItem{
     this.metadata = options.metadata
     this.duration = options.duration
     this.filename = options.filename
-    this.id = md5(this.filename)
+    this.id = 't_' + md5(this.filename)
   }
 }
