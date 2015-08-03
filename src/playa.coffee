@@ -159,9 +159,11 @@ module.exports = class Playa
     @player.on 'nowplaying', ->
       playbackInfo = PlayerStore.getPlaybackInfo()
       selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
-      selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id
-      selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id
-      OpenPlaylistActions.savePlaylist()
+
+      if (selectedPlaylist.lastPlayedAlbumId != playbackInfo.currentAlbum.id) or (selectedPlaylist.lastPlayedTrackId != playbackInfo.currentTrack.id)
+        selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id
+        selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id
+        OpenPlaylistActions.savePlaylist()
       PlayerStore.emitChange()
 
     @player.on 'playerTick', ->
