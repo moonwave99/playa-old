@@ -45,7 +45,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       KeyboardFocusStore.removeChangeListener(this._onKeyboardFocusChange)
     },
     componentDidUpdate(prevProps, prevState){
-      this.props.handleScrollToElement(this.state, this.getIdList())
+      this.props.handleScrollToElement(this.state, this.getIdList(), this.refs.component)
       if(this.props.isFocused){
         this.onFocusRequest()
       }
@@ -53,6 +53,7 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     render() {
       return (
         <Component
+          ref="component"
           handleClick={this.handleClick}
           focusParent={this.onFocusRequest}
           closeElements={this.closeElements}
