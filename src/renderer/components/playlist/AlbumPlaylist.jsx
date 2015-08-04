@@ -206,7 +206,11 @@ var AlbumPlaylist = React.createClass({
     OpenPlaylistActions.selectAlbum(album, trackId, this.props.playlist, true)
   },
   calculateDropAreaHeight: function(){
-    return 'calc(100vh - 9rem - ' + (4 * this.props.playlist.getLength() ) + 'rem)'
+    var height = _.reduce(this.state.list, (memo, item, index)=>{
+      memo += this.itemSizeGetter(index)
+      return memo
+    }, 0)
+    return 'calc(100vh - 9rem - ' + height + 'px)'
   },
   scrollTo: function(id){
     var index = _.findIndex(this.state.list, item => item.id == id)
