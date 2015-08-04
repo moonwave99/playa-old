@@ -134,7 +134,11 @@ var AlbumPlaylist = React.createClass({
   },
   itemSizeGetter: function(index){
     var height = 0
-    switch(this.state.list[index].type){
+    var item = this.state.list[index]
+    if(!item){
+      return
+    }
+    switch(item.type){
       case 'album':
         height = 56
         break
@@ -153,6 +157,7 @@ var AlbumPlaylist = React.createClass({
           itemsRenderer={this.itemsRenderer}
           itemSizeGetter={this.itemSizeGetter}
           length={this.state.list.length}
+          threshold={56 * 4}
           type='variable'
           ref='list'
           list={this.state.list}
