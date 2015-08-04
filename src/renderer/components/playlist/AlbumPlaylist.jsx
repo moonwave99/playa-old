@@ -4,9 +4,10 @@ var _ = require('lodash')
 var uid = require('uid')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
+var ReactList = require('react-list')
+
 var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
-
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var PlayerStore = require('../../stores/PlayerStore')
@@ -31,7 +32,7 @@ var AlbumPlaylist = React.createClass({
   },
   getInitialState: function(){
     return _.extend({
-
+      list: this.getFlattenedList(this.props, this.state)
     }, getPlayerState())
   },
   componentDidMount: function(){
@@ -40,60 +41,123 @@ var AlbumPlaylist = React.createClass({
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },
-  renderAlbumTracklist: function(album){
-    var isMultiple = album.isMultiple()
-    var renderedTracklist = []
-    album.tracks.forEach((track, index)=>{
-      if(isMultiple && track.metadata.track == 1){
-        renderedTracklist.push((
-          <li key={track.id + '_disc_' + track.metadata.disk.no } className="disc-number">Disc {track.metadata.disk.no}</li>
-        ))
-      }
-      var isPlaying = this.state.currentTrack && (track.id == this.state.currentTrack.id)
-      renderedTracklist.push(
-        <AlbumTracklistItem
-          key={track.id}
-          itemKey={track.id}
-          album={album}
-          track={track}
-          index={index}
-          selected={this.props.selection.indexOf(track.id) > -1}
-          isPlaying={isPlaying}
-          handleClick={this.handleTracklistClick}
-          handleDoubleClick={this.handleTracklistDoubleClick}/>
-      )
+  componentWillReceiveProps: function(nextProps){
+    this.setState({
+      list: this.getFlattenedList(nextProps)
     })
-    return renderedTracklist
+  },
+  getFlattenedList: function(props){
+    var list = []
+    props.playlist.getItems().forEach((album, index)=>{
+      var isOpened = props.openElements.indexOf(album.id) > -1
+      list.push({
+        type: 'album',
+        album: album,
+        isOpened: isOpened,
+        isSelected: props.selection.indexOf(album.id) > -1,
+        index: index
+      })
+      if(isOpened){
+        var isMultiple = album.isMultiple()
+        album.tracks.forEach((track, trackIndex)=>{
+          if(isMultiple && track.metadata.track == 1){
+            list.push({
+              type: 'discNumber',
+              disc: track.metadata.disk.no,
+              key: track.id + '_disc_' + track.metadata.disk.no
+            })
+          }
+          list.push({
+            type: 'track',
+            track: track,
+            album: album,
+            index: trackIndex,
+            isSelected: props.selection.indexOf(track.id) > -1,
+            isPlaying: this.state.currentTrack && (track.id == this.state.currentTrack.id)
+          })
+        })
+      }
+    })
+    return list
+  },
+  itemRenderer: function(index, key){
+    var item = this.state.list[index]
+    switch(item.type){
+      case 'album':
+        var album = item.album
+        return (
+          <AlbumPlaylistItem
+            key={album.id}
+            index={item.index}
+            itemKey={album.id}
+            album={album}
+            closeElements={this.props.closeElements}
+            handleClick={this.handleClick}
+            handleFolderDrop={this.handleFolderDrop}
+            handleDragEnd={this.handleDragEnd}
+            playTrack={this.playTrack}
+            currentTrack={this.state.currentTrack || {}}
+            moveAlbum={this.moveAlbum}
+            direction={this.props.direction}
+            isSelected={item.isSelected}
+            isOpened={item.isOpened}/>
+        )
+        break
+      case 'track':
+        var track = item.track
+        return (
+          <AlbumTracklistItem
+            key={track.id}
+            itemKey={track.id}
+            album={item.album}
+            track={track}
+            index={item.index}
+            isSelected={item.isSelected}
+            isPlaying={item.isPlaying}
+            handleClick={this.handleTracklistClick}
+            handleDoubleClick={this.handleTracklistDoubleClick}/>
+        )
+        break
+      case 'discNumber':
+        return (
+          <li key={item.key} className="disc-number">Disc {item.disc}</li>
+        )
+        break
+    }
+  },
+  itemsRenderer: function(items, ref){
+    return (
+      <ol className="albums list-unstyled" ref={ref}>{items}</ol>
+    )
+  },
+  itemSizeGetter: function(index){
+    var height = 0
+    switch(this.state.list[index].type){
+      case 'album':
+        height = 56
+        break
+      case 'track':
+      case 'discNumber':
+        height = 28
+        break
+    }
+    return height
   },
   render: function() {
-    var albums = []
-    this.props.playlist.getItems().forEach( (album, index)=> {
-      var isOpened = this.props.openElements.indexOf(album.id) > -1
-      albums.push(
-        <AlbumPlaylistItem
-          key={album.id}
-          index={index}
-          itemKey={album.id}
-          album={album}
-          closeElements={this.props.closeElements}
-          handleClick={this.handleClick}
-          handleFolderDrop={this.handleFolderDrop}
-          handleDragEnd={this.handleDragEnd}
-          playTrack={this.playTrack}
-          currentTrack={this.state.currentTrack || {}}
-          moveAlbum={this.moveAlbum}
-          direction={this.props.direction}
-          selection={this.props.selection}
-          isOpened={isOpened}/>
-      )
-      if(isOpened){
-        albums = albums.concat(this.renderAlbumTracklist(album))
-      }
-    })
-
     return (
       <div onClick={this.handleGlobalClick}>
-        <ol className="albums list-unstyled">{albums}</ol>
+        <ReactList
+          itemRenderer={this.itemRenderer}
+          itemsRenderer={this.itemsRenderer}
+          itemSizeGetter={this.itemSizeGetter}
+          length={this.state.list.length}
+          type='variable'
+          ref='list'
+          list={this.state.list}
+          currentTrack={this.state.currentTrack}
+          selection={this.props.selection}
+          openElements={this.props.openElements}
+        />
         <DropArea
           height={this.calculateDropAreaHeight()}
           moveAlbum={this.moveAlbum}

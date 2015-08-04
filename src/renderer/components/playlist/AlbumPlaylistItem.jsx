@@ -69,7 +69,7 @@ var AlbumPlaylistItem = React.createClass({
     var classes = cx({
       'album'     : true,
       'playing'   : isPlaying,
-      'selected'  : this.props.selection.indexOf(this.props.album.id) > -1,
+      'selected'  : this.props.isSelected,
       'open'      : this.props.isOpened
     })
     var opacity = this.props.isDragging ? 0.4 : 1

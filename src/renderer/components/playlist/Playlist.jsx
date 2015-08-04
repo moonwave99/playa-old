@@ -91,22 +91,7 @@ var Playlist = React.createClass({
     }
   },
   handleScrollToElement: function(state, list){
-    var wrapper = React.findDOMNode(this)
-    var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
-    if(!targetElement){
-      return
-    }
 
-    // save position of last selected album
-    this.props.playlist.lastScrolledAlbum = state.selection[0]
-
-    var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
-    if(direction < 0){
-      wrapper.scrollTop = targetElement.offsetTop
-    }else if(direction > 0){
-      var maxEls = Math.floor(parentBounds.height / elBounds.height)
-      wrapper.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
-    }
   },
   scrollToAlbum: function(albumId){
     var wrapper = React.findDOMNode(this)
