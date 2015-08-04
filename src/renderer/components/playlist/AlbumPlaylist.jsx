@@ -5,6 +5,7 @@ var uid = require('uid')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
+var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
@@ -39,10 +40,36 @@ var AlbumPlaylist = React.createClass({
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
   },
+  renderAlbumTracklist: function(album){
+    var isMultiple = album.isMultiple()
+    var renderedTracklist = []
+    album.tracks.forEach((track, index)=>{
+      if(isMultiple && track.metadata.track == 1){
+        renderedTracklist.push((
+          <li key={track.id + '_disc_' + track.metadata.disk.no } className="disc-number">Disc {track.metadata.disk.no}</li>
+        ))
+      }
+      var isPlaying = this.state.currentTrack && (track.id == this.state.currentTrack.id)
+      renderedTracklist.push(
+        <AlbumTracklistItem
+          key={track.id}
+          itemKey={track.id}
+          album={album}
+          track={track}
+          index={index}
+          selected={this.props.selection.indexOf(track.id) > -1}
+          isPlaying={isPlaying}
+          handleClick={this.handleTracklistClick}
+          handleDoubleClick={this.handleTracklistDoubleClick}/>
+      )
+    })
+    return renderedTracklist
+  },
   render: function() {
-    var albums = this.props.playlist.getItems().map( (album, index)=> {
+    var albums = []
+    this.props.playlist.getItems().forEach( (album, index)=> {
       var isOpened = this.props.openElements.indexOf(album.id) > -1
-      return (
+      albums.push(
         <AlbumPlaylistItem
           key={album.id}
           index={index}
@@ -59,6 +86,9 @@ var AlbumPlaylist = React.createClass({
           selection={this.props.selection}
           isOpened={isOpened}/>
       )
+      if(isOpened){
+        albums = albums.concat(this.renderAlbumTracklist(album))
+      }
     })
 
     return (
@@ -77,6 +107,14 @@ var AlbumPlaylist = React.createClass({
   },
   handleClick: function(event, item){
     this.props.handleClick(event, item)
+  },
+  handleTracklistClick: function(event, item){
+    event.stopPropagation()
+    this.props.handleClick(event, item)
+  },
+  handleTracklistDoubleClick: function(event, item){
+    event.stopPropagation()
+    this.playTrack(item.props.album, item.props.track.id)
   },
   handleFolderDrop: function(folder, afterId){
     if(!afterId){
