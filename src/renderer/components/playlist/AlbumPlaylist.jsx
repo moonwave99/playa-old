@@ -51,6 +51,7 @@ var AlbumPlaylist = React.createClass({
     props.playlist.getItems().forEach((album, index)=>{
       var isOpened = props.openElements.indexOf(album.id) > -1
       list.push({
+        id: album.id,
         type: 'album',
         album: album,
         isOpened: isOpened,
@@ -68,6 +69,7 @@ var AlbumPlaylist = React.createClass({
             })
           }
           list.push({
+            id: track.id,
             type: 'track',
             track: track,
             album: album,
@@ -205,6 +207,10 @@ var AlbumPlaylist = React.createClass({
   },
   calculateDropAreaHeight: function(){
     return 'calc(100vh - 9rem - ' + (4 * this.props.playlist.getLength() ) + 'rem)'
+  },
+  scrollTo: function(id){
+    var index = _.findIndex(this.state.list, item => item.id == id)
+    this.refs.list.scrollAround(index)
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())

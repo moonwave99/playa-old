@@ -41,26 +41,7 @@ var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConst
   }
 )
 
-var _overflows = function(parent, element){
-  var parentBounds = parent.getBoundingClientRect()
-  var elBounds = element.getBoundingClientRect()
-  var direction = 0
-  if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
-    direction = 1
-  }else if(elBounds.top < parentBounds.top){
-    direction = -1
-  }
-  return {
-    direction: direction,
-    parentBounds: parentBounds,
-    elBounds: elBounds
-  }
-}
-
 var Playlist = React.createClass({
-  componentDidMount: function(){
-    this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
-  },
   render: function() {
     var classes = cx({
       'playlist'      : true,
@@ -90,16 +71,8 @@ var Playlist = React.createClass({
       OpenPlaylistActions.selectAlbum(whatToPlay.album, whatToPlay.trackId, this.props.playlist, true)
     }
   },
-  handleScrollToElement: function(state, list){
-
-  },
-  scrollToAlbum: function(albumId){
-    var wrapper = React.findDOMNode(this)
-    var targetElement = wrapper.querySelector('[data-id="' + albumId + '"]')
-    if(!targetElement){
-      return
-    }
-    wrapper.scrollTop = targetElement.offsetTop
+  handleScrollToElement: function(state, list, component){
+    component.scrollTo(state.selection[0])
   }
 })
 
