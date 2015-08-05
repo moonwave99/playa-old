@@ -140,11 +140,11 @@ var AlbumPlaylist = React.createClass({
     }
     switch(item.type){
       case 'album':
-        height = 56
+        height = 4 * this.props.baseFontSize
         break
       case 'track':
       case 'discNumber':
-        height = 28
+        height = 2 * this.props.baseFontSize
         break
     }
     return height
@@ -157,7 +157,7 @@ var AlbumPlaylist = React.createClass({
           itemsRenderer={this.itemsRenderer}
           itemSizeGetter={this.itemSizeGetter}
           length={this.state.list.length}
-          threshold={56 * 4}
+          threshold={this.props.baseFontSize * 12}
           type='variable'
           ref='list'
           list={this.state.list}

@@ -71,6 +71,10 @@ module.exports = class Playa
       data:
         breakpoints:
           widescreen: '1500px'
+          widefont:   '1700px'
+        baseFontSize:
+          normal: 14
+          wide:   16
 
     @settings.user = new SettingsBag
       path: path.join options.userDataFolder, 'user_settings.json'

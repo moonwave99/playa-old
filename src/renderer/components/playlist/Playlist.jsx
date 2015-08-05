@@ -52,6 +52,7 @@ var Playlist = React.createClass({
         <AlbumPlaylistOnSteroids
           allowMultipleSelection={true}
           playlist={this.props.playlist}
+          baseFontSize={this.props.baseFontSize}
           initSelection={[this.props.playlist.lastScrolledAlbum]}
           handleDelKeyPress={this.handleDelKeyPress}
           handleEnterKeyPress={this.handleEnterKeyPress}
