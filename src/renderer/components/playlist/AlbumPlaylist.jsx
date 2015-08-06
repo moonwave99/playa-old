@@ -49,7 +49,7 @@ var AlbumPlaylist = React.createClass({
   },
   componentWillReceiveProps: function(nextProps){
     this.setState({
-      list: this.getFlattenedList(nextProps)
+      list: this.getFlattenedList(nextProps, this.state.currentTrack)
     })
   },
   getFlattenedList: function(props, currentTrack){
