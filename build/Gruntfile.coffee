@@ -12,6 +12,7 @@ _ = require 'underscore-plus'
 packageJson = require '../package.json'
 
 module.exports = (grunt) ->
+  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-bower-task')
   grunt.loadNpmTasks('grunt-coffeelint')
   grunt.loadNpmTasks('grunt-cson')
@@ -163,11 +164,6 @@ module.exports = (grunt) ->
         'static/**/*.css'
       ]
 
-    lesslint:
-      src: [
-        'static/**/*.less'
-      ]
-
     'build-atom-shell':
       tag: "v0.29.2"
       nodeVersion: '0.29.0'
@@ -197,6 +193,14 @@ module.exports = (grunt) ->
         options:
           targetDir: 'static/components'
 
+    copy:
+      settings:
+        files: [
+          expand: true
+          src: ['settings/**']
+          dest: appDir
+        ]
+
     shell:
       'kill-app':
         command: killCommand
@@ -210,7 +214,7 @@ module.exports = (grunt) ->
   grunt.initConfig(opts)
 
   grunt.registerTask('compile', ['coffee', 'cson'])
-  grunt.registerTask('lint', ['coffeelint', 'csslint', 'lesslint'])
+  grunt.registerTask('lint', ['coffeelint', 'csslint'])
   grunt.registerTask('test', ['shell:kill-app', 'run-specs'])
 
   ciTasks = ['output-disk-space', 'build-atom-shell', 'bower:install', 'build', 'generate-license']
@@ -222,5 +226,5 @@ module.exports = (grunt) ->
   ciTasks.push('codesign')
   grunt.registerTask('ci', ciTasks)
 
-  defaultTasks = ['bower:install', 'build-atom-shell', 'build', 'set-version', 'local-googlefont', 'stylus:compile']
+  defaultTasks = ['bower:install', 'build-atom-shell', 'build', 'set-version', 'local-googlefont', 'stylus:compile', 'copy']
   grunt.registerTask('default', defaultTasks)
