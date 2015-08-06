@@ -12,6 +12,24 @@
     .drop-area
       width "calc(100vw - %s)" % size($sidebarWidth)
 
+  .playlist-content
+    position relative
+    > div
+      opacity 1
+      transition opacity .2s linear
+    .load-icon
+      display none
+      color $playlistLoaderColor
+      font-size size($playlistLoaderSize)
+      pointer-events none
+    &.loading
+      .load-icon
+        display block
+        position absolute
+        top 'calc(50% - %s)' % size($playlistLoaderSize / 2)
+        left 'calc(50% - %s)' % size($playlistLoaderSize / 2)
+      > div
+        opacity 0
   .albums
     position relative
     margin 0

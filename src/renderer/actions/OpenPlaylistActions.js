@@ -56,6 +56,12 @@ module.exports = {
       selected: index
     })
   },
+  load: function(id){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.LOAD_PLAYLIST,
+      id: id
+    })
+  },
   selectById: function(id){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID,

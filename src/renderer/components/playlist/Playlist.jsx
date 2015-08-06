@@ -42,6 +42,11 @@ var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConst
 )
 
 var Playlist = React.createClass({
+  componentDidMount: function(){
+    if(!this.props.playlist.loaded){
+      OpenPlaylistActions.load(this.props.playlist.id)
+    }
+  },
   render: function() {
     var classes = cx({
       'playlist'      : true,
@@ -53,7 +58,8 @@ var Playlist = React.createClass({
           allowMultipleSelection={true}
           playlist={this.props.playlist}
           baseFontSize={this.props.baseFontSize}
-          initSelection={[this.props.playlist.lastScrolledAlbum]}
+          initSelection={[this.props.playlist.lastScrolledAlbumId]}
+          initOpenElements={this.props.playlist.openAlbums}
           handleDelKeyPress={this.handleDelKeyPress}
           handleEnterKeyPress={this.handleEnterKeyPress}
           handleScrollToElement={this.handleScrollToElement}/>
@@ -73,7 +79,7 @@ var Playlist = React.createClass({
     }
   },
   handleScrollToElement: function(state, list, component){
-    component.scrollTo(state.selection[0])
+    component.scrollAround(state.selection[0])
   }
 })
 

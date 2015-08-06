@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var cx = require('classnames')
 var uid = require('uid')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
@@ -217,13 +218,32 @@ var AlbumPlaylist = React.createClass({
     }, 0)
     return 'calc(100vh - 9rem - ' + height + 'px)'
   },
-  scrollTo: function(id){
+  scrollAround: function(id){
     var index = _.findIndex(this.state.list, item => item.id == id)
     this.refs.list.scrollAround(index)
   },
+  scrollTo: function(id){
+    var index = _.findIndex(this.state.list, item => item.id == id)
+    this.refs.list.scrollTo(index)
+  },
+  getScrollThreshold: function(){
+    return 0
+  },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
-  }
+  },
+  _onListScrollHandler: _.throttle(function(event){
+    if(!this.refs.list){
+      return
+    }
+    var index = this.refs.list.state.from
+    if(!index){
+      return
+    }
+    var threshold = 3
+    var lastScrolledAlbum = this.state.list[index]
+    this.props.playlist.lastScrolledAlbumId = lastScrolledAlbum.id
+  }, 100)
 })
 
 module.exports = AlbumPlaylist
