@@ -32,22 +32,27 @@ var AlbumPlaylist = React.createClass({
     selection: ReactPropTypes.array
   },
   getInitialState: function(){
+    var playerState = getPlayerState()
     return _.extend({
-      list: this.getFlattenedList(this.props, this.state)
-    }, getPlayerState())
+      list: this.getFlattenedList(this.props, playerState.currentTrack)
+    }, playerState)
   },
   componentDidMount: function(){
     PlayerStore.addChangeListener(this._onPlayerChange)
+    this.refs.list.getScrollParent().addEventListener('scroll', this._onListScrollHandler)
+    this.props.playlist.lastScrolledAlbumId && this.scrollTo(this.props.playlist.lastScrolledAlbumId)
   },
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
+    this.refs.list.getScrollParent().removeEventListener('scroll', this._onListScrollHandler)
+    this.props.playlist.openAlbums = this.props.openElements
   },
   componentWillReceiveProps: function(nextProps){
     this.setState({
       list: this.getFlattenedList(nextProps)
     })
   },
-  getFlattenedList: function(props){
+  getFlattenedList: function(props, currentTrack){
     var list = []
     props.playlist.getItems().forEach((album, index)=>{
       var isOpened = props.openElements.indexOf(album.id) > -1
@@ -76,7 +81,7 @@ var AlbumPlaylist = React.createClass({
             album: album,
             index: trackIndex,
             isSelected: props.selection.indexOf(track.id) > -1,
-            isPlaying: this.state.currentTrack && (track.id == this.state.currentTrack.id)
+            isPlaying: currentTrack && (track.id == currentTrack.id)
           })
         })
       }
@@ -151,14 +156,19 @@ var AlbumPlaylist = React.createClass({
     return height
   },
   render: function() {
+    var classes = cx({
+      'playlist-content'  : true,
+      'loading'           : !this.props.playlist.loaded
+    })
     return (
-      <div onClick={this.handleGlobalClick}>
+      <div onClick={this.handleGlobalClick} className={classes}>
+        <i className="fa fa-circle-o-notch fa-spin load-icon"></i>
         <ReactList
           itemRenderer={this.itemRenderer}
           itemsRenderer={this.itemsRenderer}
           itemSizeGetter={this.itemSizeGetter}
           length={this.state.list.length}
-          threshold={this.props.baseFontSize * 12}
+          threshold={this.getScrollThreshold()}
           type='variable'
           ref='list'
           list={this.state.list}

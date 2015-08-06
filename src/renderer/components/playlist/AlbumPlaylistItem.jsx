@@ -106,7 +106,9 @@ var AlbumPlaylistItem = React.createClass({
     this.props.handleClick(event, this)
   },
   updateCover: function(cover){
-    this.setState({ cover: cover })
+    if(this.isMounted()){
+      this.setState({ cover: cover })
+    }
   },
   getContextMenuActions: function(){
     return [

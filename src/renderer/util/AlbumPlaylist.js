@@ -20,6 +20,8 @@ module.exports = class AlbumPlaylist{
     this.loaded = false
     this.lastPlayedAlbumId = null
     this.lastPlayedTrackId = null
+    this.lastScrolledAlbumId = null
+    this.openAlbums = []
   }
   getFirst(){
     return this.items.getFirst()
@@ -150,12 +152,16 @@ module.exports = class AlbumPlaylist{
     this.title = data.title
     this.lastPlayedAlbumId = data.lastPlayedAlbumId
     this.lastPlayedTrackId = data.lastPlayedTrackId
+    this.lastScrolledAlbumId = data.lastScrolledAlbumId
+    this.openAlbums = data.openAlbums
   }
   serialize(){
     return {
       title: this.title,
       lastPlayedAlbumId: this.lastPlayedAlbumId,
       lastPlayedTrackId: this.lastPlayedTrackId,
+      lastScrolledAlbumId: this.lastScrolledAlbumId,
+      openAlbums: this.openAlbums,
       tracklist: this.getFileList()
     }
   }
