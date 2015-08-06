@@ -71,6 +71,10 @@ module.exports = class Playa
       data:
         breakpoints:
           widescreen: '1500px'
+          widefont:   '1700px'
+        baseFontSize:
+          normal: 14
+          wide:   16
 
     @settings.user = new SettingsBag
       path: path.join options.userDataFolder, 'user_settings.json'
@@ -133,7 +137,7 @@ module.exports = class Playa
 
     @player = new Player
       mediaFileLoader: @mediaFileLoader
-      resolution: 1000
+      resolution: 100
       scrobbleThreshold: @getSetting 'common', 'scrobbleThreshold'
 
   init: ->
@@ -159,9 +163,11 @@ module.exports = class Playa
     @player.on 'nowplaying', ->
       playbackInfo = PlayerStore.getPlaybackInfo()
       selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist()
-      selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id
-      selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id
-      OpenPlaylistActions.savePlaylist()
+
+      if (selectedPlaylist.lastPlayedAlbumId != playbackInfo.currentAlbum.id) or (selectedPlaylist.lastPlayedTrackId != playbackInfo.currentTrack.id)
+        selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id
+        selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id
+        OpenPlaylistActions.savePlaylist()
       PlayerStore.emitChange()
 
     @player.on 'playerTick', ->

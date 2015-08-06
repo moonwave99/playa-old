@@ -6,56 +6,72 @@
     transition transform .2s linear
   &.sidebar-open
     .sidebar-offset
-    .album.selected header:after
+    .album.selected:after
+    .track.selected:after
       transform translateX(size(-1*$sidebarWidth))
     .drop-area
       width "calc(100vw - %s)" % size($sidebarWidth)
 
+  .playlist-content
+    position relative
+    > div
+      opacity 1
+      transition opacity .2s linear
+    .load-icon
+      display none
+      color $playlistLoaderColor
+      font-size size($playlistLoaderSize)
+      pointer-events none
+    &.loading
+      .load-icon
+        display block
+        position absolute
+        top 'calc(50% - %s)' % size($playlistLoaderSize / 2)
+        left 'calc(50% - %s)' % size($playlistLoaderSize / 2)
+      > div
+        opacity 0
   .albums
     position relative
     margin 0
     .album
-      height size($albumItemClosedHeight)
-      vertical-align middle
-      box-shadow inset 0 -1px rgba($mainColor, .1)
+      height size($albumItemHeight)
       position relative
-      &.open
-        height auto
+      padding-top size($albumHeaderTopPadding)
+      padding-left size($albumItemHeight)
+      box-shadow inset 0 -1px rgba($mainColor, .1)
+      transition background-color .1s ease-in
+      vertical-align middle
+      cursor pointer
       &:first-child
         box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .1)
       &:hover
-        header
-          background-color $albumHoverBackgroundColor
+        background-color $albumHoverBackgroundColor
       &.selected
-        header
-          background-color $albumSelectedBackgroundColor
-          &:after
-            position absolute
-            content ''
-            background-color $mainColor
-            width .25rem
-            height calc(100% - 2px)
-            right 0
-            top 1px
-            transition transform .2s linear
-
+        background-color $albumSelectedBackgroundColor
+        &:after
+          position absolute
+          content ''
+          background-color $mainColor
+          width .25rem
+          height calc(100% - 2px)
+          right 0
+          top 1px
+          transition transform .2s linear
       &.playing
-        header
-          box-shadow inset 0 -1px rgba(black, .8)
-          background-color $albumPlayingBackgroundColor
-          .artist
-          .title
-          .year
-            color black
-        &.selected header:after
+        box-shadow inset 0 -1px rgba(black, .8)
+        background-color $albumPlayingBackgroundColor
+        .artist
+        .title
+        .year
+          color black
+        &.selected:after
           background-color black
       &:hover,
       &.playing
-        header
-          .cover.loaded
-            opacity 1
-          .menu-link
-            opacity 1
+        .cover.loaded
+          opacity 1
+        .menu-link
+          opacity 1
       &.drag-over-top
         box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .8)
       &.drag-over-bottom
@@ -63,100 +79,100 @@
       &.menuOpened
         .menu-link
           display inline-block
-      header
-        height size($albumItemClosedHeight)
-        padding-top size($albumHeaderTopPadding)
-        padding-left size($albumItemClosedHeight)
-        overflow-x hidden
-        transition background-color .1s ease-in
-        cursor pointer
-        position relative
-        .cover
-          height 'calc(%s - %s)' % ( size($albumItemClosedHeight) 0px)
-          width 'calc(%s - %s)' % ( size($albumItemClosedHeight) 0px)
-          background-position center
-          background-size cover
-          background-color black
-          position absolute
-          top 0
-          left 0
-          opacity 0
-          transition opacity .3s ease-in
-          border-bottom 1px solid rgba(black, .8)
-          &.loaded
-            opacity .7
-        .artist
-          color $albumArtistColor
-          font-size size($albumArtistFontSize)
-          vertical-align middle
-          padding-left 1rem
-          display inline-block
-          max-width 80%
-          transition color .3s ease-in
-          ellipsed()
-        .title
-          font-size size($albumTitleFontSize)
-          vertical-align middle
-          padding-left 1rem
-          display inline-block
-          max-width 80%
-          transition color .3s ease-in
-          ellipsed()
-        .year
-          font-size size($albumDateFontSize)
-          vertical-align middle
-          margin-right 1rem
-          position absolute
-          right 0
-          top size(($albumItemClosedHeight - $albumDateFontSize) * .5)
-        .menu-link
-          margin-right 1rem
-          position absolute
-          right 3rem
-          top size(($albumItemClosedHeight - $albumDateFontSize) * .5)
-          border-radius 50%
-          background-color $albumItemMenuLinkBgColor
-          opacity 0
 
-      .tracklist
-        padding 0
-        margin 0
-        line-height size($albumTracklistLineHeight)
-        font-size size($albumTracklistFontSize)
-        .disc-number
-          color $albumArtistColor
-          font-size .9rem
-          padding-left 5rem
-        .track
-          &:nth-child(odd)
-            background-color rgba(white, .03)
-          &:nth-child(even)
-            background-color rgba(white, .07)
-          &:hover
-            background-color rgba(white, .08)
-          &.selected
-            background-color rgba(white, .09)
-          &.playing
-            background-color rgba(white, .1)
-          .track-artist
-            color $albumArtistColor
-          .separator
-            margin 0 .5rem
-            &:after
-              content '·'
-          .track-playing-indicator
-            width 1.2rem
-            text-align center
-            display inline-block
-            margin-left 1.5rem
-          .track-number
-            width 1.2rem
-            text-align right
-            margin 0 1rem 0 0
-            display inline-block
-          .track-duration
-            float right
-            margin-right 1rem
+      .cover
+        height 'calc(%s - %s)' % ( size($albumItemHeight) 0px)
+        width 'calc(%s - %s)' % ( size($albumItemHeight) 0px)
+        background-position center
+        background-size cover
+        background-color black
+        position absolute
+        top 0
+        left 0
+        opacity 0
+        transition opacity .3s ease-in
+        border-bottom 1px solid rgba(black, .8)
+        &.loaded
+          opacity .7
+      .artist
+        color $albumArtistColor
+        font-size size($albumArtistFontSize)
+        vertical-align middle
+        padding-left 1rem
+        display inline-block
+        max-width 80%
+        transition color .3s ease-in
+        ellipsed()
+      .title
+        font-size size($albumTitleFontSize)
+        vertical-align middle
+        padding-left 1rem
+        display inline-block
+        max-width 80%
+        transition color .3s ease-in
+        ellipsed()
+      .year
+        font-size size($albumDateFontSize)
+        vertical-align middle
+        margin-right 1rem
+        position absolute
+        right 0
+        top size(($albumItemHeight - $albumDateFontSize) * .5)
+      .menu-link
+        margin-right 1rem
+        position absolute
+        right 3rem
+        top size(($albumItemHeight - $albumDateFontSize) * .5)
+        border-radius 50%
+        background-color $albumItemMenuLinkBgColor
+        opacity 0
+
+    .disc-number
+      color $albumArtistColor
+      font-size .9rem
+      padding-left 5rem
+      line-height size($albumTracklistLineHeight)
+      font-size size($albumTracklistFontSize)
+    .track
+      position relative
+      line-height size($albumTracklistLineHeight)
+      font-size size($albumTracklistFontSize)
+      &.odd
+        background-color rgba(white, .03)
+      &.even
+        background-color rgba(white, .07)
+      &:hover
+        background-color rgba(white, .08)
+      &.selected
+        background-color rgba(white, .09)
+        &:after
+          position absolute
+          content ''
+          background-color $mainColor
+          width .25rem
+          height 100%
+          right 0
+          top 0
+          transition transform .2s linear
+      .track-artist
+        color $albumArtistColor
+      .separator
+        margin 0 .5rem
+        &:after
+          content '·'
+      .track-playing-indicator
+        width 1.2rem
+        text-align center
+        display inline-block
+        margin-left 1.5rem
+      .track-number
+        width 1.2rem
+        text-align right
+        margin 0 1rem 0 0
+        display inline-block
+      .track-duration
+        float right
+        margin-right 1rem
 
   .drop-area
     min-height size($dropAreaHeight)

@@ -50,7 +50,7 @@ module.exports = class Player extends EventEmitter{
     if(this.alreadyScrobbled){
       return
     }
-    var amount = this.currentTrackPlayedAmount++
+    var amount = this.currentTrackPlayedAmount += (this.resolution * 0.001)
     if(amount >this.scrobbleThreshold.absolute || amount/this.currentTrack.duration > this.scrobbleThreshold.percent){
       this.emit('scrobbleTrack', this.currentTrack, this.currentTrackPlayedAmount)
       this.alreadyScrobbled = true
@@ -107,7 +107,7 @@ module.exports = class Player extends EventEmitter{
       if(!this.timer){
         this.startTimer()
       }
-      this.currentTrack = this.currentAlbum.findById(md5(current.item.file.filename))
+      this.currentTrack = this.currentAlbum.findById('t_' + md5(current.item.file.filename))
       this.emit('nowplaying')
     }else{
       if(this.playbackDirection == 0){
@@ -174,7 +174,7 @@ module.exports = class Player extends EventEmitter{
   gotoTrack(id) {
     id = id || this.currentAlbum.tracks[0].id
     var item = _.find(this.groovePlaylist.items(), (item)=>{
-      return id == md5(item.file.filename)
+      return id == 't_' + md5(item.file.filename)
     })
     if(item){
       this.clearTimer()

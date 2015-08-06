@@ -1,11 +1,14 @@
 "use babel"
 
 var _ = require('lodash')
+var cx = require('classnames')
 var uid = require('uid')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
-var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
+var ReactList = require('react-list')
 
+var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
+var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
 var PlayerStore = require('../../stores/PlayerStore')
@@ -29,44 +32,150 @@ var AlbumPlaylist = React.createClass({
     selection: ReactPropTypes.array
   },
   getInitialState: function(){
+    var playerState = getPlayerState()
     return _.extend({
-
-    }, getPlayerState())
+      list: this.getFlattenedList(this.props, playerState.currentTrack)
+    }, playerState)
   },
   componentDidMount: function(){
     PlayerStore.addChangeListener(this._onPlayerChange)
+    this.refs.list.getScrollParent().addEventListener('scroll', this._onListScrollHandler)
+    this.props.playlist.lastScrolledAlbumId && this.scrollTo(this.props.playlist.lastScrolledAlbumId)
   },
   componentWillUnmount: function(){
     PlayerStore.removeChangeListener(this._onPlayerChange)
+    this.refs.list.getScrollParent().removeEventListener('scroll', this._onListScrollHandler)
+    this.props.playlist.openAlbums = this.props.openElements
+  },
+  componentWillReceiveProps: function(nextProps){
+    this.setState({
+      list: this.getFlattenedList(nextProps)
+    })
+  },
+  getFlattenedList: function(props, currentTrack){
+    var list = []
+    props.playlist.getItems().forEach((album, index)=>{
+      var isOpened = props.openElements.indexOf(album.id) > -1
+      list.push({
+        id: album.id,
+        type: 'album',
+        album: album,
+        isOpened: isOpened,
+        isSelected: props.selection.indexOf(album.id) > -1,
+        index: index
+      })
+      if(isOpened){
+        var isMultiple = album.isMultiple()
+        album.tracks.forEach((track, trackIndex)=>{
+          if(isMultiple && track.metadata.track == 1){
+            list.push({
+              type: 'discNumber',
+              disc: track.metadata.disk.no,
+              key: track.id + '_disc_' + track.metadata.disk.no
+            })
+          }
+          list.push({
+            id: track.id,
+            type: 'track',
+            track: track,
+            album: album,
+            index: trackIndex,
+            isSelected: props.selection.indexOf(track.id) > -1,
+            isPlaying: currentTrack && (track.id == currentTrack.id)
+          })
+        })
+      }
+    })
+    return list
+  },
+  itemRenderer: function(index, key){
+    var item = this.state.list[index]
+    switch(item.type){
+      case 'album':
+        var album = item.album
+        return (
+          <AlbumPlaylistItem
+            key={album.id}
+            index={item.index}
+            itemKey={album.id}
+            album={album}
+            closeElements={this.props.closeElements}
+            handleClick={this.handleClick}
+            handleFolderDrop={this.handleFolderDrop}
+            handleDragEnd={this.handleDragEnd}
+            playTrack={this.playTrack}
+            currentTrack={this.state.currentTrack || {}}
+            moveAlbum={this.moveAlbum}
+            direction={this.props.direction}
+            isSelected={item.isSelected}
+            isOpened={item.isOpened}/>
+        )
+        break
+      case 'track':
+        var track = item.track
+        return (
+          <AlbumTracklistItem
+            key={track.id}
+            itemKey={track.id}
+            album={item.album}
+            track={track}
+            index={item.index}
+            isSelected={item.isSelected}
+            isPlaying={item.isPlaying}
+            handleClick={this.handleTracklistClick}
+            handleDoubleClick={this.handleTracklistDoubleClick}/>
+        )
+        break
+      case 'discNumber':
+        return (
+          <li key={item.key} className="disc-number">Disc {item.disc}</li>
+        )
+        break
+    }
+  },
+  itemsRenderer: function(items, ref){
+    return (
+      <ol className="albums list-unstyled" ref={ref}>{items}</ol>
+    )
+  },
+  itemSizeGetter: function(index){
+    var height = 0
+    var item = this.state.list[index]
+    if(!item){
+      return
+    }
+    switch(item.type){
+      case 'album':
+        height = 4 * this.props.baseFontSize
+        break
+      case 'track':
+      case 'discNumber':
+        height = 2 * this.props.baseFontSize
+        break
+    }
+    return height
   },
   render: function() {
-    var albums = this.props.playlist.getItems().map( (album, index)=> {
-      var isOpened    = this.props.openElements.indexOf(album.id) > -1
-      var isSelected  = this.props.selection.indexOf(album.id) > -1
-      return (
-        <AlbumPlaylistItem
-          key={album.id}
-          index={index}
-          itemKey={album.id}
-          album={album}
-          closeElements={this.props.closeElements}
-          focusParent={this.props.focusParent}
-          handleClick={this.handleClick}
-          handleFolderDrop={this.handleFolderDrop}
-          handleDragEnd={this.handleDragEnd}
-          playTrack={this.playTrack}
-          currentTrack={this.state.currentTrack || {}}
-          moveAlbum={this.moveAlbum}
-          direction={this.props.direction}
-          isOpened={isOpened}
-          isSelected={isSelected}
-          isKeyFocused={isOpened && isSelected && (this.props.selection.length == 1)}/>
-      )
+    var classes = cx({
+      'playlist-content'  : true,
+      'loading'           : !this.props.playlist.loaded
     })
-
     return (
-      <div onClick={this.handleGlobalClick}>
-        <ol className="albums list-unstyled">{albums}</ol>
+      <div onClick={this.handleGlobalClick} className={classes}>
+        <i className="fa fa-circle-o-notch fa-spin load-icon"></i>
+        <ReactList
+          itemRenderer={this.itemRenderer}
+          itemsRenderer={this.itemsRenderer}
+          itemSizeGetter={this.itemSizeGetter}
+          length={this.state.list.length}
+          threshold={this.getScrollThreshold()}
+          type='variable'
+          ref='list'
+          list={this.state.list}
+          currentTrack={this.state.currentTrack}
+          selection={this.props.selection}
+          openElements={this.props.openElements}
+        />
         <DropArea
           height={this.calculateDropAreaHeight()}
           moveAlbum={this.moveAlbum}
@@ -80,6 +189,14 @@ var AlbumPlaylist = React.createClass({
   },
   handleClick: function(event, item){
     this.props.handleClick(event, item)
+  },
+  handleTracklistClick: function(event, item){
+    event.stopPropagation()
+    this.props.handleClick(event, item)
+  },
+  handleTracklistDoubleClick: function(event, item){
+    event.stopPropagation()
+    this.playTrack(item.props.album, item.props.track.id)
   },
   handleFolderDrop: function(folder, afterId){
     if(!afterId){
@@ -105,11 +222,38 @@ var AlbumPlaylist = React.createClass({
     OpenPlaylistActions.selectAlbum(album, trackId, this.props.playlist, true)
   },
   calculateDropAreaHeight: function(){
-    return 'calc(100vh - 9rem - ' + (4 * this.props.playlist.getLength() ) + 'rem)'
+    var height = _.reduce(this.state.list, (memo, item, index)=>{
+      memo += this.itemSizeGetter(index)
+      return memo
+    }, 0)
+    return 'calc(100vh - 9rem - ' + height + 'px)'
+  },
+  scrollAround: function(id){
+    var index = _.findIndex(this.state.list, item => item.id == id)
+    this.refs.list.scrollAround(index)
+  },
+  scrollTo: function(id){
+    var index = _.findIndex(this.state.list, item => item.id == id)
+    this.refs.list.scrollTo(index)
+  },
+  getScrollThreshold: function(){
+    return 0
   },
   _onPlayerChange: function(){
     this.setState(getPlayerState())
-  }
+  },
+  _onListScrollHandler: _.throttle(function(event){
+    if(!this.refs.list){
+      return
+    }
+    var index = this.refs.list.state.from
+    if(!index){
+      return
+    }
+    var threshold = 3
+    var lastScrolledAlbum = this.state.list[index]
+    this.props.playlist.lastScrolledAlbumId = lastScrolledAlbum.id
+  }, 100)
 })
 
 module.exports = AlbumPlaylist

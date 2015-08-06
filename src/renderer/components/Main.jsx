@@ -77,6 +77,7 @@ var Main = React.createClass({
     ModalStore.removeChangeListener(this._onModalChange)
 
     this._unregisterCommonKeyHandler()
+    this._unregisterMediaQueryHandler()
   },
   componentDidUpdate: function(prevProps, prevState) {
     if(prevState.selectedIndex !== this.state.selectedIndex){
@@ -84,10 +85,11 @@ var Main = React.createClass({
     }
   },
   render: function() {
+    var baseFontSize = this.state.baseFontSize || this.props.baseFontSize.normal
     var openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
-          <Playlist playlist={playlist} isSidebarOpen={this.state.sidebar.isOpen}/>
+          <Playlist playlist={playlist} isSidebarOpen={this.state.sidebar.isOpen} baseFontSize={baseFontSize}/>
         </Tabs.Panel>
       )
     })
@@ -151,11 +153,23 @@ var Main = React.createClass({
   },
   _registerMediaQueryHandler: function(){
     enquire.register('screen and (min-width:' + this.props.breakpoints.widescreen + ')', {
-      match: function(){
+      match: ()=>{
         playa.toggleSidebar(true)
       },
-      unmatch: function(){}
+      unmatch: ()=>{}
     })
+    enquire.register('screen and (min-width:' + this.props.breakpoints.widefont + ')', {
+      match: ()=>{
+        this.setState({ baseFontSize: this.props.baseFontSize.wide })
+      },
+      unmatch: ()=>{
+        this.setState({ baseFontSize: this.props.baseFontSize.normal })
+      }
+    })
+  },
+  _unregisterMediaQueryHandler: function(){
+    enquire.unregister('screen and (min-width:' + this.props.breakpoints.widescreen + ')')
+    enquire.unregister('screen and (min-width:' + this.props.breakpoints.widefont + ')')
   }
 })
 

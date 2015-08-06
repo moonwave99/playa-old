@@ -58,15 +58,19 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
 
   dispatcherIndex: AppDispatcher.register(function(action) {
     switch(action.actionType) {
+      case OpenPlaylistConstants.LOAD_PLAYLIST:
+        playa.openPlaylistManager.load(action.id)
+          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+          .catch((error)=>{
+            console.error(error, error.stack)
+          })
+        break
       case OpenPlaylistConstants.UPDATE_PLAYLIST:
         playa.openPlaylistManager.update(action.id, action.values) && OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SELECT_PLAYLIST:
         playa.openPlaylistManager.selectByIndex(action.selected)
-          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
-          .catch((error)=>{
-            console.error(error, error.stack)
-          })
+        OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID:
         var id = action.id
@@ -74,11 +78,10 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           var firstPlaylist = playa.openPlaylistManager.getAt(0)
           id = firstPlaylist ? firstPlaylist.id : null
         }
-        id && playa.openPlaylistManager.selectById(id)
-          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
-          .catch((error)=>{
-            console.error(error, error.stack)
-          })
+        if(id){
+          playa.openPlaylistManager.selectById(id)
+          OpenPlaylistStore.emitChange()
+        }
         break
       case OpenPlaylistConstants.ADD_PLAYLIST:
         playa.openPlaylistManager.add(action.playlists)

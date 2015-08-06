@@ -16,32 +16,36 @@ var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConst
 
 var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConstants.ALBUM_PLAYLIST,
   function(component){
-    return component.props.playlist.getIds()
+    var ids = _.reduce(component.props.playlist.getItems(), (memo, album)=>{
+      memo.push(album.id)
+      if(_.contains(component.state.openElements, album.id)){
+        memo = memo.concat(album.tracks.map( t => t.id ))
+      }
+      return memo;
+    }, []);
+    return ids
   },
   function(component){
-    return component.props.playlist.getAlbumById(component.state.selection[0])
+    if(component.state.selection[0].startsWith('a_')){
+      var album = component.props.playlist.getAlbumById(component.state.selection[0])
+      return {
+        album: album,
+        trackId: album.tracks[0].id
+      }
+    }else{
+      return {
+        album: component.props.playlist.getAlbumByTrackId(component.state.selection[0]),
+        trackId: component.state.selection[0]
+      }
+    }
   }
 )
 
-var _overflows = function(parent, element){
-  var parentBounds = parent.getBoundingClientRect()
-  var elBounds = element.getBoundingClientRect()
-  var direction = 0
-  if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
-    direction = 1
-  }else if(elBounds.top < parentBounds.top){
-    direction = -1
-  }
-  return {
-    direction: direction,
-    parentBounds: parentBounds,
-    elBounds: elBounds
-  }
-}
-
 var Playlist = React.createClass({
   componentDidMount: function(){
-    this.scrollToAlbum(this.props.playlist.lastScrolledAlbum)
+    if(!this.props.playlist.loaded){
+      OpenPlaylistActions.load(this.props.playlist.id)
+    }
   },
   render: function() {
     var classes = cx({
@@ -53,7 +57,9 @@ var Playlist = React.createClass({
         <AlbumPlaylistOnSteroids
           allowMultipleSelection={true}
           playlist={this.props.playlist}
-          initSelection={[this.props.playlist.lastScrolledAlbum]}
+          baseFontSize={this.props.baseFontSize}
+          initSelection={[this.props.playlist.lastScrolledAlbumId]}
+          initOpenElements={this.props.playlist.openAlbums}
           handleDelKeyPress={this.handleDelKeyPress}
           handleEnterKeyPress={this.handleEnterKeyPress}
           handleScrollToElement={this.handleScrollToElement}/>
@@ -68,35 +74,12 @@ var Playlist = React.createClass({
   },
   handleEnterKeyPress: function(event, item){
     if(item.state.selection.length == 1){
-      var album = item.getSelectedElement()
-      OpenPlaylistActions.selectAlbum(album, album.tracks[0].id, this.props.playlist, true)
+      var whatToPlay = item.getSelectedElement()
+      OpenPlaylistActions.selectAlbum(whatToPlay.album, whatToPlay.trackId, this.props.playlist, true)
     }
   },
-  handleScrollToElement: function(state, list){
-    var wrapper = React.findDOMNode(this)
-    var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
-    if(!targetElement){
-      return
-    }
-
-    // save position of last selected album
-    this.props.playlist.lastScrolledAlbum = state.selection[0]
-
-    var {direction, parentBounds, elBounds} = _overflows(wrapper, targetElement)
-    if(direction < 0){
-      wrapper.scrollTop = targetElement.offsetTop
-    }else if(direction > 0){
-      var maxEls = Math.floor(parentBounds.height / elBounds.height)
-      wrapper.scrollTop = (list.indexOf(state.selection[0]) - maxEls +1) * elBounds.height
-    }
-  },
-  scrollToAlbum: function(albumId){
-    var wrapper = React.findDOMNode(this)
-    var targetElement = wrapper.querySelector('[data-id="' + albumId + '"]')
-    if(!targetElement){
-      return
-    }
-    wrapper.scrollTop = targetElement.offsetTop
+  handleScrollToElement: function(state, list, component){
+    component.scrollAround(state.selection[0])
   }
 })
 

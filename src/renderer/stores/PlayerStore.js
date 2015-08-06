@@ -15,7 +15,7 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
   getPlaybackInfo: function(){
     var info = playa.player.playbackInfo()
     var totalTime = info.currentTrack ? info.currentTrack.duration : 0
-    var currentTime = Math.round(info.position) || 0
+    var currentTime = info.position || 0
     return{
       totalTime: totalTime,
       currentTime: currentTime,

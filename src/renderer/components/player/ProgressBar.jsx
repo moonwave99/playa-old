@@ -19,16 +19,15 @@ module.exports = React.createClass({
     }
   },
   render: function(){
-    var percent = 100 - this.props.currentTime / this.props.totalTime * 100
+    var percent = this.props.currentTime / this.props.totalTime * 100
     var waveformProgressStyle = {
-      'width': percent + '%'
+      'transform': 'translateX(' + percent + '%)'
     }
     return (
       <div className="progress-wrapper" onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseOut} onClick={this.handleClick}>
         <div className="waveform" ref="waveform"></div>
         <div className="waveform-progress" ref="waveformProgress" style={waveformProgressStyle}></div>
         <div className="progress-cursor" ref="cursor"></div>
-        <progress value={this.props.currentTime} max={this.props.totalTime}></progress>
       </div>
     )
   },

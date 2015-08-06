@@ -30,19 +30,25 @@ var AlbumTracklistItem = React.createClass({
   },
   render: function(){
     var track = this.props.track
+    var even = this.props.index % 2 == 0
     var classes = cx({
       'track'     : true,
       'playing'   : this.props.isPlaying,
-      'selected'  : this.props.selected
+      'selected'  : this.props.isSelected,
+      'odd'       : !even,
+      'even'      : even
     })
     return (
-      <li className={classes} onDoubleClick={this.handleDoubleClick} data-id={track.id}>
+      <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={track.id}>
         <span className="track-playing-indicator">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
         <span className="track-number">{ track.metadata.track }.</span>
         { this.renderTrackTitle() }
         <span className="track-duration sidebar-offset">{ this.formatTime(track.duration) }</span>
       </li>
     )
+  },
+  handleClick: function(event){
+    this.props.handleClick(event, this)
   },
   handleDoubleClick: function(event){
     this.props.handleDoubleClick(event, this)

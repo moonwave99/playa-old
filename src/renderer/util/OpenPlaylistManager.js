@@ -112,18 +112,24 @@ module.exports = class OpenPlaylistManager {
       }
     }
   }
+  load(id){
+    var playlist = _.find(this.playlists, p => p.id == id)
+    if(!playlist){
+      return Promise.reject('Could not select playlist widh id: ' + id)
+    }
+    return this.loader.load(playlist).then((playlist)=>{
+      console.info('Loaded ' + playlist.id, playlist)
+    })
+  }
   _select(playlist, index){
     if(!playlist){
-      return Promise.reject('Playlist not found')
+      return false
     }
     var index = _.isNumber(index) ? index : _.findIndex(this.playlists, p => p.id == playlist.id)
     if(index < 0){
-      return Promise.reject('Could not select playlist at index: ' + index)
+      return false
     }else{
-      return this.loader.load(playlist).then((playlist)=>{
-        this.selectedIndex = index
-        console.info('Selected ' + playlist.id, playlist)
-      })
+      this.selectedIndex = index
     }
   }
 }

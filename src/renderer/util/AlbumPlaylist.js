@@ -20,6 +20,8 @@ module.exports = class AlbumPlaylist{
     this.loaded = false
     this.lastPlayedAlbumId = null
     this.lastPlayedTrackId = null
+    this.lastScrolledAlbumId = null
+    this.openAlbums = []
   }
   getFirst(){
     return this.items.getFirst()
@@ -47,6 +49,13 @@ module.exports = class AlbumPlaylist{
   }
   getAlbumById(id){
     return _.findWhere(this.items.toArray(), { id: id })
+  }
+  getTrackById(id){
+    var tracks = _.flatten(this.items.toArray().map( i => i.tracks ))
+    return _.findWhere(tracks, { id: id })
+  }
+  getAlbumByTrackId(id){
+    return _.find(this.items.toArray(), a => a.contains(id))
   }
   getLastPlayedAlbum(){
     return this.getAlbumById(this.lastPlayedAlbumId)
@@ -143,12 +152,16 @@ module.exports = class AlbumPlaylist{
     this.title = data.title
     this.lastPlayedAlbumId = data.lastPlayedAlbumId
     this.lastPlayedTrackId = data.lastPlayedTrackId
+    this.lastScrolledAlbumId = data.lastScrolledAlbumId
+    this.openAlbums = data.openAlbums
   }
   serialize(){
     return {
       title: this.title,
       lastPlayedAlbumId: this.lastPlayedAlbumId,
       lastPlayedTrackId: this.lastPlayedTrackId,
+      lastScrolledAlbumId: this.lastScrolledAlbumId,
+      openAlbums: this.openAlbums,
       tracklist: this.getFileList()
     }
   }
@@ -161,7 +174,7 @@ module.exports = class AlbumPlaylist{
       var processedAlbums =  _.map(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         return new Album({
-          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
           tracks: tracks
         })
       })
@@ -170,7 +183,7 @@ module.exports = class AlbumPlaylist{
       _.forEach(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         this.items.add(new Album({
-          id: md5(tracks[0].metadata.artist + tracks[0].metadata.album),
+          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
           tracks: tracks
         }))
       })
