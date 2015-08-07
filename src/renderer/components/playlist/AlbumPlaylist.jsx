@@ -11,16 +11,8 @@ var AlbumPlaylistItem = require('./AlbumPlaylistItem.jsx')
 var AlbumTracklistItem = require('./AlbumTracklistItem.jsx')
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
-var PlayerStore = require('../../stores/PlayerStore')
 
 var DropArea = require('./DropArea.jsx')
-
-function getPlayerState(){
-  var playerState = PlayerStore.getPlaybackInfo()
-  return {
-    currentTrack: playerState.currentTrack
-  }
-}
 
 var AlbumPlaylist = React.createClass({
   propTypes: {
@@ -32,24 +24,21 @@ var AlbumPlaylist = React.createClass({
     selection: ReactPropTypes.array
   },
   getInitialState: function(){
-    var playerState = getPlayerState()
-    return _.extend({
-      list: this.getFlattenedList(this.props, playerState.currentTrack)
-    }, playerState)
+    return {
+      list: this.getFlattenedList(this.props, this.props.currentTrack)
+    }
   },
   componentDidMount: function(){
-    PlayerStore.addChangeListener(this._onPlayerChange)
     this.refs.list.getScrollParent().addEventListener('scroll', this._onListScrollHandler)
     this.props.playlist.lastScrolledAlbumId && this.scrollTo(this.props.playlist.lastScrolledAlbumId)
   },
   componentWillUnmount: function(){
-    PlayerStore.removeChangeListener(this._onPlayerChange)
     this.refs.list.getScrollParent().removeEventListener('scroll', this._onListScrollHandler)
     this.props.playlist.openAlbums = this.props.openElements
   },
   componentWillReceiveProps: function(nextProps){
     this.setState({
-      list: this.getFlattenedList(nextProps, this.state.currentTrack)
+      list: this.getFlattenedList(nextProps, this.props.currentTrack)
     })
   },
   getFlattenedList: function(props, currentTrack){
@@ -104,7 +93,7 @@ var AlbumPlaylist = React.createClass({
             handleFolderDrop={this.handleFolderDrop}
             handleDragEnd={this.handleDragEnd}
             playTrack={this.playTrack}
-            currentTrack={this.state.currentTrack || {}}
+            currentTrack={this.props.currentTrack || {}}
             moveAlbum={this.moveAlbum}
             direction={this.props.direction}
             isSelected={item.isSelected}
@@ -172,7 +161,7 @@ var AlbumPlaylist = React.createClass({
           type='variable'
           ref='list'
           list={this.state.list}
-          currentTrack={this.state.currentTrack}
+          currentTrack={this.props.currentTrack}
           selection={this.props.selection}
           openElements={this.props.openElements}
         />
@@ -238,9 +227,6 @@ var AlbumPlaylist = React.createClass({
   },
   getScrollThreshold: function(){
     return 0
-  },
-  _onPlayerChange: function(){
-    this.setState(getPlayerState())
   },
   _onListScrollHandler: _.throttle(function(event){
     if(!this.refs.list){
