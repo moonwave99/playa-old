@@ -45,14 +45,14 @@ var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConst
 function getPlayerState(){
   var playerState = PlayerStore.getPlaybackInfo()
   return {
-    currentTrack: playerState.currentTrack
+    currentTrack: playerState.currentTrack || {}
   }
 }
 
 var Playlist = React.createClass({
   getInitialState: function(){
     return {
-      currentTrack: null
+      currentTrack: {}
     }
   },
   componentDidMount: function(){
@@ -100,7 +100,10 @@ var Playlist = React.createClass({
     component.scrollAround(state.selection[0])
   },
   _onPlayerChange: function(){
-    this.setState(getPlayerState())
+    var playerState = getPlayerState()
+    if(playerState.currentTrack.id != this.state.currentTrack.id){
+      this.setState(playerState)
+    }
   }
 })
 
