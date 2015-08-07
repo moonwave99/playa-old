@@ -8,6 +8,7 @@ var AlbumPlaylist = require('./AlbumPlaylist.jsx')
 
 var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 var PlayerActions = require('../../actions/PlayerActions')
+var PlayerStore = require('../../stores/PlayerStore')
 var NavGenerator = require('../../generators/Navigable.jsx')
 
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
@@ -41,11 +42,27 @@ var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConst
   }
 )
 
+function getPlayerState(){
+  var playerState = PlayerStore.getPlaybackInfo()
+  return {
+    currentTrack: playerState.currentTrack
+  }
+}
+
 var Playlist = React.createClass({
+  getInitialState: function(){
+    return {
+      currentTrack: null
+    }
+  },
   componentDidMount: function(){
+    PlayerStore.addChangeListener(this._onPlayerChange)
     if(!this.props.playlist.loaded){
       OpenPlaylistActions.load(this.props.playlist.id)
     }
+  },
+  componentWillUnmount: function(){
+    PlayerStore.removeChangeListener(this._onPlayerChange)
   },
   render: function() {
     var classes = cx({
@@ -56,6 +73,7 @@ var Playlist = React.createClass({
       <div className={classes} onClick={this.handleGlobalClick}>
         <AlbumPlaylistOnSteroids
           allowMultipleSelection={true}
+          currentTrack={this.state.currentTrack}
           playlist={this.props.playlist}
           baseFontSize={this.props.baseFontSize}
           initSelection={[this.props.playlist.lastScrolledAlbumId]}
@@ -80,6 +98,9 @@ var Playlist = React.createClass({
   },
   handleScrollToElement: function(state, list, component){
     component.scrollAround(state.selection[0])
+  },
+  _onPlayerChange: function(){
+    this.setState(getPlayerState())
   }
 })
 
