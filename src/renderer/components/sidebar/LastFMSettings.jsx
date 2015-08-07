@@ -2,6 +2,7 @@
 
 var _ = require('lodash')
 var cx = require('classnames')
+var shell = require('shell')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 
@@ -39,7 +40,7 @@ var LastFMSettings = React.createClass({
     if(this.state.isAuthorised){
       return (
         <div>
-          <p>Signed in as: <strong>{this.props.lastFMClient.session.user}</strong></p>
+          <p>Signed in as: <a href="#" onClick={this.handleLastFMUserClick}><strong>{this.props.lastFMClient.session.user}</strong></a></p>
           <p><a className="btn btn-default btn-block" href="#" onClick={this.handleSignoutClick}>Sign out</a></p>
         </div>
       )
@@ -48,6 +49,9 @@ var LastFMSettings = React.createClass({
         <a className="btn btn-default btn-block" href="#" onClick={this.handleAuthoriseClick}>Authorise Playa</a>
       )
     }
+  },
+  handleLastFMUserClick: function(event){
+    shell.openExternal('https://last.fm/user/' + this.props.lastFMClient.session.user)
   },
   handleAuthoriseClick: function(event){
     this.props.lastFMClient.authorise()
