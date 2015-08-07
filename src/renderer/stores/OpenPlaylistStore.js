@@ -147,10 +147,7 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         break
       case OpenPlaylistConstants.CLOSE_PLAYLIST:
         playa.openPlaylistManager.close()
-          .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
-          .catch((error)=>{
-            console.error(error, error.stack)
-          })
+        OpenPlaylistStore.emitChange()
         break
       case OpenPlaylistConstants.REORDER_PLAYLIST:
         playa.openPlaylistManager.reorder(action.id, action.from, action.to, action.position) && OpenPlaylistStore.emitChange()
