@@ -108,7 +108,7 @@ module.exports = class OpenPlaylistManager {
       if(nextPlaylist){
         return this._select(nextPlaylist)
       }else{
-        Promise.resolve(true)
+        return true
       }
     }
   }
@@ -130,6 +130,7 @@ module.exports = class OpenPlaylistManager {
       return false
     }else{
       this.selectedIndex = index
+      return true
     }
   }
 }
