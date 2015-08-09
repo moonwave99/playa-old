@@ -54,7 +54,6 @@ module.exports = class PlaylistLoader {
     }else{
       targetPath = path.join(this.root, playlist.title + this.playlistExtension)
     }
-
     return fs.outputFileAsync(
       targetPath,
       yaml.safeDump(playlist.serialize())
@@ -62,6 +61,8 @@ module.exports = class PlaylistLoader {
       playlist.path = targetPath
       playlist.id = md5(targetPath)
       return playlist
+    }).catch((error)=>{
+      console.error(error, error.stack)
     })
   }
 }

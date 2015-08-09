@@ -153,16 +153,16 @@ module.exports = class AlbumPlaylist{
     this.lastPlayedAlbumId = data.lastPlayedAlbumId
     this.lastPlayedTrackId = data.lastPlayedTrackId
     this.lastScrolledAlbumId = data.lastScrolledAlbumId
-    this.openAlbums = data.openAlbums
+    this.openAlbums = data.openAlbums || []
   }
   serialize(){
     return {
       title: this.title,
-      lastPlayedAlbumId: this.lastPlayedAlbumId,
-      lastPlayedTrackId: this.lastPlayedTrackId,
-      lastScrolledAlbumId: this.lastScrolledAlbumId,
-      openAlbums: this.openAlbums,
-      tracklist: this.getFileList()
+      lastPlayedAlbumId: this.lastPlayedAlbumId || null,
+      lastPlayedTrackId: this.lastPlayedTrackId || null,
+      lastScrolledAlbumId: this.lastScrolledAlbumId || null,
+      openAlbums: this.openAlbums || [],
+      tracklist: this.getFileList() || []
     }
   }
   _process(files, opts){
