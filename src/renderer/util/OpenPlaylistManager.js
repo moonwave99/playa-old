@@ -8,7 +8,7 @@ module.exports = class OpenPlaylistManager {
   constructor(options) {
     this.loader = options.loader
     this.playlists = []
-    this.selectedIndex = -1
+    this.selectedId = null
     this.activeIndex = -1
   }
   selectByIndex(index){
@@ -20,7 +20,10 @@ module.exports = class OpenPlaylistManager {
     return this._select(playlist)
   }
   getSelectedPlaylist(){
-    return this.playlists[this.selectedIndex]
+    return _.findWhere(this.playlists, { id: this.selectedId })
+  }
+  getSelectedIndex(){
+    return _.findIndex(this.playlists, {id: this.selectedId })
   }
   getAll(){
     return this.playlists
@@ -41,6 +44,12 @@ module.exports = class OpenPlaylistManager {
       })
     }
     return playlist
+  }
+  newPlaylist(){
+    return new AlbumPlaylist({
+      title: 'Untitled',
+      id: md5('Untitled' + playa.getSetting('common', 'playlistExtension'))
+    })
   }
   add(playlists){
     var newPlaylists = _.difference(playlists.map( i => i.id), this.playlists.map(i => i.id))
@@ -82,9 +91,15 @@ module.exports = class OpenPlaylistManager {
   }
   save(playlist){
     playlist = playlist || this.getSelectedPlaylist()
+    console.log(this.selectedId, playlist.id)
+    var wasNew = playlist.isNew()
+    var id = playlist.id
     if(playlist){
       return this.loader.save(playlist).then((playlist)=>{
         console.info('Saved ' + playlist.id, playlist)
+        if(wasNew && id == this.selectedId){
+          this.selectedId = playlist.id
+        }
         return playlist
       })
     }else{
@@ -94,17 +109,13 @@ module.exports = class OpenPlaylistManager {
   close(playlist){
     playlist = playlist || this.getSelectedPlaylist()
     if(playlist){
+      var currentIndex = this.getSelectedIndex()
       playlist.clear()
       this.playlists = this.playlists.filter( p => p.id !== playlist.id )
       if(!this.playlists.length){
-        this.playlists.push(
-          new AlbumPlaylist({
-            title: 'Untitled',
-            id: md5('Untitled' + playa.getSetting('common', 'playlistExtension'))
-          })
-        )
+        this.playlists.push(this.newPlaylist())
       }
-      var nextPlaylist = this.getAt(Math.max(this.selectedIndex -1, 0))
+      var nextPlaylist = this.getAt(Math.max(currentIndex-1, 0))
       if(nextPlaylist){
         return this._select(nextPlaylist)
       }else{
@@ -116,6 +127,9 @@ module.exports = class OpenPlaylistManager {
     var playlist = _.find(this.playlists, p => p.id == id)
     if(!playlist){
       return Promise.reject('Could not select playlist widh id: ' + id)
+    }else if(playlist.isNew()){
+      playlist.loaded = true
+      return Promise.resolve(playlist)
     }
     return this.loader.load(playlist).then((playlist)=>{
       console.info('Loaded ' + playlist.id, playlist)
@@ -129,7 +143,7 @@ module.exports = class OpenPlaylistManager {
     if(index < 0){
       return false
     }else{
-      this.selectedIndex = index
+      this.selectedId = playlist.id
       return true
     }
   }

@@ -272,9 +272,15 @@ module.exports = class Playa
       @toggleSidebar()
 
     ipc.on 'playlist:create', =>
+      playlist = new AlbumPlaylist title: 'Untitled', id: md5 "Untitled#{@getSetting 'common', 'playlistExtension'}"
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_PLAYLIST
-        playlists:  [ new AlbumPlaylist title: 'Untitled', id: md5 "Untitled#{@getSetting 'common', 'playlistExtension'}" ]
+        playlists:  [ playlist ]
+        silent:     true
+      AppDispatcher.dispatch
+        actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID
+        playlists:  [ playlist ]
+        id:         playlist.id
 
     ipc.on 'playlist:save', ->
       AppDispatcher.dispatch

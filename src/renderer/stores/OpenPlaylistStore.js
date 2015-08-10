@@ -27,15 +27,11 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
   },
 
   getSelectedIndex: function(){
-    return playa.openPlaylistManager.selectedIndex
+    return playa.openPlaylistManager.getSelectedIndex()
   },
 
   getSelectedPlaylist: function(){
     return playa.openPlaylistManager.getSelectedPlaylist()
-  },
-
-  getActiveIndex: function(){
-    return playa.openPlaylistManager.activeIndex
   },
 
   emitChange: function(){
