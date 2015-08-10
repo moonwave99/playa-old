@@ -18,6 +18,7 @@ module.exports = class AlbumPlaylist{
     this.ext = this.isNew() ? '.yml' : path.extname(this.path)
     this.title = this.isNew() ? 'Untitled' : path.basename(this.path, this.ext)
     this.loaded = false
+    this.loadErrors = []
     this.lastPlayedAlbumId = null
     this.lastPlayedTrackId = null
     this.lastScrolledAlbumId = null
@@ -78,8 +79,10 @@ module.exports = class AlbumPlaylist{
       if(this.loaded || this.isNew()){
         resolve(this)
       }else{
-        playa.mediaFileLoader.loadFiles(files).bind(playa.mediaFileLoader).then((files)=>{
-          this._process(files)
+        playa.mediaFileLoader.loadFiles(files).bind(playa.mediaFileLoader).then((results)=>{
+          var [fulFilled, rejected] = _.partition(results, r => r.isFulfilled() )
+          this.loadErrors = rejected.map( f => f.reason() )
+          this._process(fulFilled.map( f => f.value() ))
           this.loaded = true
           resolve(this)
         })
