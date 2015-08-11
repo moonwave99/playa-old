@@ -150,7 +150,7 @@ module.exports = class Player extends EventEmitter{
     })
     if(currentIndex < items.length -1){
       this.clearTimer()
-      this.groovePlaylist.seek(items[currentIndex+1], -1)
+      this.groovePlaylist.seek(items[currentIndex+1], 0)
       return true
     }else{
       return this.nextAlbum()
@@ -165,7 +165,7 @@ module.exports = class Player extends EventEmitter{
     })
     if(currentIndex > 0){
       this.clearTimer()
-      this.groovePlaylist.seek(items[currentIndex-1], -1)
+      this.groovePlaylist.seek(items[currentIndex-1], 0)
       return true
     }else{
       return this.prevAlbum()
@@ -180,7 +180,7 @@ module.exports = class Player extends EventEmitter{
       this.clearTimer()
       this.currentTrack = this.currentAlbum.findById(id)
       this.emit('trackChange')
-      this.groovePlaylist.seek(item, -1)
+      this.groovePlaylist.seek(item, 0)
       !this.groovePlaylist.playing() && this.play()
     }
   }

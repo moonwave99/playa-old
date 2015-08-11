@@ -70,8 +70,7 @@ Plans for the not-so-close future:
 
 ## Known issues
 
-- no drag and drop of multiple albums/folders;
-- when going back to already played items, seek does not reset to initial position.
+- no drag and drop of multiple albums/folders.
 
 ## License
 
