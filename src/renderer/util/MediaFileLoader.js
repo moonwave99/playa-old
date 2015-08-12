@@ -69,4 +69,7 @@ module.exports = class MediaFileLoader {
   getFromPool(filename){
     return this.cache[md5(filename)];
   }
+  invalidate(ids){
+    ids.forEach( id => delete this.cache[md5(id)] )
+  }
 }

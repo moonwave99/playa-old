@@ -7,6 +7,7 @@ var AlbumPlaylist = require('./AlbumPlaylist')
 module.exports = class OpenPlaylistManager {
   constructor(options) {
     this.loader = options.loader
+    this.mediaFileLoader = options.mediaFileLoader
     this.playlists = []
     this.selectedId = null
     this.activeIndex = -1
@@ -87,7 +88,15 @@ module.exports = class OpenPlaylistManager {
   }
   removeFiles(ids, playlist){
     playlist = playlist || this.getSelectedPlaylist()
-    playlist && playlist.removeItems(ids)
+    if(playlist){
+      var filesToRemove = _.reduce(ids, (memo, id)=>{
+        return memo.concat(
+          playlist.getAlbumById(id).tracks.map( t => t.filename )
+        )
+      }, [])
+      playlist.removeItems(ids)
+      this.mediaFileLoader.invalidate(filesToRemove)
+    }
   }
   save(playlist){
     playlist = playlist || this.getSelectedPlaylist()
