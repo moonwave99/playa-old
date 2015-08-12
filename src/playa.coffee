@@ -126,7 +126,8 @@ module.exports = class Playa
         'png-color-outer'   : '505050FF'
 
     @openPlaylistManager = new OpenPlaylistManager
-      loader: @playlistLoader
+      loader:           @playlistLoader
+      mediaFileLoader:  @mediaFileLoader
 
     @lastFMClient = new LastFMClient
       scrobbleEnabled:  @getSetting 'user', 'scrobbleEnabled'
