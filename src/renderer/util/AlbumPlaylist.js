@@ -71,6 +71,19 @@ module.exports = class AlbumPlaylist{
       return memo
     }, { tracks: 0, totalTime: 0, albums: albums.length })
   }
+  removeErrors(files){
+    this.loadErrors = this.loadErrors.filter((f)=>{
+      return !_.contains(files, f)
+    })
+  }
+  getGrouppedErrors(){
+    return _.reduce(this.loadErrors, (memo, file)=>{
+      var folder = path.dirname(file)
+      !memo[folder] && (memo[folder] = [])
+      memo[folder].push(path.basename(file))
+      return memo
+    }, {})
+  }
   isNew(){
     return !this.path
   }
@@ -81,7 +94,7 @@ module.exports = class AlbumPlaylist{
       }else{
         playa.mediaFileLoader.loadFiles(files).bind(playa.mediaFileLoader).then((results)=>{
           var [fulFilled, rejected] = _.partition(results, r => r.isFulfilled() )
-          this.loadErrors = rejected.map( f => f.reason() )
+          this.loadErrors = rejected.map( f => f.reason().message.match(/ENOENT: no such file or directory, open '(.*)'/)[1] )
           this._process(fulFilled.map( f => f.value() ))
           this.loaded = true
           resolve(this)
@@ -191,6 +204,6 @@ module.exports = class AlbumPlaylist{
         }))
       })
     }
-    return true
+    return this
   }
 }

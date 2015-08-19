@@ -151,6 +151,12 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
           playa.openPlaylistManager.save()
         }
         break
+      case OpenPlaylistConstants.LOCATE_FOLDER:
+        playa.openPlaylistManager.locateFolder(action.id, action.files, action.newFolder).then((playlist)=>{
+          playlist.removeErrors(action.files)
+          OpenPlaylistStore.emitChange()
+        })
+        break
     }
 
     return true // No errors. Needed by promise in Dispatcher.

@@ -12,5 +12,6 @@ module.exports = keyMirror({
   REORDER_PLAYLIST: null,
   SELECT_ALBUM: null,
   ADD_FOLDER: null,
-  ADD_FOLDER_AT_POSITION: null
+  ADD_FOLDER_AT_POSITION: null,
+  LOCATE_FOLDER: null
 })

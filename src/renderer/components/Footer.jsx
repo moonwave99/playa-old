@@ -1,6 +1,7 @@
 "use babel"
 
 var React = require('react')
+var ipc = require('ipc')
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
 var moment = require('moment')
@@ -16,6 +17,12 @@ var Footer = React.createClass({
     return {
       isDrawerOpen: false
     }
+  },
+  componentDidMount: function(){
+    ipc.on('playlist:toggleInfo', this._onPlaylistInfoToggle)
+  },
+  componentWillUnmount: function(){
+    ipc.removeListener('playlist:toggleInfo', this._onPlaylistInfoToggle)
   },
   render: function() {
     var footerClasses = cx({
@@ -37,11 +44,13 @@ var Footer = React.createClass({
     })
     return (
       <footer className={footerClasses}>
-        <span className="count">{this.playlistDescription()}</span>
-        <ul className={iconClasses}>
-          <li><a href="#" onClick={this.handleErrorIconClick}><i className={errorIconClasses}></i></a></li>
-          <li><a href="#" onClick={this.handleInfoIconClick}><i className="fa fa-fw fa-info"></i></a></li>
-        </ul>
+        <div className="footer-top-bar">
+          <span className="count">{this.playlistDescription()}</span>
+          <ul className={iconClasses}>
+            <li><a href="#" onClick={this.handleErrorIconClick}><i className={errorIconClasses}></i></a></li>
+            <li><a href="#" onClick={this.handleInfoIconClick}><i className="fa fa-fw fa-info"></i></a></li>
+          </ul>
+        </div>
         <InfoDrawer {...this.props}/>
       </footer>
     )
@@ -65,6 +74,9 @@ var Footer = React.createClass({
     this.setState({
       isDrawerOpen: !this.state.isDrawerOpen
     })
+  },
+  _onPlaylistInfoToggle: function(){
+    this.setState({ isDrawerOpen: !this.state.isDrawerOpen })
   }
 })
 
