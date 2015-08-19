@@ -21,10 +21,7 @@ module.exports = class MediaFileLoader {
     this.cache = {}
   }
   loadFiles(files) {
-    var loads = files.map((f)=>{
-      return this.openFile(f)
-    })
-    return Promise.all(loads)
+    return Promise.settle(files.map( f => this.openFile(f) ))
   }
   loadFolder(folder) {
     folder = _.isArray(folder) ? folder : [folder]
@@ -54,10 +51,12 @@ module.exports = class MediaFileLoader {
       if(this.cache[hash]){
         resolve(this.cache[hash])
       }else{
-        mm(stream = fs.createReadStream(filename), { duration: true }, (err, metadata)=>{
+        stream = fs.createReadStream(filename)
+        stream.on('error', reject)
+        mm(stream, { duration: true }, (error, metadata)=>{
           this.cache[hash] = {
             filename: filename,
-            metadata: err ? {} : MetaDoctor.normalise(metadata),
+            metadata: error ? {} : MetaDoctor.normalise(metadata),
             duration: metadata.duration,
           }
           stream.close()

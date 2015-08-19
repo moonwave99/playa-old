@@ -51,10 +51,35 @@ html
     color $footerColor
     background-color $footerBgColor
     user-select none
+    transition height .1s ease-in
+    &.isDrawerOpen
+      height size($footerHeight + $infoDrawerHeight)
     .icons
       padding-right 1rem
+      margin 0
       a
         .fa
           vertical-align middle
           color $footerIconColor
           font-size size($footerIconSize)
+        .error-icon
+          color $footerErrorIconColor
+
+    .info-drawer
+      text-align left
+      padding 0 1rem
+      width 100%
+      overflow-y auto
+      height $infoDrawerHeight
+      background-color $infoDrawerBgColor
+      .playlist-errors
+        margin 0
+        user-select all
+        ul li
+          padding-left 1.2rem
+          color darken($mainColor, 50%)
+      h3
+        font-size size($infoDrawerHeaderFontSize)
+        margin 1.5rem 0 1rem 0
+      .playlist-errors
+        margin 0

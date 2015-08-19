@@ -46,6 +46,14 @@ module.exports = class OpenPlaylistManager {
     }
     return playlist
   }
+  locateFolder(id, files, newFolder){
+    var playlist = this.findBy('id', id)
+    if(playlist){
+      return playlist.addFolder(newFolder)
+    }else{
+      return Promise.reject('Could not find playlist with id: ' + id)
+    }
+  }
   newPlaylist(){
     return new AlbumPlaylist({
       title: 'Untitled',
@@ -100,7 +108,6 @@ module.exports = class OpenPlaylistManager {
   }
   save(playlist){
     playlist = playlist || this.getSelectedPlaylist()
-    console.log(this.selectedId, playlist.id)
     var wasNew = playlist.isNew()
     var id = playlist.id
     if(playlist){

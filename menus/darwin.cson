@@ -47,6 +47,7 @@
       { label: 'Show Playlists', command: 'window:showPlaylists', accelerator: 'Command+P' }
       { label: 'Show File Browser', command: 'window:showFileBrowser', accelerator: 'Command+B' }
       { label: 'Toggle Sidebar', command: 'window:toggleSidebar', accelerator: 'Command+D' }
+      { label: 'Toggle Playlist Info', command: 'window:togglePlaylistInfo', accelerator: 'Command+Shift+I' }
       { label: 'Toggle Full Screen', command: 'window:toggle-full-screen', accelerator: 'Command+Control+F' }
       {
         label: 'Developer'

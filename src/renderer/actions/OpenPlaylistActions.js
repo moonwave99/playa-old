@@ -83,5 +83,13 @@ module.exports = {
       to: to,
       position: position
     })
+  },
+  locateFolder: function(id, files, newFolder){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.LOCATE_FOLDER,
+      id: id,
+      files: files,
+      newFolder: newFolder
+    })
   }
 }
