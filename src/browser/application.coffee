@@ -130,6 +130,9 @@ class Application
     @menu.on 'window:toggleSidebar', ->
       appWindow.toggleSidebar()
 
+    @menu.on 'window:togglePlaylistInfo', ->
+      appWindow.togglePlaylistInfo()
+
     @menu.on 'window:reload', ->
       BrowserWindow.getFocusedWindow().reload()
 
@@ -150,6 +153,10 @@ class Application
     ipc.on 'request:save:dialog', (event, params) ->
       params||={}
       event.returnValue = dialog.showSaveDialog(params)
+
+    ipc.on 'request:open:dialog', (event, params) ->
+      params||={}
+      event.returnValue = dialog.showOpenDialog(params)
 
     ipc.on 'request:app:path', (event, params) =>
       event.returnValue = app.getPath params.key

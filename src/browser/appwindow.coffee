@@ -107,6 +107,9 @@ class AppWindow
   showFileBrowser: ->
     @window.webContents.send('sidebar:show', 'files')
 
+  togglePlaylistInfo: ->
+    @window.webContents.send('playlist:toggleInfo')
+
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
 
