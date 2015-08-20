@@ -287,6 +287,10 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.SAVE_PLAYLIST
 
+    ipc.on 'playlist:reload', ->
+      AppDispatcher.dispatch
+        actionType: OpenPlaylistConstants.RELOAD_PLAYLIST
+
     ipc.on 'playlist:close', ->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST

@@ -68,6 +68,11 @@ module.exports = {
       id: id
     })
   },
+  reload: function(){
+    AppDispatcher.dispatch({
+      actionType: OpenPlaylistConstants.RELOAD_PLAYLIST
+    })
+  },
   update: function(id, values){
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.UPDATE_PLAYLIST,

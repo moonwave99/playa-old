@@ -94,6 +94,14 @@ module.exports = class OpenPlaylistManager {
     playlist.reorder(from, to, position)
     return true
   }
+  reload(playlist){
+    playlist = playlist || this.getSelectedPlaylist()
+    if(!playlist){
+      return Promise.reject('Could not reload playlist.')
+    }else{
+      return this.load(playlist.id, { force: true })
+    }
+  }
   removeFiles(ids, playlist){
     playlist = playlist || this.getSelectedPlaylist()
     if(playlist){
@@ -139,7 +147,7 @@ module.exports = class OpenPlaylistManager {
       }
     }
   }
-  load(id){
+  load(id, opts){
     var playlist = _.find(this.playlists, p => p.id == id)
     if(!playlist){
       return Promise.reject('Could not select playlist widh id: ' + id)
@@ -147,7 +155,7 @@ module.exports = class OpenPlaylistManager {
       playlist.loaded = true
       return Promise.resolve(playlist)
     }
-    return this.loader.load(playlist).then((playlist)=>{
+    return this.loader.load(playlist, opts).then((playlist)=>{
       console.info('Loaded ' + playlist.id, playlist)
     })
   }

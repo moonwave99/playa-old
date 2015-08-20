@@ -115,6 +115,9 @@ class Application
     @menu.on 'window:savePlaylist', ->
       appWindow.savePlaylist()
 
+    @menu.on 'window:reloadPlaylist', ->
+      appWindow.reloadPlaylist()
+
     @menu.on 'window:closePlaylist', ->
       appWindow.closePlaylist()
 
