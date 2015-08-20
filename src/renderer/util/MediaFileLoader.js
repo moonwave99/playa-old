@@ -20,8 +20,8 @@ module.exports = class MediaFileLoader {
     this.fileAmountThreshold = options.fileAmountThreshold
     this.cache = {}
   }
-  loadFiles(files) {
-    return Promise.settle(files.map( f => this.openFile(f) ))
+  loadFiles(files, opts) {
+    return Promise.settle(files.map( f => this.openFile(f, opts) ))
   }
   loadFolder(folder) {
     folder = _.isArray(folder) ? folder : [folder]
@@ -44,11 +44,11 @@ module.exports = class MediaFileLoader {
       console.error(err, err.stack)
     })
   }
-  openFile(filename){
+  openFile(filename, opts={}){
     var stream
     return new Promise((resolve, reject)=>{
       var hash = md5(filename)
-      if(this.cache[hash]){
+      if(this.cache[hash] && !opts.force){
         resolve(this.cache[hash])
       }else{
         stream = fs.createReadStream(filename)

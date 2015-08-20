@@ -87,15 +87,15 @@ module.exports = class AlbumPlaylist{
   isNew(){
     return !this.path
   }
-  load(files){
+  load(files, opts={}){
     return new Promise((resolve, reject)=>{
-      if(this.loaded || this.isNew()){
+      if((this.loaded && !opts.force) || this.isNew()){
         resolve(this)
       }else{
-        playa.mediaFileLoader.loadFiles(files).bind(playa.mediaFileLoader).then((results)=>{
+        playa.mediaFileLoader.loadFiles(files, opts).bind(playa.mediaFileLoader).then((results)=>{
           var [fulFilled, rejected] = _.partition(results, r => r.isFulfilled() )
           this.loadErrors = rejected.map( f => f.reason().message.match(/ENOENT: no such file or directory, open '(.*)'/)[1] )
-          this._process(fulFilled.map( f => f.value() ))
+          this._process(fulFilled.map( f => f.value() ), opts)
           this.loaded = true
           resolve(this)
         })
@@ -181,11 +181,11 @@ module.exports = class AlbumPlaylist{
       tracklist: this.getFileList() || []
     }
   }
-  _process(files, opts){
+  _process(files, opts={}){
     var albums = _.groupBy(files, (file)=>{
       return file.metadata.album ? file.metadata.album.toLowerCase() : '_noalbum'
     })
-    if(opts && opts.insertAt){
+    if(opts.insertAt){
       var positionIndex = this.indexOf(opts.insertAt)
       var processedAlbums =  _.map(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
@@ -196,6 +196,9 @@ module.exports = class AlbumPlaylist{
       })
       this.items.addArrayAt(processedAlbums, positionIndex)
     }else{
+      if(opts.force){
+        this.items = new DoublyLinkedList()
+      }
       _.forEach(albums, (tracks, key)=>{
         tracks = tracks.map( track => new PlaylistItem(track) )
         this.items.add(new Album({

@@ -24,14 +24,14 @@ module.exports = class PlaylistLoader {
         console.error(err, err.stack)
       })
   }
-  load(playlist) {
+  load(playlist, opts) {
     return new Promise((resolve, reject)=>{
       if(playlist.isNew()){
         resolve(playlist)
       }else{
         resolve(this.parse(playlist.path).then((data)=>{
           playlist.hydrate(data)
-          return playlist.load(data.tracklist)
+          return playlist.load(data.tracklist, opts)
         }))
       }
     })

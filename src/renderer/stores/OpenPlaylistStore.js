@@ -64,6 +64,13 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
       case OpenPlaylistConstants.UPDATE_PLAYLIST:
         playa.openPlaylistManager.update(action.id, action.values) && OpenPlaylistStore.emitChange()
         break
+        case OpenPlaylistConstants.RELOAD_PLAYLIST:
+          playa.openPlaylistManager.reload()
+            .then(OpenPlaylistStore.emitChange.bind(OpenPlaylistStore))
+            .catch((error)=>{
+              console.error(error, error.stack)
+            })
+          break
       case OpenPlaylistConstants.SELECT_PLAYLIST:
         playa.openPlaylistManager.selectByIndex(action.selected)
         OpenPlaylistStore.emitChange()

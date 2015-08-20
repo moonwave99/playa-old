@@ -36,6 +36,7 @@
     submenu: [
       { label: 'New Playlist', command: 'window:createPlaylist', accelerator: 'Command+T' }
       { label: 'Save Playlist', command: 'window:savePlaylist', accelerator: 'Command+S' }
+      { label: 'Reload Current Playlist', command: 'window:reloadPlaylist', accelerator: 'Command+R' }
       { label: 'Close Current Playlist', command: 'window:closePlaylist', accelerator: 'Command+W' }
       { label: 'Select All', selector: 'selectAll:', accelerator: 'Command+A' }
     ]
