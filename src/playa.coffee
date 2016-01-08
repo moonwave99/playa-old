@@ -138,7 +138,7 @@ module.exports = class Playa
 
     @player = new Player
       mediaFileLoader: @mediaFileLoader
-      resolution: 100
+      resolution: 1000
       scrobbleThreshold: @getSetting 'common', 'scrobbleThreshold'
 
   init: ->
