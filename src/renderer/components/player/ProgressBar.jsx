@@ -43,6 +43,10 @@ module.exports = React.createClass({
     }
     var bounds = event.currentTarget.getBoundingClientRect()
     var position = (event.clientX - bounds.left) / bounds.width
+    React.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', true)
+    setTimeout(() => {
+      React.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', false)
+    }, 100)
     this.props.seekTo(position)
   },
   handleMouseMove: function(event){

@@ -86,8 +86,10 @@
         right 0
         left 0
         background-color $playbackBarProgressBgColor
-        transition transform .1s linear
+        transition transform 1s linear
         z-index 1000
+        &.clicked
+          transition none
       .progress-cursor
         height size($playbackBarHeight)
         width 1px
