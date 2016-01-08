@@ -1,0 +1,184 @@
+{
+  "menu": [
+    {
+      "label": "Playa",
+      "submenu": [
+        {
+          "label": "About Playa",
+          "command": "application:about"
+        },
+        {
+          "label": "Restart and Install Update",
+          "command": "application:install-update",
+          "visible": false
+        },
+        {
+          "label": "Check for Update",
+          "command": "application:check-for-update",
+          "visible": false
+        },
+        {
+          "label": "Downloading Update",
+          "enabled": false,
+          "visible": false
+        },
+        {
+          "type": "separator"
+        },
+        {
+          "label": "Preferences...",
+          "command": "application:show-settings",
+          "accelerator": "Command+,"
+        },
+        {
+          "type": "separator"
+        },
+        {
+          "label": "Services",
+          "submenu": [
+
+          ]
+        },
+        {
+          "type": "separator"
+        },
+        {
+          "label": "Quit",
+          "command": "application:quit",
+          "accelerator": "Command+Q"
+        }
+      ]
+    },
+    {
+      "label": "File",
+      "submenu": [
+        {
+          "label": "Open",
+          "command": "window:open",
+          "accelerator": "Command+O"
+        }
+      ]
+    },
+    {
+      "label": "Controls",
+      "submenu": [
+        {
+          "label": "Play/Pause",
+          "command": "window:togglePlayback",
+          "accelerator": "MediaPlayPause"
+        },
+        {
+          "label": "Previous Track",
+          "command": "window:prevTrack",
+          "accelerator": "MediaPreviousTrack"
+        },
+        {
+          "label": "Next Track",
+          "command": "window:nextTrack",
+          "accelerator": "MediaNextTrack"
+        }
+      ]
+    },
+    {
+      "label": "Playlist",
+      "submenu": [
+        {
+          "label": "New Playlist",
+          "command": "window:createPlaylist",
+          "accelerator": "Command+T"
+        },
+        {
+          "label": "Save Playlist",
+          "command": "window:savePlaylist",
+          "accelerator": "Command+S"
+        },
+        {
+          "label": "Reload Current Playlist",
+          "command": "window:reloadPlaylist",
+          "accelerator": "Command+R"
+        },
+        {
+          "label": "Close Current Playlist",
+          "command": "window:closePlaylist",
+          "accelerator": "Command+W"
+        },
+        {
+          "label": "Select All",
+          "selector": "selectAll:",
+          "accelerator": "Command+A"
+        }
+      ]
+    },
+    {
+      "label": "View",
+      "submenu": [
+        {
+          "label": "Show Playlists",
+          "command": "window:showPlaylists",
+          "accelerator": "Command+P"
+        },
+        {
+          "label": "Show File Browser",
+          "command": "window:showFileBrowser",
+          "accelerator": "Command+B"
+        },
+        {
+          "label": "Toggle Sidebar",
+          "command": "window:toggleSidebar",
+          "accelerator": "Command+D"
+        },
+        {
+          "label": "Toggle Playlist Info",
+          "command": "window:togglePlaylistInfo",
+          "accelerator": "Command+Shift+I"
+        },
+        {
+          "label": "Toggle Full Screen",
+          "command": "window:toggle-full-screen",
+          "accelerator": "Command+Control+F"
+        },
+        {
+          "label": "Developer",
+          "submenu": [
+            {
+              "label": "Run Tests...",
+              "command": "application:run-specs",
+              "accelerator": "Alt+Command+T"
+            },
+            {
+              "label": "Toggle Developer Tools",
+              "command": "window:toggle-dev-tools",
+              "accelerator": "Alt+Command+I"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Window",
+      "submenu": [
+        {
+          "label": "Minimize",
+          "selector": "performMiniaturize:",
+          "accelerator": "Command+M"
+        },
+        {
+          "label": "Zoom",
+          "selector": "performZoom:"
+        }
+      ]
+    },
+    {
+      "label": "Help",
+      "submenu": [
+        {
+          "label": "Report Issue",
+          "command": "application:report-issue"
+        },
+        {
+          "type": "separator"
+        }
+      ]
+    }
+  ]
+}

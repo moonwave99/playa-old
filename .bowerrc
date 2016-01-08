@@ -1,5 +1,3 @@
 {
-  "directory": "static/components/",
-  "analytics": true,
-  "timeout": 120000
+  "directory": "src/ui/vendor"
 }

@@ -62,7 +62,7 @@ class AppWindow
       @window.webContents.send 'window:toggle-dev-tools', false
 
   show: ->
-    targetPath = path.resolve(__dirname, '..', '..', 'static', 'index.html')
+    targetPath = path.resolve __dirname, '..', '..', 'src', 'ui', 'index.html'
 
     targetUrl = url.format
       protocol: 'file'

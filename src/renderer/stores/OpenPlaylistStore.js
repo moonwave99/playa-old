@@ -1,7 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
-var md5 = require('MD5')
+var md5 = require('md5')
 var assign = require('object-assign')
 var groove = require('groove')
 var uid = require('uid')

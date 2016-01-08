@@ -18,25 +18,6 @@ defaultOptions =
   # when the source map is inlined.
   sourceMap: 'inline'
 
-  # Blacklisted features do not get transpiled. Features that are
-  # natively supported in the target environment should be listed
-  # here. Because Atom uses a bleeding edge version of Node/io.js,
-  # I think this can include es6.arrowFunctions, es6.classes, and
-  # possibly others, but I want to be conservative.
-  blacklist: [
-    'useStrict'
-  ]
-
-  # Includes support for es7 features listed at:
-  # http://babeljs.io/docs/usage/transformers/#es7-experimental-.
-  experimental: true
-
-  optional: [
-    # Target a version of the regenerator runtime that
-    # supports yield so the transpiled code is cleaner/smaller.
-    'asyncToGenerator'
-  ]
-
 ###
 shasum - Hash with an update() method.
 value - Must be a value that could be returned by JSON.parse().

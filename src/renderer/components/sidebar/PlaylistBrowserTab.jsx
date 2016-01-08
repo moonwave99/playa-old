@@ -2,7 +2,7 @@
 
 var _ = require('lodash')
 var cx = require('classnames')
-var md5 = require('MD5')
+var md5 = require('md5')
 var path = require('path')
 var React = require('react')
 var ReactPropTypes = React.PropTypes

@@ -2,7 +2,7 @@
 
 var _ = require('lodash')
 var fs = require('fs-extra')
-var md5 = require('MD5')
+var md5 = require('md5')
 var path = require('path')
 
 module.exports = class FileTreeNode {
