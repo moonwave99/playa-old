@@ -150,6 +150,9 @@ class Application
     @menu.on 'window:toggle-dev-tools', ->
       BrowserWindow.getFocusedWindow().toggleDevTools()
 
+    @menu.on 'window:hide', ->
+      Menu.sendActionToFirstResponder 'hide:'
+
     @menu.on 'application:run-specs', =>
       @openWithOptions(test: true)
 

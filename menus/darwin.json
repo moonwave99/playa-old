@@ -41,6 +41,14 @@
         },
         {
           "type": "separator"
+        },        
+        {
+          "label": "Hide",
+          "command": "window:hide",
+          "accelerator": "Command+H"
+        },
+        {
+          "type": "separator"
         },
         {
           "label": "Quit",
