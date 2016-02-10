@@ -5,6 +5,7 @@ md5                         = require 'md5'
 ipc                         = require 'ipc'
 path                        = require 'path'
 React                       = require 'react'
+ReactDOM                    = require 'react-dom'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
@@ -301,7 +302,7 @@ module.exports = class Playa
         folder:     folder
 
   render: ->
-    React.render React.createElement(Main, @settings.ui.all()), document.getElementById('main')
+    ReactDOM.render React.createElement(Main, @settings.ui.all()), document.getElementById('main')
     @postRender()
 
   postRender: =>

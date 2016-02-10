@@ -1,6 +1,7 @@
 "use babel"
 
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup')
 var cx = require('classnames')
@@ -17,7 +18,7 @@ var Rename = React.createClass({
     }
   },
   componentDidMount: function(){
-    React.findDOMNode(this.refs.formElement).querySelector('input[name="name"]').focus()
+    ReactDOM.findDOMNode(this.refs.formElement).querySelector('input[name="name"]').focus()
   },
   render: function() {
     var Model = t.struct({

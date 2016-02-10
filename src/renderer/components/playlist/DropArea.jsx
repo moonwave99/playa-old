@@ -4,6 +4,7 @@ var _ = require('lodash')
 var path = require('path')
 var shell = require('shell')
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
 
@@ -41,7 +42,7 @@ const dropAreaTarget = {
     props.handleDragEnd()
   },
   hover(props, monitor, component) {
-    React.findDOMNode(component).classList.add('over')
+    ReactDOM.findDOMNode(component).classList.add('over')
   }
 }
 

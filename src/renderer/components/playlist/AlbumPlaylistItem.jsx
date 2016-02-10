@@ -3,6 +3,7 @@
 var _ = require('lodash')
 var shell = require('shell')
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var DragSource = require('react-dnd').DragSource
 var DropTarget = require('react-dnd').DropTarget
@@ -49,7 +50,7 @@ const albumTarget = {
   },
   hover(props, monitor, component) {
     props.handleDragEnd()
-    React.findDOMNode(component).classList.add('drag-over', props.index < monitor.getItem().originalIndex ? 'drag-over-top' : 'drag-over-bottom')
+    ReactDOM.findDOMNode(component).classList.add('drag-over', props.index < monitor.getItem().originalIndex ? 'drag-over-top' : 'drag-over-bottom')
   }
 }
 

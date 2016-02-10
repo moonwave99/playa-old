@@ -3,6 +3,7 @@
 var _ = require('lodash')
 var cx = require('classnames')
 var React = require('react')
+var ReactDOM = require('react-dom')
 var Tabs = require('react-simpletabs')
 var ReactPropTypes = React.PropTypes
 var PlaylistBrowserTab = require('./PlaylistBrowserTab.jsx')
@@ -76,7 +77,7 @@ var Sidebar = React.createClass({
     }, 100)
   },
   handleScrollToElement: function(state, list){
-    var wrapper = React.findDOMNode(this).querySelector('.tab-panel')
+    var wrapper = ReactDOM.findDOMNode(this).querySelector('.tab-panel')
     var targetElement = wrapper.querySelector('[data-id="' + state.selection[0] + '"]')
     if(!targetElement){
       return

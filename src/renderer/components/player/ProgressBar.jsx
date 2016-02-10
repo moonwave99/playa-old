@@ -2,6 +2,7 @@
 
 var _ = require('lodash')
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
 
@@ -32,10 +33,10 @@ module.exports = React.createClass({
     )
   },
   handleMouseEnter: function(event){
-    React.findDOMNode(this.refs.cursor).style.opacity = '1'
+    ReactDOM.findDOMNode(this.refs.cursor).style.opacity = '1'
   },
   handleMouseOut: function(event){
-    React.findDOMNode(this.refs.cursor).style.opacity = '0'
+    ReactDOM.findDOMNode(this.refs.cursor).style.opacity = '0'
   },
   handleClick: function(event){
     if(!this.props.playing){
@@ -43,19 +44,19 @@ module.exports = React.createClass({
     }
     var bounds = event.currentTarget.getBoundingClientRect()
     var position = (event.clientX - bounds.left) / bounds.width
-    React.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', true)
+    ReactDOM.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', true)
     setTimeout(() => {
-      React.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', false)
+      ReactDOM.findDOMNode(this.refs.waveformProgress).classList.toggle('clicked', false)
     }, 100)
     this.props.seekTo(position)
   },
   handleMouseMove: function(event){
     var waveformBounds = event.currentTarget.getBoundingClientRect()
     var percent = (event.clientX - waveformBounds.left)/waveformBounds.width*100
-    React.findDOMNode(this.refs.cursor).style.left = percent + '%'
+    ReactDOM.findDOMNode(this.refs.cursor).style.left = percent + '%'
   },
   updateWaveform: function(waveform){
-    var wrapper = React.findDOMNode(this.refs.waveform)
+    var wrapper = ReactDOM.findDOMNode(this.refs.waveform)
     if(waveform){
       wrapper.style.backgroundImage = "url('file://" + encodeURI(waveform) + "')"
       wrapper.classList.add('loaded')

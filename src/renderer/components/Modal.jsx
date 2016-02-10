@@ -1,6 +1,7 @@
 "use babel"
 
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var key = require('keymaster')
 var cx = require('classnames')
@@ -19,7 +20,7 @@ var Modal = React.createClass({
   componentDidUpdate: function(prevProps, prevState){
     if(prevProps.isVisible !== this.props.isVisible){
       if(this.props.isVisible){
-        React.findDOMNode(this.refs.modal).classList.add('in')
+        ReactDOM.findDOMNode(this.refs.modal).classList.add('in')
         if(this.props.isDismissable && !this.state.isKeyBound){
           this.bindKeyHandler()
           this.setState({ isKeyBound: true})

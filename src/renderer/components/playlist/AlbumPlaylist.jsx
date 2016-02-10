@@ -4,6 +4,7 @@ var _ = require('lodash')
 var cx = require('classnames')
 var uid = require('uid')
 var React = require('react')
+var ReactDOM = require('react-dom')
 var ReactPropTypes = React.PropTypes
 var ReactList = require('react-list')
 
@@ -195,7 +196,7 @@ var AlbumPlaylist = React.createClass({
     }
   },
   handleDragEnd: function(){
-    var node = React.findDOMNode(this)
+    var node = ReactDOM.findDOMNode(this)
     _.forEach(node.querySelectorAll('.drag-over'), (e)=> e.classList.remove('drag-over', 'drag-over-bottom', 'drag-over-top') )
     node.querySelector('.drop-area').classList.remove('over')
   },
