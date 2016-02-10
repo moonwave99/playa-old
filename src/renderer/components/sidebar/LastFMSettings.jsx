@@ -40,7 +40,7 @@ var LastFMSettings = React.createClass({
     if(this.state.isAuthorised){
       return (
         <div>
-          <p>Signed in as: <a href="#" onClick={this.handleLastFMUserClick}><strong>{this.props.lastFMClient.session.user}</strong></a></p>
+          <p>Signed in as: <a href="#" onClick={this.handleLastFMUserClick} title="Visit Last.FM profile"><strong>{this.props.lastFMClient.session.user}</strong></a></p>
           <p><a className="btn btn-default btn-block" href="#" onClick={this.handleSignoutClick}>Sign out</a></p>
         </div>
       )
