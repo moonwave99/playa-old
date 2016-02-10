@@ -40,7 +40,7 @@ var Footer = React.createClass({
       'fa-fw'                 : true,
       'fa-exclamation-circle' : true,
       'error-icon'            : true,
-      'hidden'                : !this.props.selectedPlaylist.loadErrors.length
+      'hidden'                : true
     })
     return (
       <footer className={footerClasses}>
