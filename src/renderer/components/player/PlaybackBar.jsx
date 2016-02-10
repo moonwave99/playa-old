@@ -35,6 +35,9 @@ module.exports = React.createClass({
     PlayerActions.nextTrack()
   },
   play: function(event){
+    if(!event.clientX){
+      return
+    }
     this.state.playing ? PlayerActions.pause() : PlayerActions.play()
   },
   componentDidMount: function(){
