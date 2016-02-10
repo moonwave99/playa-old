@@ -50,14 +50,16 @@ module.exports = class Album{
   }
   getStats(){
     return _.reduce(this.tracks, (memo, track)=>{
-      memo.tracks++
-      memo.totalTime += track.duration
+      if(!track.disabled){
+        memo.tracks++
+        memo.totalTime += track.duration
+      }
       return memo
     }, { tracks: 0, totalTime: 0})
   }
   missingTracksCount(){
     return this.tracks.filter( t => t.disabled ).length
-  }  
+  }
   getFolder(){
     return this._folder
   }
