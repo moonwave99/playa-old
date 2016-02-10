@@ -8,6 +8,7 @@ os = require 'os'
 net = require 'net'
 url = require 'url'
 dialog = require 'dialog'
+globalShortcut = require('electron').globalShortcut
 
 {EventEmitter} = require 'events'
 _ = require 'underscore-plus'
@@ -33,8 +34,14 @@ class Application
     @sessionSettings.load()
     options.sessionSettings = @sessionSettings
 
+    @registerGlobalShortcuts()
+
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
+
+    app.on 'will-quit', ->
+      console.log 'Unregistering all global shortcuts...'
+      globalShortcut.unregisterAll()
 
     @openWithOptions(options)
 
@@ -182,3 +189,8 @@ class Application
   #   :appWindow - The {AppWindow} to be removed.
   removeAppWindow: (appWindow) =>
     @windows.splice(idx, 1) for w, idx in @windows when w is appWindow
+
+  registerGlobalShortcuts: =>
+    ['MediaPlayPause', 'MediaNextTrack', 'MediaPreviousTrack'].forEach (shortcut) =>
+      globalShortcut.register shortcut, =>
+        @windows[0].sendMediaControl shortcut

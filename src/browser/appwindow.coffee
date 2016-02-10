@@ -12,6 +12,11 @@ dialog = require 'dialog'
 BrowserWindow = require 'browser-window'
 _ = require 'underscore-plus'
 
+mediaControlMap =
+  MediaPlayPause:     'playback:toggle'
+  MediaNextTrack:     'playback:next'
+  MediaPreviousTrack: 'playback:prev'
+
 module.exports =
 class AppWindow
   _.extend @prototype, EventEmitter.prototype
@@ -115,6 +120,9 @@ class AppWindow
 
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
+
+  sendMediaControl: (mediaControl)->
+    @window.webContents.send mediaControlMap[mediaControl]
 
   reload: ->
     @window.webContents.reload()
