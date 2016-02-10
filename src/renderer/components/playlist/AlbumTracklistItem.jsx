@@ -16,7 +16,9 @@ var AlbumTracklistItem = React.createClass({
   },
   renderTrackTitle: function(track){
     var track = this.props.track
-    if(this.props.album.getArtistCount() > 1){
+    if(track.disabled){
+        return <span className="track-filename">{track.filename}</span>
+    }else if(this.props.album.getArtistCount() > 1){
       return (
         <span className="track-title">
           <span className="track-artist">{track.metadata.artist}</span>
@@ -36,7 +38,8 @@ var AlbumTracklistItem = React.createClass({
       'playing'   : this.props.isPlaying,
       'selected'  : this.props.isSelected,
       'odd'       : !even,
-      'even'      : even
+      'even'      : even,
+      'disabled'  : this.props.track.disabled
     })
     return (
       <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={track.id}>

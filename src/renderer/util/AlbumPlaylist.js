@@ -18,7 +18,6 @@ module.exports = class AlbumPlaylist{
     this.ext = this.isNew() ? '.yml' : path.extname(this.path)
     this.title = this.isNew() ? 'Untitled' : path.basename(this.path, this.ext)
     this.loaded = false
-    this.loadErrors = []
     this.lastPlayedAlbumId = null
     this.lastPlayedTrackId = null
     this.lastScrolledAlbumId = null
@@ -71,19 +70,6 @@ module.exports = class AlbumPlaylist{
       return memo
     }, { tracks: 0, totalTime: 0, albums: albums.length })
   }
-  removeErrors(files){
-    this.loadErrors = this.loadErrors.filter((f)=>{
-      return !_.contains(files, f)
-    })
-  }
-  getGrouppedErrors(){
-    return _.reduce(this.loadErrors, (memo, file)=>{
-      var folder = path.dirname(file)
-      !memo[folder] && (memo[folder] = [])
-      memo[folder].push(path.basename(file))
-      return memo
-    }, {})
-  }
   isNew(){
     return !this.path
   }
@@ -93,9 +79,7 @@ module.exports = class AlbumPlaylist{
         resolve(this)
       }else{
         playa.mediaFileLoader.loadFiles(files, opts).bind(playa.mediaFileLoader).then((results)=>{
-          var [fulFilled, rejected] = _.partition(results, r => r.isFulfilled() )
-          this.loadErrors = rejected.map( f => f.reason().message.match(/ENOENT: no such file or directory, open '(.*)'/)[1] )
-          this._process(fulFilled.map( f => f.value() ), opts)
+          this._process(results, opts)
           this.loaded = true
           resolve(this)
         })
@@ -181,32 +165,46 @@ module.exports = class AlbumPlaylist{
       tracklist: this.getFileList() || []
     }
   }
-  _process(files, opts={}){
-    var albums = _.groupBy(files, (file)=>{
-      return file.metadata.album ? file.metadata.album.toLowerCase() : '_noalbum'
-    })
+  _process(results, opts={}){
+    var processedAlbums = _(results)
+      .groupBy( r => path.dirname( r.isFulfilled() ? r.value().filename : r.reason() ))
+      .map((album, directory)=>{
+        var candidateTrack = null
+        var tracks = album.map((track, index)=>{
+          if(track.isFulfilled()){
+            var t = new PlaylistItem(track.value())
+            if(candidateTrack == null){
+              candidateTrack = t
+            }
+            return t
+          }else{
+            return new PlaylistItem({
+              filename: track.reason(),
+              disabled: true
+            })
+          }
+        })
+        return new Album({
+          id: ['a',
+            candidateTrack
+              ? md5(candidateTrack.metadata.artist + candidateTrack.metadata.album)
+              : md5(tracks[0].filename)
+            ].join('_'),
+          tracks: tracks,
+          disabled: !candidateTrack
+        })
+      }).value()
+
     if(opts.insertAt){
       var positionIndex = this.indexOf(opts.insertAt)
-      var processedAlbums =  _.map(albums, (tracks, key)=>{
-        tracks = tracks.map( track => new PlaylistItem(track) )
-        return new Album({
-          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
-          tracks: tracks
-        })
-      })
       this.items.addArrayAt(processedAlbums, positionIndex)
     }else{
       if(opts.force){
         this.items = new DoublyLinkedList()
       }
-      _.forEach(albums, (tracks, key)=>{
-        tracks = tracks.map( track => new PlaylistItem(track) )
-        this.items.add(new Album({
-          id: 'a_' + md5(tracks[0].metadata.artist + tracks[0].metadata.album),
-          tracks: tracks
-        }))
-      })
+      processedAlbums.forEach( a => this.items.add(a) )
     }
+
     return this
   }
 }
