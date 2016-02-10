@@ -1,37 +1,38 @@
 "use babel";
 
-var _ = require('lodash')
-var ipc = require('ipc')
-var cx = require('classnames')
-var key = require('keymaster')
-var enquire = require('enquire.js')
+let _ = require('lodash')
+let ipc = require('ipc')
+let cx = require('classnames')
+let key = require('keymaster')
+let enquire = require('enquire.js')
 
-var React = require('react')
-var Tabs = require('react-simpletabs')
+let React = require('react')
+let Tabs = require('react-simpletabs')
 
-var DragDropContext = require('react-dnd').DragDropContext
-var HTML5Backend = require('react-dnd/modules/backends/HTML5')
+let DragDropContext = require('react-dnd').DragDropContext
+let HTML5Backend = require('react-dnd/modules/backends/HTML5')
 
-var Modal = require('./Modal.jsx')
-var ContextMenu = require('./ContextMenu.jsx')
-var PlaybackBar = require('./player/PlaybackBar.jsx')
-var Playlist = require('./playlist/Playlist.jsx')
-var Sidebar = require('./Sidebar/Sidebar.jsx')
-var Footer = require('./Footer.jsx')
+let Modal = require('./Modal.jsx')
+let ContextMenu = require('./ContextMenu.jsx')
+let PlaybackBar = require('./player/PlaybackBar.jsx')
+let Playlist = require('./playlist/Playlist.jsx')
+let Sidebar = require('./Sidebar/Sidebar.jsx')
+let Footer = require('./Footer.jsx')
 
-var ModalStore = require('../stores/ModalStore')
-var ContextMenuStore = require('../stores/ContextMenuStore')
-var OpenPlaylistStore = require('../stores/OpenPlaylistStore')
-var SidebarStore = require('../stores/SidebarStore')
+let ModalStore = require('../stores/ModalStore')
+let ContextMenuStore = require('../stores/ContextMenuStore')
+let OpenPlaylistStore = require('../stores/OpenPlaylistStore')
+let SidebarStore = require('../stores/SidebarStore')
+let SettingsStore = require('../stores/SettingsStore')
 
-var ModalActions = require('../actions/ModalActions')
-var ContextMenuActions = require('../actions/ContextMenuActions')
-var OpenPlaylistActions = require('../actions/OpenPlaylistActions')
-var SidebarActions = require('../actions/SidebarActions')
-var PlayerActions = require('../actions/PlayerActions')
+let ModalActions = require('../actions/ModalActions')
+let ContextMenuActions = require('../actions/ContextMenuActions')
+let OpenPlaylistActions = require('../actions/OpenPlaylistActions')
+let SidebarActions = require('../actions/SidebarActions')
+let PlayerActions = require('../actions/PlayerActions')
 
-var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
-var KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
+let KeyboardFocusActions = require('../actions/KeyboardFocusActions')
+let KeyboardNameSpaceConstants = require('../constants/KeyboardNameSpaceConstants')
 
 function getModalState(){
   return ModalStore.getInfo()
@@ -53,12 +54,17 @@ function getOpenPlaylistState(){
   }
 }
 
-var Main = React.createClass({
+function getSettingsState(){
+  return SettingsStore.getSettings()
+}
+
+let Main = React.createClass({
   getInitialState: function() {
     return _.merge({
       sidebar: getSidebarState(),
       contextMenu: getContextMenuState(),
-      modal: getModalState()
+      modal: getModalState(),
+      settings: getSettingsState()
     }, getOpenPlaylistState())
   },
   componentDidMount: function() {
@@ -66,6 +72,7 @@ var Main = React.createClass({
     SidebarStore.addChangeListener(this._onSidebarChange)
     ContextMenuStore.addChangeListener(this._onContextMenuChange)
     ModalStore.addChangeListener(this._onModalChange)
+    SettingsStore.addChangeListener(this._onSettingsChange)
 
     this._registerCommonKeyHandler()
     this._registerMediaQueryHandler()
@@ -75,6 +82,7 @@ var Main = React.createClass({
     SidebarStore.removeChangeListener(this._onSidebarChange)
     ContextMenuStore.removeChangeListener(this._onContextMenuChange)
     ModalStore.removeChangeListener(this._onModalChange)
+    SettingsStore.removeChangeListener(this._onSettingsChange)
 
     this._unregisterCommonKeyHandler()
     this._unregisterMediaQueryHandler()
@@ -85,15 +93,15 @@ var Main = React.createClass({
     }
   },
   render: function() {
-    var baseFontSize = this.state.baseFontSize || this.props.baseFontSize.normal
-    var openPlaylists = this.state.openPlaylists.map((playlist)=>{
+    let baseFontSize = this.state.baseFontSize || this.props.baseFontSize.normal
+    let openPlaylists = this.state.openPlaylists.map((playlist)=>{
       return (
         <Tabs.Panel title={playlist.title} key={playlist.id}>
           <Playlist playlist={playlist} isSidebarOpen={this.state.sidebar.isOpen} baseFontSize={baseFontSize}/>
         </Tabs.Panel>
       )
     })
-    var classes = cx({
+    let classes = cx({
       'playa-main' : true,
       'sidebar-open' : this.state.sidebar.isOpen
     })
@@ -121,7 +129,7 @@ var Main = React.createClass({
     OpenPlaylistActions.select(selectedIndex-1)
   },
   handleCommandNumberPress: function(event){
-    var index = event.which - 48
+    let index = event.which - 48
     if(index == 0){
       OpenPlaylistActions.select(this.state.openPlaylists.length -1)
     }else if(index <= this.state.openPlaylists.length){
@@ -143,6 +151,9 @@ var Main = React.createClass({
   _onModalChange: function(){
     this.setState({ modal: getModalState() })
   },
+  _onSettingsChange: function(){
+    this.setState({ settings: getSettingsState() })
+  },
   _registerCommonKeyHandler: function(){
     key('space', this.handleSpacePress)
     key(_.range(9).map( n => '⌘+' + n).join(', '), this.handleCommandNumberPress)
@@ -154,7 +165,7 @@ var Main = React.createClass({
   _registerMediaQueryHandler: function(){
     enquire.register('screen and (min-width:' + this.props.breakpoints.widescreen + ')', {
       match: ()=>{
-        playa.toggleSidebar(true)
+        this.state.settings.user.openSidebar && playa.toggleSidebar(true)
       },
       unmatch: ()=>{}
     })
