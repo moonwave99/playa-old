@@ -260,11 +260,11 @@ module.exports = class Playa
 
     ipc.on 'playback:prev', ->
       AppDispatcher.dispatch
-        actionType: PlayerConstants.PREV
+        actionType: PlayerConstants.PREV_TRACK
 
     ipc.on 'playback:next', ->
       AppDispatcher.dispatch
-        actionType: PlayerConstants.NEXT
+        actionType: PlayerConstants.NEXT_TRACK
 
     ipc.on 'playback:toggle', =>
       AppDispatcher.dispatch
