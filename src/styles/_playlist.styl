@@ -79,7 +79,8 @@
       &.menuOpened
         .menu-link
           display inline-block
-
+      &.disabled
+        padding-top 0
       .cover
         height 'calc(%s - %s)' % ( size($albumItemHeight) 0px)
         width 'calc(%s - %s)' % ( size($albumItemHeight) 0px)
@@ -126,6 +127,22 @@
         border-radius 50%
         background-color $albumItemMenuLinkBgColor
         opacity 0
+      .folder
+        line-height size($albumItemHeight)
+        color $albumArtistColor
+        font-size size($albumArtistFontSize)
+        vertical-align middle
+        padding-left 1rem
+        display inline-block
+      .album-status
+        margin-right 1rem
+        position absolute
+        right 5rem
+        top size(($albumItemHeight - $albumDateFontSize) * .5)
+        &.album-error
+          color $errorIconColor
+        &.album-warning
+          color $warningIconColor
 
     .disc-number
       color $albumArtistColor
@@ -154,6 +171,15 @@
           right 0
           top 0
           transition transform .2s linear
+      &.disabled
+        background-color rgba($trackFilenameColor, .5)
+        .track-artist
+        .separator
+        .track-number
+        .track-duration
+          display none
+        .track-filename
+          margin-left 2.4rem
       .track-artist
         color $albumArtistColor
       .separator
