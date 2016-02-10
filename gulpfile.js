@@ -9,6 +9,7 @@ const _ = require('lodash');
 const childProcess = require('child_process');
 const babel = require('gulp-babel');
 const stylus = require('gulp-stylus');
+const autoprefixer = require('gulp-autoprefixer');
 const coffee = require('gulp-coffee');
 const merge = require('merge-stream');
 const googleWebFonts = require('gulp-google-webfonts');
@@ -23,13 +24,12 @@ require('gulp-task-list')(gulp);
 const SRC_DIR = 'src';
 const DOCS_DIR = 'docs';
 const RELEASE_IGNORE_PKGS = [ //any npm packages that should not be included in the release
-  "babel-preset-es2015",
-  "babel-preset-react",
   "bower",
   "electron-packager",
   "electron-prebuilt",
   "fontcustom",
   "gulp",
+  "gulp-autoprefixer",
   "gulp-babel",
   "gulp-coffee",
   "gulp-google-webfonts",
@@ -96,6 +96,9 @@ gulp.task('css', () => {
   return merge(['application', 'bootstrap'].map((x)=>{
     return gulp.src(SRC_DIR + '/styles/' + x + '.styl')
       .pipe(stylus(STYLUSOPTIONS))
+      .pipe(autoprefixer({
+        browsers: ['last 1 version']
+      }))
       .pipe(gulp.dest(SRC_DIR + '/ui/css'));
   }));
 });
@@ -191,7 +194,11 @@ gulp.task('dev-sym-links', () => {
 
 gulp.task('build', ['clean', 'fonts', 'css', 'coffee', 'dev-sym-links']);
 
-gulp.task('serve', ['build'], (next) => {
+gulp.task('watch', () => {
+  gulp.watch(SRC_DIR + '/styles/*.styl', ['css']);
+});
+
+gulp.task('serve', ['watch', 'build'], (next) => {
 
   var env = _.extend({}, process.env);
   var child = childProcess.spawn('./node_modules/.bin/electron', ['./'], {
