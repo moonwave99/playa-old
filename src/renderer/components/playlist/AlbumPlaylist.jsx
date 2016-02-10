@@ -15,6 +15,8 @@ var PlayerActions = require('../../actions/PlayerActions')
 
 var DropArea = require('./DropArea.jsx')
 
+var NavigableConstants = require('../../constants/NavigableConstants')
+
 var AlbumPlaylist = React.createClass({
   propTypes: {
     playlist: ReactPropTypes.object,
@@ -32,6 +34,11 @@ var AlbumPlaylist = React.createClass({
   componentDidMount: function(){
     this.refs.list.getScrollParent().addEventListener('scroll', this._onListScrollHandler)
     this.props.playlist.lastScrolledAlbumId && this.scrollTo(this.props.playlist.lastScrolledAlbumId)
+  },
+  componentDidUpdate: function(prevProps, prevState){
+    if(this.props.lastAction == null && this.props.playlist.lastScrolledAlbumId){
+      this.scrollAround(this.props.playlist.lastScrolledAlbumId)
+    }
   },
   componentWillUnmount: function(){
     this.refs.list.getScrollParent().removeEventListener('scroll', this._onListScrollHandler)
@@ -220,20 +227,24 @@ var AlbumPlaylist = React.createClass({
   },
   scrollAround: function(id){
     var index = _.findIndex(this.state.list, item => item.id == id)
-    this.refs.list.scrollAround(index)
+    if(index > -1){
+      this.refs.list.scrollAround(index)
+    }
   },
   scrollTo: function(id){
     var index = _.findIndex(this.state.list, item => item.id == id)
-    this.refs.list.scrollTo(index)
+    if(index > -1){
+      this.refs.list.scrollTo(index)
+    }
   },
   getScrollThreshold: function(){
     return 0
   },
-  _onListScrollHandler: _.throttle(function(event){
+  _onListScrollHandler: _.debounce(function(event){
     if(!this.refs.list){
       return
     }
-    var index = this.refs.list.state.from
+    var index = this.refs.list.getVisibleRange()[0]
     if(!index){
       return
     }

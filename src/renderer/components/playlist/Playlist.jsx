@@ -97,7 +97,7 @@ var Playlist = React.createClass({
     }
   },
   handleScrollToElement: function(state, list, component){
-    component.scrollAround(state.selection[0])
+    state.selection[0] && component.scrollAround(state.selection[0])
   },
   _onPlayerChange: function(){
     var playerState = getPlayerState()
