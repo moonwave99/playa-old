@@ -67,8 +67,8 @@ var AlbumPlaylist = React.createClass({
           if(isMultiple && track.metadata.track == 1){
             list.push({
               type: 'discNumber',
-              disc: track.metadata.disk.no,
-              key: track.id + '_disc_' + track.metadata.disk.no
+              disc: track.getDiscNumber(),
+              key: track.id + '_disc_' + track.getDiscNumber()
             })
           }
           list.push({
@@ -158,6 +158,7 @@ var AlbumPlaylist = React.createClass({
       'playlist-content'  : true,
       'loading'           : !this.props.playlist.loaded
     })
+
     return (
       <div onClick={this.handleGlobalClick} className={classes}>
         <i className="fa fa-circle-o-notch fa-spin load-icon"></i>
@@ -194,7 +195,7 @@ var AlbumPlaylist = React.createClass({
   },
   handleTracklistDoubleClick: function(event, item){
     event.stopPropagation()
-    this.playTrack(item.props.album, item.props.track.id)
+    !item.props.track.disabled && this.playTrack(item.props.album, item.props.track.id)
   },
   handleFolderDrop: function(folder, afterId){
     if(!afterId){

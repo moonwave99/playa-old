@@ -1,9 +1,10 @@
 "use babel";
 
 var EventEmitter = require('events').EventEmitter
+var Promise = require('bluebird')
 var assert = require('assert')
 var groove = require('groove')
-var md5 = require('MD5')
+var md5 = require('md5')
 var _ = require('lodash')
 
 groove.setLogging(groove.LOG_ERROR)
@@ -236,7 +237,7 @@ module.exports = class Player extends EventEmitter{
       if(!this.currentAlbum || (this.currentAlbum.id !== album.id)){
         this.loading = true
         this.clearPlaylist().then(()=>{
-          Promise.all(album.tracks.map((track)=>{
+          Promise.settle(album.tracks.map((track)=>{
             return new Promise((resolve, reject)=>{
               groove.open(track.filename, (err, file)=>{
                 if(err){ reject(err)
@@ -245,7 +246,7 @@ module.exports = class Player extends EventEmitter{
             })
           })).then((files)=>{
             this.currentAlbum = album
-            return this.append(files)
+            return this.append( files.filter( f => f.isFulfilled() ).map( f => f.value() ) )
           }).then(()=>{
             this.loading = false
             this.clearTimer()

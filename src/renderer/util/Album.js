@@ -11,13 +11,18 @@ module.exports = class Album{
     this.id = options.id
     this.tracks = options.tracks || []
     this._folder = this.tracks.length && path.dirname(this.tracks[0].filename)
-    this._title = this.tracks[0].metadata.album || '_noalbum'
-    this._year = this.tracks[0].metadata.year
-    this._artists = _.uniq(this.tracks.map( t => t.metadata.artist), a => a.toLowerCase() )
+    this.disabled = options.disabled
+    if(this.disabled){
+      this._artists = []
+      return
+    }
+    this._title = _.find(this.tracks, t => t.metadata.album).metadata.album || '_noalbum'
+    this._year = _.find(this.tracks, t => t.metadata.year).metadata.year
+    this._artists = _(this.tracks.map( t => t.metadata.artist)).uniq( a => a ? a.toLowerCase() : null ).compact().value()
     this._isCompilation = (this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i))
       || this._artists.length > _variousArtistThreshold
     this._isSplit = this._artists.length > 1 && !this._isCompilation
-    this._isMultiple = _.uniq(this.tracks.map( t => t.metadata.disk.no )).length > 1
+    this._isMultiple = _.uniq(this.tracks.map( t => t.getDiscNumber() )).length > 1
   }
   contains(id){
     return this.tracks.map(i => i.id).indexOf(id) > -1
@@ -50,6 +55,9 @@ module.exports = class Album{
       return memo
     }, { tracks: 0, totalTime: 0})
   }
+  missingTracksCount(){
+    return this.tracks.filter( t => t.disabled ).length
+  }  
   getFolder(){
     return this._folder
   }

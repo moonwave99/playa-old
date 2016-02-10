@@ -38,7 +38,7 @@ module.exports = class MediaFileLoader {
       })
     }))
     .then((files)=>{
-      return Promise.all(_.flatten(files).map( f => this.openFile(f) ))
+      return Promise.settle(_.flatten(files).map( f => this.openFile(f) ))
     })
     .catch((err)=>{
       console.error(err, err.stack)
@@ -52,15 +52,20 @@ module.exports = class MediaFileLoader {
         resolve(this.cache[hash])
       }else{
         stream = fs.createReadStream(filename)
-        stream.on('error', reject)
+        stream.on('error', reject.bind(null, filename))
         mm(stream, { duration: true }, (error, metadata)=>{
-          this.cache[hash] = {
-            filename: filename,
-            metadata: error ? {} : MetaDoctor.normalise(metadata),
-            duration: metadata.duration,
+          if(error){
+            stream.close()
+            reject(filename)
+          }else{
+            this.cache[hash] = {
+              filename: filename,
+              metadata: error ? {} : MetaDoctor.normalise(metadata),
+              duration: metadata.duration,
+            }
+            stream.close()
+            resolve(this.cache[hash])
           }
-          stream.close()
-          resolve(this.cache[hash])
         })
       }
     })

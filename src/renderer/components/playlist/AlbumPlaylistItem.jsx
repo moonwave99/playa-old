@@ -61,6 +61,9 @@ var AlbumPlaylistItem = React.createClass({
     }
   },
   componentWillMount: function(){
+    if(this.props.album.disabled){
+      return
+    }
     playa.coverLoader.load(this.props.album)
       .then(this.updateCover)
       .catch((err)=>{})
@@ -71,7 +74,8 @@ var AlbumPlaylistItem = React.createClass({
       'album'     : true,
       'playing'   : isPlaying,
       'selected'  : this.props.isSelected,
-      'open'      : this.props.isOpened
+      'open'      : this.props.isOpened,
+      'disabled'  : this.props.album.disabled
     })
     var opacity = this.props.isDragging ? 0.4 : 1
     var coverStyle = this.state.cover ? { backgroundImage: 'url(' + encodeURI(this.state.cover) + ')'} : {}
@@ -80,15 +84,36 @@ var AlbumPlaylistItem = React.createClass({
       'loaded'      : !!this.state.cover,
       'menuOpened'  : !!this.props.isMenuOpened
     })
-    return this.props.connectDragSource(this.props.connectDropTarget(
-      <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} onContextMenu={this.handleMenuLinkClick} style={{opacity}} data-id={this.props.album.id}>
-        <div className={coverClasses} style={coverStyle}></div>
-        <span className="artist">{this.props.album.getArtist()}</span><br/>
-        <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
-        <a href="#" className="menu-link sidebar-offset" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
-        <span className="year sidebar-offset">{this.props.album.getYear()}</span>
-      </li>
-    ))
+
+    var output = null
+
+    if(this.props.album.disabled){
+      output = (
+        <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} onContextMenu={this.handleDisabledMenuLinkClick} style={{opacity}} data-id={this.props.album.id}>
+          <div className={coverClasses} style={coverStyle}></div>
+          <span className="folder">{this.props.album.getFolder()}</span>
+          <a href="#" className="menu-link sidebar-offset" onClick={this.handleDisabledMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
+          <a href="#" className="album-status album-error sidebar-offset"><i className="fa fa-fw fa-exclamation-circle"></i></a>
+        </li>
+      )
+    }else{
+      var status = this.props.album.missingTracksCount() > 0 ? <a href="#" className="album-status album-warning sidebar-offset"><i className="fa fa-fw fa-exclamation-triangle"></i></a> : null
+      output = (
+        <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} onContextMenu={this.handleMenuLinkClick} style={{opacity}} data-id={this.props.album.id}>
+          <div className={coverClasses} style={coverStyle}></div>
+          <span className="artist">{this.props.album.getArtist()}</span><br/>
+          <span className="title">{this.props.album.getTitle()} { (isPlaying && !this.props.isOpened) ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
+          {status}
+          <a href="#" className="menu-link sidebar-offset" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
+          <span className="year sidebar-offset">{this.props.album.getYear()}</span>
+        </li>
+      )
+    }
+
+    return this.props.connectDragSource(this.props.connectDropTarget(output))
+  },
+  handleDisabledMenuLinkClick: function(event){
+    event.stopPropagation()
   },
   handleMenuLinkClick: function(event){
     event.stopPropagation()
@@ -101,7 +126,7 @@ var AlbumPlaylistItem = React.createClass({
   },
   handleDoubleClick: function(event){
     event.stopPropagation()
-    this.props.playTrack(this.props.album, this.props.album.tracks[0].id)
+    !this.props.album.disabled && this.props.playTrack(this.props.album, this.props.album.tracks[0].id)
   },
   handleClick: function(event){
     this.props.handleClick(event, this)
