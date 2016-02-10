@@ -120,7 +120,8 @@ var AlbumPlaylist = React.createClass({
             isSelected={item.isSelected}
             isPlaying={item.isPlaying}
             handleClick={this.handleTracklistClick}
-            handleDoubleClick={this.handleTracklistDoubleClick}/>
+            handleDoubleClick={this.handleTracklistDoubleClick}
+            useTranslate3d={true}/>
         )
         break
       case 'discNumber':
