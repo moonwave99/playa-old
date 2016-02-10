@@ -109,7 +109,7 @@ let Main = React.createClass({
       <div className={classes} onClick={this.handleGlobalClick}>
         <Modal {...this.state.modal}/>
         <PlaybackBar/>
-        <Sidebar {...this.state.sidebar}/>
+        <Sidebar settings={this.state.settings} {...this.state.sidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
             tabActive={this.state.selectedIndex+1}

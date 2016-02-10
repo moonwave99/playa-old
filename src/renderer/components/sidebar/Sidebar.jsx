@@ -62,7 +62,7 @@ var Sidebar = React.createClass({
           isFocused={this.props.isOpen && this.props.selectedTab == 1}/>
       </Tabs.Panel>,
       <Tabs.Panel title={<i className="fa fa-fw fa-cog"></i>} key="settings">
-        <SettingsTab isFocused={this.props.isOpen && this.props.selectedTab == 2}/>
+        <SettingsTab isFocused={this.props.isOpen && this.props.selectedTab == 2} settings={this.props.settings}/>
       </Tabs.Panel>
     ]
   },
