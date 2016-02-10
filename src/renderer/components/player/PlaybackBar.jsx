@@ -63,9 +63,9 @@ module.exports = React.createClass({
       <div className="playback-bar">
         <div className={logoClasses}>Playa.</div>
         <div className="playback-buttons">
-          <button onClick={this.prev}><i className="fa fa-fw fa-backward"></i></button>
+          <button onClick={this.prev}><i className="fa fa-fw fa-fast-backward"></i></button>
           <button onClick={this.play}>{this.state.playing ? <i className="fa fa-fw fa-pause"></i> : <i className="fa fa-fw fa-play"></i>}</button>
-          <button onClick={this.next}><i className="fa fa-fw fa-forward"></i></button>
+          <button onClick={this.next}><i className="fa fa-fw fa-fast-forward"></i></button>
         </div>
         <div className={wrapperClasses}>
           <ProgressBar seekTo={this.seekTo} {...this.state}/>

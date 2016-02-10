@@ -18,7 +18,7 @@
     &.hide-logo
       display none
   .playback-buttons
-    flex 0 0 size($sidebarWidth)
+    flex 0 0 size($sidebarWidth - $playbackBarCoverWidth)
     text-align center
     @media(max-width: 640px)
       flex 0 0 size($sidebarCompactWidth)
@@ -101,7 +101,7 @@
         opacity 1
 
     .playback-track-cover
-      flex 0 0 $playbackBarCoverWidth
+      flex 0 0 size($playbackBarCoverWidth)
       overflow hidden
       position relative
       img
