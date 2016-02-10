@@ -7,6 +7,8 @@ var ReactPropTypes = React.PropTypes
 var KeyboardFocusStore = require('../stores/KeyboardFocusStore')
 var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
 
+var NavigableConstants = require('../constants/NavigableConstants')
+
 module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
   getSelectedIds = getSelectedIds || function(component){
     return component.state.selection
@@ -95,7 +97,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
         })
       }else{
         this.setState({
-          selection: [item.props.itemKey]
+          selection: [item.props.itemKey],
+          lastAction: NavigableConstants.MOUSE_INPUT
         })
       }
     },
@@ -141,7 +144,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
       }
       this.setState({
         selection: ids.slice(newLow, newHi+1),
-        direction: direction
+        direction: direction,
+        lastAction: NavigableConstants.KEYBOARD_INPUT
       })
     },
     handleLeftRightKeyPress(event){
@@ -157,23 +161,27 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     handleDelKeyPress(event) {
       this.props.handleDelKeyPress(event, this, getSelectedIds(this))
       this.setState({
-        selection: []
+        selection: [],
+        lastAction: null
       })
     },
     handleSelectAllKeyPress(event) {
       this.setState({
-        selection: this.getIdList()
+        selection: this.getIdList(),
+        lastAction: NavigableConstants.KEYBOARD_INPUT
       })
     },
     openElements(ids){
       this.setState({
-        openElements: _.uniq(this.state.openElements.concat(ids))
+        openElements: _.uniq(this.state.openElements.concat(ids)),
+        lastAction: NavigableConstants.KEYBOARD_INPUT
       })
       this.props.handleOpen && this.props.handleOpen(ids)
     },
     closeElements(ids){
       this.setState({
-        openElements: _.difference(this.state.openElements, ids)
+        openElements: _.difference(this.state.openElements, ids),
+        lastAction: NavigableConstants.KEYBOARD_INPUT
       })
       this.props.handleClose && this.props.handleClose(ids)
     },
