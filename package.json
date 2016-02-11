@@ -112,6 +112,8 @@
     "supertest": "0.15.0"
   },
   "scripts": {
+    "start": "gulp serve",
+    "build": "gulp release",
     "test": "gulp test",
     "postinstall": "make postinstall"
   },
