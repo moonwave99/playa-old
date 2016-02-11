@@ -1,6 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
+var ipc = require('ipc')
 var shell = require('shell')
 var React = require('react')
 var ReactDOM = require('react-dom')
@@ -14,6 +15,7 @@ var DragDropConstants = require('../../constants/DragDropConstants')
 var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
 var ContextMenuActions = require('../../actions/ContextMenuActions')
 var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
+var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
 
 const albumSource = {
   beginDrag(props) {
@@ -89,10 +91,10 @@ var AlbumPlaylistItem = React.createClass({
 
     if(this.props.album.disabled){
       output = (
-        <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} onContextMenu={this.handleDisabledMenuLinkClick} style={{opacity}} data-id={this.props.album.id}>
+        <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} onContextMenu={this.handleMenuLinkClick} style={{opacity}} data-id={this.props.album.id}>
           <div className={coverClasses} style={coverStyle}></div>
           <span className="folder">{this.props.album.getFolder()}</span>
-          <a href="#" className="menu-link sidebar-offset" onClick={this.handleDisabledMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
+          <a href="#" className="menu-link sidebar-offset" onClick={this.handleMenuLinkClick}><i className="fa fa-fw fa-ellipsis-h"></i></a>
           <a href="#" className="album-status album-error sidebar-offset"><i className="fa fa-fw fa-exclamation-circle"></i></a>
         </li>
       )
@@ -112,14 +114,11 @@ var AlbumPlaylistItem = React.createClass({
 
     return this.props.connectDragSource(this.props.connectDropTarget(output))
   },
-  handleDisabledMenuLinkClick: function(event){
-    event.stopPropagation()
-  },
   handleMenuLinkClick: function(event){
     event.stopPropagation()
     ContextMenuActions.show(
-      this.getContextMenuActions(),
-      { top: event.clientY, left: event.clientX },
+      this.props.album.disabled ? this.getDisabledContextMenuActions() : this.getContextMenuActions(),
+      { top: event.clientY, left: event.clientX - 10 * this.props.baseFontSize },
       event,
       KeyboardNameSpaceConstants.ALBUM_PLAYLIST
     )
@@ -135,6 +134,21 @@ var AlbumPlaylistItem = React.createClass({
     if(this.isMounted()){
       this.setState({ cover: cover })
     }
+  },
+  getDisabledContextMenuActions: function(){
+    return [
+      {
+        'label': 'Locate Folder',
+        'handler': function(){
+          var folder = this.props.album.getFolder()
+          var remoteFolder = ipc.sendSync('request:open:dialog', {
+            title: 'Locate folder for ' + folder,
+            properties: ['openDirectory']
+          })
+          remoteFolder[0] && OpenPlaylistActions.locateFolder(this.props.playlist.id, this.props.album.id, remoteFolder[0])
+        }.bind(this)
+      },
+    ]
   },
   getContextMenuActions: function(){
     return [

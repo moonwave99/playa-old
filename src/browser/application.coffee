@@ -2,7 +2,7 @@ Menu = require 'menu'
 BrowserWindow = require 'browser-window'
 app = require 'app'
 fs = require 'fs-plus'
-ipc = require 'ipc'
+ipc = require('electron').ipcMain
 path = require 'path'
 os = require 'os'
 net = require 'net'
@@ -165,11 +165,11 @@ class Application
 
     ipc.on 'request:save:dialog', (event, params) ->
       params||={}
-      event.returnValue = dialog.showSaveDialog(params)
+      event.returnValue = dialog.showSaveDialog(params) || false
 
     ipc.on 'request:open:dialog', (event, params) ->
       params||={}
-      event.returnValue = dialog.showOpenDialog(params)
+      event.returnValue = dialog.showOpenDialog(params) || false
 
     ipc.on 'request:app:path', (event, params) =>
       event.returnValue = app.getPath params.key
