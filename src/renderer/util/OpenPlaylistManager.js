@@ -46,10 +46,18 @@ module.exports = class OpenPlaylistManager {
     }
     return playlist
   }
-  locateFolder(id, files, newFolder){
+  locateFolder(id, albumId, newFolder){
     var playlist = this.findBy('id', id)
     if(playlist){
-      return playlist.addFolder(newFolder)
+      var position = playlist.indexOf(albumId)
+      var album = playlist.getAlbumById(albumId)
+      var next = playlist.getNext(album)
+      playlist.removeItems([albumId])
+      if(next){
+        return playlist.addFolderAtPosition(newFolder, next.id)
+      }else{
+        return playlist.addFolder(newFolder)
+      }
     }else{
       return Promise.reject('Could not find playlist with id: ' + id)
     }

@@ -159,8 +159,10 @@ var OpenPlaylistStore = assign({}, EventEmitter.prototype, {
         }
         break
       case OpenPlaylistConstants.LOCATE_FOLDER:
-        playa.openPlaylistManager.locateFolder(action.id, action.files, action.newFolder).then((playlist)=>{
-          playlist.removeErrors(action.files)
+        playa.openPlaylistManager.locateFolder(action.id, action.albumId, action.newFolder).then((playlist)=>{
+          if(playa.getSetting('user', 'autosave')){
+            playa.openPlaylistManager.save()
+          }
           OpenPlaylistStore.emitChange()
         })
         break
