@@ -8,6 +8,7 @@ React                       = require 'react'
 ReactDOM                    = require 'react-dom'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
+RemoteController            = require './renderer/util/RemoteController'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
 FileBrowser                 = require './renderer/util/FileBrowser'
 PlaylistLoader              = require './renderer/util/PlaylistLoader'
@@ -42,9 +43,9 @@ _tabScopeNames = [
 module.exports = class Playa
   constructor: (options) ->
     @settings = {}
-    @settings.pkg = new SettingsBag
+    @settings.config = new SettingsBag
       readOnly: true
-      data:     require '../package.json'
+      data:     require './config/appConfig'
 
     @settings.common = new SettingsBag
       readOnly: true
@@ -53,7 +54,7 @@ module.exports = class Playa
         playlistRoot:       path.join options.userDataFolder, 'Playlists'
         fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
         playlistExtension:  '.yml'
-        useragent:          "playa/v#{@getSetting 'pkg', 'version'}"
+        useragent:          "playa/v#{@getSetting 'config', 'version'}"
         scrobbleThreshold:
           percent:  0.5
           absolute: 4 * 60
@@ -143,6 +144,8 @@ module.exports = class Playa
       resolution: 1000
       scrobbleThreshold: @getSetting 'common', 'scrobbleThreshold'
 
+    @remote = new RemoteController
+
   init: ->
     @firstPlaylistLoad = false
     @ensureFolders _.map @getSetting('common', 'storeFolders'), (value, key) -> value
@@ -182,6 +185,7 @@ module.exports = class Playa
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
 
     @initIPC()
+    @initRemote()
     @loadPlaylists()
 
   loadPlaylists: =>
@@ -245,6 +249,10 @@ module.exports = class Playa
         when 0 then @loadSidebarPlaylists()
         when 1 then @loadSidebarFileBrowser()
 
+  initRemote: =>
+    if @getSetting 'user', 'allowRemote'
+      @remote.start()
+
   initIPC: ->
     ipc.on 'sidebar:show', (tabName) =>
       switch tabName
@@ -307,7 +315,7 @@ module.exports = class Playa
     @postRender()
 
   postRender: =>
-    console.info "Welcome to Playa v#{@getSetting 'pkg', 'version'}"
+    console.info "Welcome to Playa v#{@getSetting 'config', 'version'}"
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
