@@ -113,7 +113,8 @@
     "start": "gulp serve",
     "build": "gulp release",
     "test": "gulp test",
-    "postinstall": "make postinstall"
+    "postinstall": "make postinstall",
+    "localInstall": "cp -r ./release/Playa-darwin-x64/Playa.app/ /Applications/Playa.app/"
   },
   "private": true
 }
