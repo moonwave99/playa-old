@@ -8,7 +8,6 @@ React                       = require 'react'
 ReactDOM                    = require 'react-dom'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
-RemoteController            = require './renderer/util/RemoteController'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
 FileBrowser                 = require './renderer/util/FileBrowser'
 PlaylistLoader              = require './renderer/util/PlaylistLoader'
@@ -144,8 +143,6 @@ module.exports = class Playa
       resolution: 1000
       scrobbleThreshold: @getSetting 'common', 'scrobbleThreshold'
 
-    @remote = new RemoteController
-
   init: ->
     @firstPlaylistLoad = false
     @ensureFolders _.map @getSetting('common', 'storeFolders'), (value, key) -> value
@@ -251,7 +248,7 @@ module.exports = class Playa
 
   initRemote: =>
     if @getSetting 'user', 'allowRemote'
-      @remote.start()
+      ipc.sendSync 'remote:start', playa: @
 
   initIPC: ->
     ipc.on 'sidebar:show', (tabName) =>

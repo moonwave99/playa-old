@@ -18,6 +18,7 @@ AppMenu = require './appmenu'
 AppWindow = require './appwindow'
 AboutWindow = require './aboutwindow'
 SettingsBag = require '../SettingsBag'
+RemoteController = require './remotecontroller'
 
 module.exports =
 class Application
@@ -36,6 +37,7 @@ class Application
     options.sessionSettings = @sessionSettings
 
     @registerGlobalShortcuts()
+    @initRemoteController()
 
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
@@ -185,6 +187,20 @@ class Application
       @sessionSettings.set params.key, params.value
       @sessionSettings.save()
 
+    ipc.on 'remote:start', (event, params={}) =>
+      if !@remote.isActive() then @remote.start(params.playa)
+      event.returnValue = true
+
+    ipc.on 'remote:stop', (event, params) =>
+      if @remote.isActive() then @remote.stop()
+      event.returnValue = true
+
+    ipc.on 'remote:getAddress', (event, params) =>
+      event.returnValue = @remote.getAddress()
+
+    ipc.on 'remote:isActive', (event, params) =>
+      event.returnValue = @remote.isActive()
+
     appWindow
 
   # Removes the given window from the list of windows, so it can be GC'd.
@@ -204,3 +220,7 @@ class Application
   openAboutWindow: =>
     @aboutwindow = new AboutWindow
     @aboutwindow.show()
+
+  # Inits remote controller instance
+  initRemoteController: =>
+    @remote = new RemoteController

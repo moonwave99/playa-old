@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Playa Remote</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self'; style-src 'self' 'unsafe-inline';">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style type="text/css">
+      body{
+        text-align: center;
+        font-family: 'Lato', sans-serif;
+        background-color: #ECECEC;
+        opacity: 0;
+        transition: .2s opacity ease-in-out;
+        overflow: hidden;
+      }
+      body.loaded{
+        opacity: 1;
+      }
+      .logo img{
+        width: 150px;
+        height: 150px;
+      }
+      a, a:hover, a:visited{
+        color: black;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body tabindex="-1">
+    <div id="main">
+    </div>
+  </body>
+</html>

@@ -2,6 +2,7 @@
 
 var _ = require('lodash')
 var cx = require('classnames')
+var ipc = require('ipc')
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 
@@ -27,18 +28,17 @@ var RemoteSettings = React.createClass({
     )
   },
   renderRemoteLink: function(){
-    let remote = playa.remote
-    return <span>Address: <strong><a href="#">{remote.getAddress()}</a></strong></span>
+    return <span>Address: <strong><a href="#">{ipc.sendSync('remote:getAddress')}</a></strong></span>
   },
   handleRemoteChange: function(event){
     SettingsActions.set('user', 'allowRemote', !this.state.allowRemote)
     this.setState({
       allowRemote: !this.state.allowRemote
     })
-    if(playa.remote.isActive()){
-      playa.remote.stop()
+    if(ipc.sendSync('remote:isActive')){
+      ipc.sendSync('remote:stop')
     }else{
-      playa.remote.start()
+      ipc.sendSync('remote:start', { playa: playa })
     }
   }
 
