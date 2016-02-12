@@ -7,6 +7,7 @@ let key = require('keymaster')
 let enquire = require('enquire.js')
 
 let React = require('react')
+let ReactDOM = require('react-dom')
 let Tabs = require('react-simpletabs')
 
 let DragDropContext = require('react-dnd').DragDropContext
@@ -64,7 +65,8 @@ let Main = React.createClass({
       sidebar: getSidebarState(),
       contextMenu: getContextMenuState(),
       modal: getModalState(),
-      settings: getSettingsState()
+      settings: getSettingsState(),
+      baseFontSize: this.props.baseFontSize.normal
     }, getOpenPlaylistState())
   },
   componentDidMount: function() {
@@ -91,6 +93,7 @@ let Main = React.createClass({
     if(prevState.selectedIndex !== this.state.selectedIndex){
       KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.ALBUM_PLAYLIST)
     }
+    this._updateTabsWidth()
   },
   render: function() {
     let baseFontSize = this.state.baseFontSize || this.props.baseFontSize.normal
@@ -112,6 +115,7 @@ let Main = React.createClass({
         <Sidebar settings={this.state.settings} {...this.state.sidebar}/>
         <div className="playa-main-wrapper">
           <Tabs
+            ref="tabs"
             tabActive={this.state.selectedIndex+1}
             onAfterChange={this.handleAfter}>
             {openPlaylists}
@@ -181,6 +185,10 @@ let Main = React.createClass({
   _unregisterMediaQueryHandler: function(){
     enquire.unregister('screen and (min-width:' + this.props.breakpoints.widescreen + ')')
     enquire.unregister('screen and (min-width:' + this.props.breakpoints.widefont + ')')
+  },
+  _updateTabsWidth: function(){
+    let width = ((this.state.openPlaylists.length - 1) * this.state.baseFontSize * 10 + this.state.baseFontSize * 15) + 'px'
+    ReactDOM.findDOMNode(this.refs.tabs).querySelector('.tabs-menu').style.width = width
   }
 })
 

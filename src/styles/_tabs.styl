@@ -6,6 +6,7 @@
   box-shadow 0 0 2rem rgba(0,0,0,.75)
   user-select none
   overflow-x auto
+  overflow-y hidden
   clearfix()
   .tabs-menu
     list-style none
@@ -22,8 +23,11 @@
         color $tabsBarColor
         text-decoration none
         text-align center
-        box-shadow: 0 0 black, 1px 0 rgba($mainColor, .1)
+        box-shadow 0 0 black, 1px 0 rgba($mainColor, .1)
         ellipsed()
+        cursor pointer
+        &:hover
+          background-color darken($tabsBgActiveColor, 50%)
       &.is-active
         a
           background-color $tabsBgActiveColor
@@ -32,11 +36,10 @@
   .tabs-navigation
     width "calc(100vw - %s)" % size($sidebarClosedWidth)
     .tabs-menu
-      width "calc(100vw - %s)" % size($sidebarClosedWidth)
       .tabs-menu-item
         a
           padding 0 1rem
-          transition width .2s ease-in-out
+          transition width .2s ease-in-out, background-color .2s ease-in-out
         &.is-active
           a
             width size(1.5 * $tabsWidth)
@@ -52,3 +55,4 @@
         width 33.333333333%
         a
           width auto
+          transition background-color .2s ease-in-out
