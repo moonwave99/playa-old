@@ -16,6 +16,7 @@ _ = require 'underscore-plus'
 
 AppMenu = require './appmenu'
 AppWindow = require './appwindow'
+AboutWindow = require './aboutwindow'
 SettingsBag = require '../SettingsBag'
 
 module.exports =
@@ -100,6 +101,9 @@ class Application
     @menu.attachToWindow(appWindow)
 
     @menu.on 'application:quit', -> app.quit()
+
+    @menu.on 'application:about', =>
+      @openAboutWindow()
 
     @menu.on 'application:show-settings', ->
       appWindow.showSettings()
@@ -190,7 +194,13 @@ class Application
   removeAppWindow: (appWindow) =>
     @windows.splice(idx, 1) for w, idx in @windows when w is appWindow
 
+  # Registers global media shortcuts.
   registerGlobalShortcuts: =>
     ['MediaPlayPause', 'MediaNextTrack', 'MediaPreviousTrack'].forEach (shortcut) =>
       globalShortcut.register shortcut, =>
         @windows[0].sendMediaControl shortcut
+
+  # Opens about window.
+  openAboutWindow: =>
+    @aboutwindow = new AboutWindow
+    @aboutwindow.show()
