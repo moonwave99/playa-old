@@ -13,6 +13,7 @@ var defaultSettings = {
   version: packageJson.version,
   name: packageJson.name,
   productName: packageJson.productName,
+  description: packageJson.description,
   repository: packageJson.repository.url,
   authorUrl: packageJson.author.url,
   authorName: packageJson.author.name,
