@@ -4,6 +4,7 @@ var _ = require('lodash')
 var path = require('path')
 var Promise = require('bluebird')
 var ffmpeg = Promise.promisifyAll(require('fluent-ffmpeg'))
+var appConfig = require('../../config/appConfig')
 
 module.exports = class AudioMetadata {
   constructor(filename) {
@@ -14,6 +15,7 @@ module.exports = class AudioMetadata {
     if(!this.filename){
       return Promise.reject('No filename provided!')
     }
+    ffmpeg.setFfprobePath(appConfig.ffprobePath)
     return ffmpeg.ffprobeAsync(this.filename).bind(this).then(this._parseMetadata)
   }
   _parseMetadata(metadata) {

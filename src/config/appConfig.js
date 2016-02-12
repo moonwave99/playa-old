@@ -19,7 +19,9 @@ var defaultSettings = {
   authorName: packageJson.author.name,
   logLevel: 'debug',
   buildPath: 'build',
-  releasePath: 'release'
+  releasePath: 'release',
+  ffmpegPath: '/usr/local/bin/ffmpeg',
+  ffprobePath: '/usr/local/bin/ffprobe'
 };
 
 var production = _.extend(_.extend({}, defaultSettings), {
