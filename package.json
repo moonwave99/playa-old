@@ -1,7 +1,7 @@
 {
   "name": "playa",
   "productName": "Playa",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "The Audio Player that thinks in albums.",
   "main": "./src/browser/main.js",
   "author": {
