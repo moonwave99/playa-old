@@ -1,4 +1,3 @@
-Menu = require 'menu'
 BrowserWindow = require 'browser-window'
 app = require 'app'
 fs = require 'fs-plus'
@@ -42,9 +41,10 @@ class Application
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
 
-    app.on 'will-quit', ->
+    app.on 'will-quit', =>
       console.log 'Unregistering all global shortcuts...'
       globalShortcut.unregisterAll()
+      if @remote.isActive() then @remote.stop()
 
     @openWithOptions(options)
 
