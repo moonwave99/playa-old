@@ -5,7 +5,7 @@
   "description": "The Audio Player that thinks in albums.",
   "main": "./src/browser/main.js",
   "author": {
-    "name": "moonwave99",
+    "name": "Diego Caponera",
     "email": "diego.caponera@gmail.com",
     "url": "http://www.diegocaponera.com"
   },
