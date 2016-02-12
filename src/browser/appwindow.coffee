@@ -68,7 +68,6 @@ class AppWindow
 
   show: ->
     targetPath = path.resolve __dirname, '..', '..', 'src', 'ui', 'index.html'
-
     targetUrl = url.format
       protocol: 'file'
       pathname: targetPath
