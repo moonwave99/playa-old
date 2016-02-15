@@ -48,7 +48,7 @@ module.exports = class Player extends EventEmitter{
     this.timer = null
   }
   checkScrobble(){
-    if(this.alreadyScrobbled){
+    if(!this.currentTrack || this.alreadyScrobbled){
       return
     }
     var amount = this.currentTrackPlayedAmount += (this.resolution * 0.001)
@@ -132,9 +132,13 @@ module.exports = class Player extends EventEmitter{
   }
   play() {
     this.attach().then(()=>{
+      if(this.groovePlaylist.count() == 0){
+        return false;
+      }
       this.startTimer()
       this.playing = true
       this.groovePlaylist.play()
+      return true;
     })
   }
   pause() {
