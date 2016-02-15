@@ -2,7 +2,7 @@
 
 var assign = require('object-assign')
 var path = require('path')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 
 var FileTree = require('../util/FileTree')
 var AppDispatcher = require('../dispatcher/AppDispatcher')

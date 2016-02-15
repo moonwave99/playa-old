@@ -1,7 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var shell = require('shell')
 var React = require('react')
 var ReactDOM = require('react-dom')

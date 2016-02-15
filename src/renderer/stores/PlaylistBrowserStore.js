@@ -1,7 +1,7 @@
 "use babel";
 
 var assign = require('object-assign')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter

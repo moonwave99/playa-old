@@ -1,7 +1,7 @@
 "use babel"
 
 var React = require('react')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var ReactPropTypes = React.PropTypes
 var cx = require('classnames')
 var moment = require('moment')

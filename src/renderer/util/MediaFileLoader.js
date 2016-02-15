@@ -1,7 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var fs = require('fs-extra')
 var md5 = require('md5')
 var path = require('path')

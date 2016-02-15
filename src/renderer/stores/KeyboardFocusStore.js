@@ -2,7 +2,7 @@
 
 var _ = require('lodash')
 var assign = require('object-assign')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var key = require('keymaster')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')

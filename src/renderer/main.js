@@ -1,6 +1,6 @@
 'use strict';
 
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var Playa = require('../playa')
 
 window.playa = new Playa({

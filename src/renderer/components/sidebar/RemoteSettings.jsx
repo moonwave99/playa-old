@@ -2,7 +2,7 @@
 
 var _ = require('lodash')
 var cx = require('classnames')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var React = require('react')
 var ReactPropTypes = React.PropTypes
 

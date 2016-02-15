@@ -2,7 +2,7 @@ _                           = require 'lodash'
 fs                          = require 'fs-extra'
 fsPlus                      = require 'fs-plus'
 md5                         = require 'md5'
-ipc                         = require 'ipc'
+ipc                         = require('electron').ipcRenderer
 path                        = require 'path'
 React                       = require 'react'
 ReactDOM                    = require 'react-dom'
@@ -248,7 +248,7 @@ module.exports = class Playa
 
   initRemote: =>
     if @getSetting 'user', 'allowRemote'
-      ipc.sendSync 'remote:start', playa: @
+      ipc.send 'remote:start', playa: @
 
   initIPC: ->
     ipc.on 'sidebar:show', (tabName) =>
