@@ -180,6 +180,7 @@ module.exports = class Playa
       if @getSetting 'user', 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
+    PlayerStore.addChangeListener @_onPlayerChange
 
     @initIPC()
     @initRemote()
@@ -302,6 +303,19 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
 
+    ipc.on 'playlist:gotoAlbum', (event, message) =>
+      selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
+      if !selectedPlaylist then return
+
+      selectedAlbum = selectedPlaylist.getAlbumById message.albumId
+      if selectedAlbum
+        AppDispatcher.dispatch
+          actionType: OpenPlaylistConstants.SELECT_ALBUM
+          playlist:   selectedPlaylist
+          album:      selectedAlbum
+          trackId:    selectedAlbum.tracks[0].id
+          play:       true
+
     ipc.on 'open:folder', (folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
@@ -346,6 +360,10 @@ module.exports = class Playa
 
     if playlistPaths.length then @saveSetting 'session', 'openPlaylists', playlistPaths
 
+    if selectedPlaylist and @getSetting 'user', 'allowRemote'
+      ipc.send 'remote:update',
+        playlist: selectedPlaylist.serializeForRemote()
+
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true
       selectedAlbum = selectedPlaylist.getLastPlayedAlbum()
@@ -356,3 +374,7 @@ module.exports = class Playa
           album:      selectedAlbum
           trackId:    selectedPlaylist.lastPlayedTrackId
           play:       false
+
+  _onPlayerChange: =>
+    ipc.send 'remote:update',
+      playbackInfo: PlayerStore.getPlaybackInfo remote: true

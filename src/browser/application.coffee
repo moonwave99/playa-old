@@ -1,5 +1,6 @@
 BrowserWindow = require 'browser-window'
 app = require 'app'
+Menu = require 'menu'
 fs = require 'fs-plus'
 ipc = require('electron').ipcMain
 path = require 'path'
@@ -36,7 +37,6 @@ class Application
     options.sessionSettings = @sessionSettings
 
     @registerGlobalShortcuts()
-    @initRemoteController()
 
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
@@ -66,6 +66,7 @@ class Application
 
     newWindow.show()
     @windows.push(newWindow)
+    @initRemoteController newWindow
     newWindow.on 'closed', =>
       @removeAppWindow(newWindow)
 
@@ -189,7 +190,6 @@ class Application
 
     ipc.on 'remote:start', (event, params={}) =>
       if !@remote.isActive() then @remote.start(params.playa)
-      event.returnValue = true
 
     ipc.on 'remote:stop', (event, params) =>
       if @remote.isActive() then @remote.stop()
@@ -200,6 +200,9 @@ class Application
 
     ipc.on 'remote:isActive', (event, params) =>
       event.returnValue = @remote.isActive()
+
+    ipc.on 'remote:update', (event, params) =>
+      @remote.update params
 
     appWindow
 
@@ -222,5 +225,6 @@ class Application
     @aboutwindow.show()
 
   # Inits remote controller instance
-  initRemoteController: =>
+  initRemoteController: (appWindow)=>
     @remote = new RemoteController
+      window: appWindow

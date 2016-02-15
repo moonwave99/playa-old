@@ -63,6 +63,7 @@
     "react-list": "^0.7.0",
     "react-simpletabs": "^0.7.0",
     "react-treeview": "^0.3.12",
+    "riot": "^2.3.15",
     "season": "^1.0.2",
     "semver": "2.2.1",
     "socket.io": "^1.4.5",

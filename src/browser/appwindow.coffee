@@ -117,6 +117,9 @@ class AppWindow
   togglePlaylistInfo: ->
     @window.webContents.send('playlist:toggleInfo')
 
+  gotoAlbum: (data)->
+    @window.webContents.send('playlist:gotoAlbum', data)
+
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
 

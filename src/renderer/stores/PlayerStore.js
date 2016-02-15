@@ -12,18 +12,32 @@ var CHANGE_EVENT = 'change'
 
 var PlayerStore = assign({}, EventEmitter.prototype, {
 
-  getPlaybackInfo: function(){
+  getPlaybackInfo: function(options={}){
     var info = playa.player.playbackInfo()
     var totalTime = info.currentTrack ? info.currentTrack.duration : 0
     var currentTime = info.position || 0
-    return{
-      totalTime: totalTime,
-      currentTime: currentTime,
-      remainingTime: totalTime - currentTime,
-      playing: !!info.playing,
-      hideInfo: !info.currentTrack,
-      currentTrack: info.currentTrack,
-      currentAlbum: info.currentAlbum
+    if(options.remote){
+      return{
+        totalTime: totalTime,
+        currentTime: currentTime,
+        remainingTime: totalTime - currentTime,
+        playing: !!info.playing,
+        hideInfo: !info.currentTrack,
+        currentTrackID: info.currentTrack && info.currentTrack.id,
+        currentAlbumID: info.currentAlbum && info.currentAlbum.id
+      }
+
+    }else{
+      return{
+        totalTime: totalTime,
+        currentTime: currentTime,
+        remainingTime: totalTime - currentTime,
+        playing: !!info.playing,
+        hideInfo: !info.currentTrack,
+        currentTrack: info.currentTrack,
+        currentAlbum: info.currentAlbum
+      }
+
     }
   },
 

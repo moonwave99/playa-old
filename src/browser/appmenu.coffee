@@ -1,5 +1,5 @@
 app = require 'app'
-ipc = require 'ipc'
+ipc = require('electron').ipcMain
 Menu = require 'menu'
 path = require 'path'
 

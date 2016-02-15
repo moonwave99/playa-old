@@ -168,6 +168,15 @@ module.exports = class AlbumPlaylist{
       tracklist: this.getFileList() || []
     }
   }
+  serializeForRemote(){
+    return {
+      id: this.id,
+      title: this.title,
+      albums: this.getItems().map( (album) => {
+        return album.serializeForRemote()
+      })
+    }
+  }
   _process(results, opts={}){
     var processedAlbums = _(results)
       .groupBy( r => path.dirname( r.isFulfilled() ? r.value().filename : r.reason() ))

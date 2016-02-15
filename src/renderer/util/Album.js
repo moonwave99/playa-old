@@ -63,4 +63,14 @@ module.exports = class Album{
   getFolder(){
     return this._folder
   }
+  serializeForRemote(){
+    return {
+      id: this.id,
+      disabled: this.disabled,
+      title: this.getTitle(),
+      artist: this.getArtist(),
+      year: this.getYear(),
+      tracks: []
+    }
+  }
 }
