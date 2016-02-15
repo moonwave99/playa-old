@@ -114,7 +114,7 @@ gulp.task('font-awesome', function () {
 });
 
 gulp.task('jshint', () => {
-  return _init(gulp.src(['src/**/*.js', '!src/ui/vendor/**/*.js']))
+  return _init(gulp.src(['src/**/*.js', '!src/ui/vendor/**/*.js', '!src/ui/riot-tags/**/*.js']))
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
     .pipe(jshint.reporter('fail'));
@@ -167,7 +167,7 @@ gulp.task('babel', () => {
   return gulp.src(['./src/**/*.js', './src/**/*.jsx'])
     .pipe(babel({
       presets: ['es2015', 'react'],
-      ignore: 'src/ui/vendor/*',
+      ignore: ['src/ui/vendor/*', 'src/ui/riot-tags/*'],
     }))
     .pipe(gulp.dest(appConfig.buildPath));
 });
