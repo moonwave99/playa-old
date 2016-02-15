@@ -92,7 +92,7 @@ gulp.task('coffee', () => {
 });
 
 gulp.task('css', () => {
-  return merge(['application', 'bootstrap'].map((x)=>{
+  return merge(['application', 'bootstrap', 'remote'].map((x)=>{
     return gulp.src(SRC_DIR + '/styles/' + x + '.styl')
       .pipe(stylus(STYLUSOPTIONS))
       .pipe(autoprefixer({
