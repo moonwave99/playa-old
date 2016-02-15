@@ -252,7 +252,7 @@ module.exports = class Playa
       ipc.send 'remote:start', playa: @
 
   initIPC: ->
-    ipc.on 'sidebar:show', (tabName) =>
+    ipc.on 'sidebar:show', (event, tabName) =>
       switch tabName
         when 'playlists'
           @loadSidebarPlaylists()
@@ -316,7 +316,7 @@ module.exports = class Playa
           trackId:    selectedAlbum.tracks[0].id
           play:       true
 
-    ipc.on 'open:folder', (folder)->
+    ipc.on 'open:folder', (event, folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder:     folder
