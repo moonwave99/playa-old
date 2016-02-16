@@ -5,8 +5,8 @@
 
 $mainColor = #111
 $backgroundColor = #ECECEC
-$playlistTitleHeight = 4rem
-$playbackBarHeight = 4rem
+$playlistTitleHeight = 3rem
+$playbackBarHeight = 6rem
 
 // Apply a natural box layout model to all elements.
 // http://paulirish.com/2012/box-sizing-border-box-ftw/
@@ -33,19 +33,42 @@ a, a:hover, a:visited
 .playback-bar
   text-align center
   height $playbackBarHeight
-  line-height $playbackBarHeight
   position fixed
   bottom 0
   left 0
   right 0
-  background-color rgba($mainColor, .5)
-  button
+  background-color rgba($mainColor, .8)
+  z-index 1010
+  progress
+    width 100%
+    height .25rem
+    line-height .25rem
+    vertical-align top
+    cursor pointer
+    border 0
+    border-radius 0
+    appearance none
     margin 0
     padding 0
-    border 0
+    display block
+    &[value]::-webkit-progress-value
+      background-color white
+  .playback-info
+    margin 0
     color white
-    font-size $playbackBarHeight * .5
-    background-color transparent
+    line-height 2.5rem
+    font-size .9rem
+  .buttons
+    margin 1rem 0
+    button
+      margin 0
+      padding 0
+      border 0
+      color white
+      font-size $playbackBarHeight * .25
+      background-color transparent
+      outline none
+      height 2 * $playbackBarHeight / 3
   .play-icon
     display inline-block
   .pause-icon
@@ -59,12 +82,14 @@ a, a:hover, a:visited
 .playlist
   margin 0
   h2
+    font-size .5 $playlistTitleHeight
     line-height $playlistTitleHeight
     padding 0 .5rem
     margin 0
     border-bottom 1px solid rgba(white, .8)
     background-color rgba($mainColor, .8)
     color white
+    text-align center
   ul
     overflow-y auto
     -webkit-overflow-scrolling touch

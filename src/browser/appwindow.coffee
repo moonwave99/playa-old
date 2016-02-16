@@ -120,6 +120,9 @@ class AppWindow
   gotoAlbum: (data)->
     @window.webContents.send('playlist:gotoAlbum', data)
 
+  seekTo: (data)->
+    @window.webContents.send('playback:seek', data)
+
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')
 

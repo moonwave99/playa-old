@@ -18,31 +18,17 @@ class RemoteController
       playbackInfo: {}
     @serverOpts =
       root: path.join __dirname, '../ui'
+    @staticOpts =
+      index: 'remote.html'
     @window = options.window
 
   isActive: =>
     @started
 
   start: ()=>
-    @app = require('express')()
-    @http = http.createServer @app
-    @io = io @http
-    @io.on 'connection', (socket) =>
-      console.log 'New incoming connection'
-      socket.emit 'data', @data
-      socket.on 'control:playback', (data) =>
-        switch data.action
-          when 'toggle' then @window.togglePlayback()
-          when 'prev' then @window.prevTrack()
-          when 'next' then @window.nextTrack()
-          when 'gotoAlbum' then @window.gotoAlbum data
-
-    @app.use express.static @serverOpts.root
-    @app.get '/remote', (req, res) =>
-      res.sendFile 'remote.html', @serverOpts
-
-    @app.get '/js/:file(*)', (req, res) =>
-      res.sendFile path.resolve __dirname, '../../node_modules/', req.params.file
+    @app = @_initExpress()
+    @http ||= http.createServer @app
+    @io = @_initIO @http
 
     @http.listen @port, =>
       console.info "Remote control listening at: #{@getAddress()}"
@@ -61,3 +47,31 @@ class RemoteController
   update: (data) =>
     _.assign @data, data
     @io.sockets.emit 'data', @data
+
+  _initIO: (server) =>
+    if @io then @io else
+      socketIO = io server
+      socketIO.on 'connection', (socket) =>
+        console.log 'New incoming connection'
+        socket.emit 'data', @data
+        socket.on 'control:playback', (data) =>
+          switch data.action
+            when 'toggle' then @window.togglePlayback()
+            when 'prev' then @window.prevTrack()
+            when 'next' then @window.nextTrack()
+            when 'gotoAlbum' then @window.gotoAlbum data
+            when 'seekTo' then @window.seekTo data
+      socketIO
+
+  _initExpress: =>
+    if @app then @app
+    else
+      app = require('express')()
+      app.use express.static @serverOpts.root, @staticOpts
+      app.get '/', (req, res) =>
+        res.sendFile 'remote.html', @serverOpts
+
+      app.get '/js/:file(*)', (req, res) =>
+        res.sendFile path.resolve __dirname, '../../node_modules/', req.params.file
+
+      app

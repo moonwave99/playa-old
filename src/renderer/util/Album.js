@@ -70,7 +70,7 @@ module.exports = class Album{
       title: this.getTitle(),
       artist: this.getArtist(),
       year: this.getYear(),
-      tracks: []
+      tracks: this.tracks.map( x => x.serializeForRemote() )
     }
   }
 }

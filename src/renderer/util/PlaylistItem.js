@@ -13,4 +13,15 @@ module.exports = class PlaylistItem{
   getDiscNumber(){
     return this.disabled ? 0 : this.metadata.disk.no
   }
+  serializeForRemote(){
+    if(this.disabled){
+      return {}
+    }else{
+      return {
+        id: this.id,
+        title: this.metadata.title,
+        artist: this.metadata.artist
+      }
+    }
+  }
 }

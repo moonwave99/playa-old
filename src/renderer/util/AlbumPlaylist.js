@@ -172,9 +172,7 @@ module.exports = class AlbumPlaylist{
     return {
       id: this.id,
       title: this.title,
-      albums: this.getItems().map( (album) => {
-        return album.serializeForRemote()
-      })
+      albums: this.getItems().map( (album) => album.serializeForRemote() )
     }
   }
   _process(results, opts={}){
