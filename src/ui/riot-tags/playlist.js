@@ -19,7 +19,7 @@
       onclick={this.onProgressClick.bind(this)}
       data-action="seekTo">
     </progress>
-    <p class="playback-info">{ this.currentTrack.artist + ' - ' + this.currentTrack.title }</p>
+    <p class="playback-info">{ this.currentTrack.artist ? (this.currentTrack.artist + ' - ' + this.currentTrack.title) : '' }</p>
   </section>
 
   <section class="playlist">
@@ -48,7 +48,7 @@
       this.update({
         playbackInfo: data.playbackInfo,
         playlist: data.playlist,
-        albums: data.playlist.albums || [],
+        albums: _.where(data.playlist.albums || [], { disabled: false }),
         currentAlbum: currentAlbum,
         currentTrack: currentTrack
       })
