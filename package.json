@@ -67,7 +67,7 @@
     "season": "^1.0.2",
     "semver": "2.2.1",
     "socket.io": "^1.4.5",
-    "tcomb-form": "^0.6.3",
+    "tcomb-form": "^0.8.1",
     "uid": "0.0.2",
     "underscore-plus": "^1.6.1",
     "vm-compatibility-layer": "0.1.0",

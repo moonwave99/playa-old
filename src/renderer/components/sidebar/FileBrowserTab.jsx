@@ -69,7 +69,6 @@ var FileBrowserTab = React.createClass({
           handleContextMenu={this.handleContextMenu}
           handleOpen={this.handleOpen}
           handleClose={this.handleClose}
-          handleContextMenu={this.handleContextMenu}
           isFocused={this.props.isFocused}
           tree={this.state.fileTree}/>
       </div>
