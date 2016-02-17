@@ -6,7 +6,7 @@
 $mainColor = #111
 $backgroundColor = #ECECEC
 $playlistTitleHeight = 3 * $baseFontSize
-$playbackBarHeight = 6 * $baseFontSize
+$playbackBarHeight = 9 * $baseFontSize
 $playlistAlbumHeight = 4 * $baseFontSize
 $albumDetailCoverWidth = 8 * $baseFontSize
 
@@ -25,45 +25,156 @@ body
   width 100vw
   height 100vh
   backface-visibility hidden
+  overflow hidden
 
 a, a:hover, a:visited
   color black
   text-decoration underline
 
 .remote-controller
-  position relative
-  .panel
-    width 100vw
-    position absolute
-    top 0
-    left 0
-    transition transform .4s ease-in-out
-    transform translateX(0)
-    .header
-      font-size .333333333333 * $playlistTitleHeight
-      line-height $playlistTitleHeight
-      padding 0 .5rem
-      margin 0
-      border-bottom 1px solid rgba(white, .8)
-      background-color rgba($mainColor, 1)
-      color white
-      text-align center
-      display block
-      ellipsed()
   &.show-album
-    .playlist
-      transform translateX(-100%)
-    .album-detail
+    .panel-wrapper
+      .panel
+        &.playlist
+          transform translateX(-100%)
+        &.album-detail
+          transform translateX(0)
+    .playback-bar
+      .footer
+        &.playlist-title
+          display none
+        &.back-button
+          display block
+  .panel-wrapper
+    overflow-x hidden
+    overflow-y auto
+    -webkit-overflow-scrolling touch
+    height "calc(100vh - %s)" % ($playbackBarHeight)
+    position relative
+    .panel
+      width 100vw
+      position absolute
+      top 0
+      left 0
+      transition transform .4s ease-in-out
       transform translateX(0)
+
+      &.playlist
+        margin 0
+        transform translateX(0)
+        ul
+          padding 0
+          margin 0
+          li
+            position relative
+            padding-top .5rem
+            padding-bottom .5rem
+            padding-left .5rem
+            line-height 1.5rem
+            height $playlistAlbumHeight
+            box-shadow inset 0 -1px rgba(white, .8)
+            transition background-color .2s ease-in-out
+            &:hover
+              cursor pointer
+              background-color darken($backgroundColor, 10%)
+            &.playing
+              background-color lighten($backgroundColor, 100%)
+              .playing-icon
+                display inline-block
+            .playing-icon
+              display none
+            .artist
+            .title
+              display block
+              margin 0 $playlistAlbumHeight
+              ellipsed()
+              &.title
+                font-weight bold
+            .year
+              position absolute
+              top 1.25rem
+              right .5rem
+              font-weight 300
+            .cover
+              display block
+              position absolute
+              background-color rgba($mainColor, .1)
+              top 0
+              left 0
+              width $playlistAlbumHeight
+              height $playlistAlbumHeight
+              img
+                width 100%
+                opacity 1
+                transition opacity .3s ease-in-out
+              &:hover
+                img
+                  opacity .8
+
+      &.album-detail
+        transform translateX(100%)
+        h2
+          font-weight normal
+          line-height 2rem
+          padding .5rem
+          margin 1rem
+          position relative
+          height $albumDetailCoverWidth
+          .artist
+          .title
+          .year
+            display block
+            margin-left $albumDetailCoverWidth * 1.1
+            ellipsed()
+            &.title
+              font-weight bold
+            &.year
+              margin-top 1rem
+              font-weight 300
+          .cover
+            box-shadow 0 0 .25rem 0 rgba(0,0,0,0.75)
+            position absolute
+            top 0
+            left 0
+            height $albumDetailCoverWidth
+            max-width $albumDetailCoverWidth
+        ol
+          margin 0
+          padding 0
+          li
+            line-height 2rem
+            font-size .9rem
+            cursor pointer
+            &:nth-child(odd)
+              background-color rgba($mainColor, .1)
+            .playing-icon
+              visibility hidden
+              margin-left .5rem
+            &.playing
+              background-color lighten($backgroundColor, 100%)
+              .playing-icon
+                visibility visible
+            .track-title
+              ellipsed()
+            .track-number
+              display inline-block
+              width 1.5rem
+              text-align right
+              margin-right .5rem
+              &:after
+                content '.'
+            .track-duration
+              float right
+              margin-right .5rem
+              font-size .8rem
+
   .playback-bar
     text-align center
     height $playbackBarHeight
-    position fixed
-    bottom 0
-    left 0
-    right 0
+    width 100vw
     background-color rgba($mainColor, .9)
     z-index 1010
+    padding-top 1rem
     progress
       width 100%
       height .25rem
@@ -81,10 +192,11 @@ a, a:hover, a:visited
     .playback-info
       margin 0
       color white
+      min-height 2.5rem
       line-height 2.5rem
       font-size .9rem
     .buttons
-      margin 1rem 0
+      margin 0 0 1rem 0
       button
         margin 0
         padding 0
@@ -94,6 +206,18 @@ a, a:hover, a:visited
         background-color transparent
         outline none
         height 2 * $playbackBarHeight / 3
+    .footer
+      font-size .333333333333 * $playlistTitleHeight
+      padding 0 .5rem
+      margin 0
+      color white
+      text-align center
+      display block
+      ellipsed()
+      &.playlist-title
+        display block
+      &.back-button
+        display none
     .play-icon
       display inline-block
     .pause-icon
@@ -103,100 +227,3 @@ a, a:hover, a:visited
         display none
       .pause-icon
         display inline-block
-
-  .playlist
-    margin 0
-    transform translateX(0)
-    ul
-      overflow-y auto
-      -webkit-overflow-scrolling touch
-      height "calc(100vh - %s)" % $playlistTitleHeight
-      padding-bottom $playbackBarHeight
-      li
-        position relative
-        padding-top .5rem
-        padding-bottom .5rem
-        padding-left .5rem
-        line-height 1.5rem
-        height $playlistAlbumHeight
-        box-shadow inset 0 -1px rgba(white, .8)
-        transition background-color .2s ease-in-out
-        &:hover
-          cursor pointer
-          background-color darken($backgroundColor, 10%)
-        &.playing
-          background-color lighten($backgroundColor, 100%)
-        .artist
-        .title
-          display block
-          margin 0 $playlistAlbumHeight
-          ellipsed()
-          &.title
-            font-weight bold
-        .year
-          position absolute
-          top 1.25rem
-          right .5rem
-        .cover
-          display block
-          position absolute
-          background-color rgba($mainColor, .1)
-          top 0
-          left 0
-          width $playlistAlbumHeight
-          height $playlistAlbumHeight
-          img
-            width 100%
-            opacity 1
-            transition opacity .3s ease-in-out
-          &:hover
-            img
-              opacity .8
-
-  .album-detail
-    transform translateX(100%)
-    h2
-      font-weight normal
-      line-height 2rem
-      padding .5rem
-      margin 1rem
-      position relative
-      height $albumDetailCoverWidth
-      .artist
-      .title
-      .year
-        display block
-        margin-left $albumDetailCoverWidth * 1.1
-        ellipsed()
-        &.title
-          font-weight bold
-        &.year
-          margin-top 1rem
-      .cover
-        box-shadow 0 0 .25rem 0 rgba(0,0,0,0.75)
-        position absolute
-        top 0
-        left 0
-        width $albumDetailCoverWidth
-
-    ol
-      margin 0
-      padding 0
-      li
-        line-height 2rem
-        font-size .9rem
-        &:nth-child(odd)
-          background-color rgba($mainColor, .1)
-        .track-title
-          ellipsed()
-        .track-number
-          display inline-block
-          width 2rem
-          text-align right
-          margin-right .5rem
-          &:after
-            content '.'
-        .track-duration
-          float right
-          margin-right .5rem
-          font-size .8rem
