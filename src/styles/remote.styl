@@ -5,11 +5,11 @@
 
 $mainColor = #111
 $backgroundColor = #ECECEC
-$playlistTitleHeight = 3rem
-$playbackBarHeight = 6rem
+$playlistTitleHeight = 3 * $baseFontSize
+$playbackBarHeight = 6 * $baseFontSize
+$playlistAlbumHeight = 4 * $baseFontSize
+$albumDetailCoverWidth = 8 * $baseFontSize
 
-// Apply a natural box layout model to all elements.
-// http://paulirish.com/2012/box-sizing-border-box-ftw/
 html
   box-sizing border-box
   overflow hidden
@@ -30,90 +30,173 @@ a, a:hover, a:visited
   color black
   text-decoration underline
 
-.playback-bar
-  text-align center
-  height $playbackBarHeight
-  position fixed
-  bottom 0
-  left 0
-  right 0
-  background-color rgba($mainColor, .9)
-  z-index 1010
-  progress
-    width 100%
-    height .25rem
-    line-height .25rem
-    vertical-align top
-    cursor pointer
-    border 0
-    border-radius 0
-    appearance none
-    margin 0
-    padding 0
-    display block
-    &[value]::-webkit-progress-value
-      background-color white
-  .playback-info
-    margin 0
-    color white
-    line-height 2.5rem
-    font-size .9rem
-  .buttons
-    margin 1rem 0
-    button
+.remote-controller
+  position relative
+  .panel
+    width 100vw
+    position absolute
+    top 0
+    left 0
+    transition transform .4s ease-in-out
+    transform translateX(0)
+    .header
+      font-size .333333333333 * $playlistTitleHeight
+      line-height $playlistTitleHeight
+      padding 0 .5rem
+      margin 0
+      border-bottom 1px solid rgba(white, .8)
+      background-color rgba($mainColor, 1)
+      color white
+      text-align center
+      display block
+      ellipsed()
+  &.show-album
+    .playlist
+      transform translateX(-100%)
+    .album-detail
+      transform translateX(0)
+  .playback-bar
+    text-align center
+    height $playbackBarHeight
+    position fixed
+    bottom 0
+    left 0
+    right 0
+    background-color rgba($mainColor, .9)
+    z-index 1010
+    progress
+      width 100%
+      height .25rem
+      line-height .25rem
+      vertical-align top
+      cursor pointer
+      border 0
+      border-radius 0
+      appearance none
       margin 0
       padding 0
-      border 0
+      display block
+      &[value]::-webkit-progress-value
+        background-color white
+    .playback-info
+      margin 0
       color white
-      font-size $playbackBarHeight * .25
-      background-color transparent
-      outline none
-      height 2 * $playbackBarHeight / 3
-  .play-icon
-    display inline-block
-  .pause-icon
-    display none
-  &.playing
+      line-height 2.5rem
+      font-size .9rem
+    .buttons
+      margin 1rem 0
+      button
+        margin 0
+        padding 0
+        border 0
+        color white
+        font-size $playbackBarHeight * .25
+        background-color transparent
+        outline none
+        height 2 * $playbackBarHeight / 3
     .play-icon
-      display none
-    .pause-icon
       display inline-block
+    .pause-icon
+      display none
+    &.playing
+      .play-icon
+        display none
+      .pause-icon
+        display inline-block
 
-.playlist
-  margin 0
-  h2
-    font-size .5 $playlistTitleHeight
-    line-height $playlistTitleHeight
-    padding 0 .5rem
+  .playlist
     margin 0
-    border-bottom 1px solid rgba(white, .8)
-    background-color rgba($mainColor, 1)
-    color white
-    text-align center
-  ul
-    overflow-y auto
-    -webkit-overflow-scrolling touch
-    height "calc(100vh - %s)" % $playlistTitleHeight
-    padding-bottom $playbackBarHeight
-    li
+    transform translateX(0)
+    ul
+      overflow-y auto
+      -webkit-overflow-scrolling touch
+      height "calc(100vh - %s)" % $playlistTitleHeight
+      padding-bottom $playbackBarHeight
+      li
+        position relative
+        padding-top .5rem
+        padding-bottom .5rem
+        padding-left .5rem
+        line-height 1.5rem
+        height $playlistAlbumHeight
+        box-shadow inset 0 -1px rgba(white, .8)
+        transition background-color .2s ease-in-out
+        &:hover
+          cursor pointer
+          background-color darken($backgroundColor, 10%)
+        &.playing
+          background-color lighten($backgroundColor, 100%)
+        .artist
+        .title
+          display block
+          margin 0 $playlistAlbumHeight
+          ellipsed()
+          &.title
+            font-weight bold
+        .year
+          position absolute
+          top 1.25rem
+          right .5rem
+        .cover
+          display block
+          position absolute
+          background-color rgba($mainColor, .1)
+          top 0
+          left 0
+          width $playlistAlbumHeight
+          height $playlistAlbumHeight
+          img
+            width 100%
+            opacity 1
+            transition opacity .3s ease-in-out
+          &:hover
+            img
+              opacity .8
+
+  .album-detail
+    transform translateX(100%)
+    h2
+      font-weight normal
+      line-height 2rem
+      padding .5rem
+      margin 1rem
       position relative
-      padding-top .5rem
-      padding-bottom .5rem
-      padding-left .5rem
-      line-height 1.5rem
-      box-shadow inset 0 -1px rgba(white, .8)
-      transition background-color .2s ease-in-out
-      &:hover
-        cursor pointer
-        background-color darken($backgroundColor, 20%)
-      &.playing
-        background-color lighten($backgroundColor, 100%)
-      .author
+      height $albumDetailCoverWidth
+      .artist
       .title
+      .year
         display block
+        margin-left $albumDetailCoverWidth * 1.1
+        ellipsed()
         &.title
           font-weight bold
-      .year
+        &.year
+          margin-top 1rem
+      .cover
+        box-shadow 0 0 .25rem 0 rgba(0,0,0,0.75)
         position absolute
-        top 1.25rem
-        right .5rem
+        top 0
+        left 0
+        width $albumDetailCoverWidth
+
+    ol
+      margin 0
+      padding 0
+      li
+        line-height 2rem
+        font-size .9rem
+        &:nth-child(odd)
+          background-color rgba($mainColor, .1)
+        .track-title
+          ellipsed()
+        .track-number
+          display inline-block
+          width 2rem
+          text-align right
+          margin-right .5rem
+          &:after
+            content '.'
+        .track-duration
+          float right
+          margin-right .5rem
+          font-size .8rem

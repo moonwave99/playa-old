@@ -6,6 +6,7 @@ ipc                         = require('electron').ipcRenderer
 path                        = require 'path'
 React                       = require 'react'
 ReactDOM                    = require 'react-dom'
+moment                      = require 'moment'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
@@ -33,6 +34,8 @@ OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
 SettingsBag                 = require './SettingsBag'
 
+require 'moment-duration-format'
+
 _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   KeyboardNameSpaceConstants.FILE_BROWSER,
@@ -50,7 +53,8 @@ module.exports = class Playa
       readOnly: true
       data:
         userDataFolder:     options.userDataFolder
-        playlistRoot:       path.join options.userDataFolder, 'Playlists'
+        fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
+        playlistRoot:       path.join options.userDataFolder, @getSetting 'config', 'playlistFolderName'
         fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
         playlistExtension:  '.yml'
         useragent:          "playa/v#{@getSetting 'config', 'version'}"
@@ -58,9 +62,9 @@ module.exports = class Playa
           percent:  0.5
           absolute: 4 * 60
         storeFolders:
-          covers:     'Covers'
-          waveforms:  'Waveforms'
-          playlists:  'Playlists'
+          covers:     @getSetting 'config', 'coverFolderName'
+          waveforms:  @getSetting 'config', 'waveformFolderName'
+          playlists:  @getSetting 'config', 'playlistFolderName'
 
     @settings.session = new SettingsBag
       data: options.sessionInfo.data
@@ -321,6 +325,19 @@ module.exports = class Playa
           trackId:    selectedAlbum.tracks[0].id
           play:       true
 
+    ipc.on 'playlist:gotoTrack', (event, message) =>
+      selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
+      if !selectedPlaylist then return
+
+      selectedAlbum = selectedPlaylist.getAlbumById message.albumId
+      if selectedAlbum
+        AppDispatcher.dispatch
+          actionType: OpenPlaylistConstants.SELECT_ALBUM
+          playlist:   selectedPlaylist
+          album:      selectedAlbum
+          trackId:    message.trackId
+          play:       true
+
     ipc.on 'open:folder', (event, folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
@@ -366,8 +383,18 @@ module.exports = class Playa
     if playlistPaths.length then @saveSetting 'session', 'openPlaylists', playlistPaths
 
     if selectedPlaylist and @getSetting 'user', 'allowRemote'
-      ipc.send 'remote:update',
-        playlist: selectedPlaylist.serializeForRemote()
+      serialisedPlaylist = selectedPlaylist.serializeForRemote()
+      Promise.all serialisedPlaylist.albums.map (album) =>
+        @coverLoader.load(album).then (cover) =>
+          album.cover = path.basename cover
+          album.tracks = album.tracks.map (track) =>
+            track.formattedDuration = moment.duration(track.duration, 'seconds').format 'mm:ss', trim: false
+            track
+          album
+      .then (albums) ->
+        serialisedPlaylist.albums = albums
+        ipc.send 'remote:update',
+          playlist: serialisedPlaylist
 
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true

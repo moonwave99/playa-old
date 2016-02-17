@@ -31,6 +31,10 @@ class Application
 
     @pkgJson = require '../../package.json'
     @windows = []
+    @configSettings = new SettingsBag
+      data: require '../config/appConfig.js'
+      readOnly: true
+
     @sessionSettings = new SettingsBag
       path: path.join app.getPath('userData'), 'session_settings.json'
     @sessionSettings.load()
@@ -225,6 +229,7 @@ class Application
     @aboutwindow.show()
 
   # Inits remote controller instance
-  initRemoteController: (appWindow)=>
+  initRemoteController: (appWindow) =>
     @remote = new RemoteController
       window: appWindow
+      coverPath: path.join app.getPath('userData'), @configSettings.get 'coverFolderName'

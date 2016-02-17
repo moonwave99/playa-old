@@ -120,6 +120,9 @@ class AppWindow
   gotoAlbum: (data)->
     @window.webContents.send('playlist:gotoAlbum', data)
 
+  gotoTrack: (data)->
+    @window.webContents.send('playlist:gotoTrack', data)
+
   seekTo: (data)->
     @window.webContents.send('playback:seek', data)
 

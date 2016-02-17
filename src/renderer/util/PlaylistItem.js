@@ -20,7 +20,9 @@ module.exports = class PlaylistItem{
       return {
         id: this.id,
         title: this.metadata.title,
-        artist: this.metadata.artist
+        artist: this.metadata.artist,
+        track: this.metadata.track,
+        duration: this.duration
       }
     }
   }

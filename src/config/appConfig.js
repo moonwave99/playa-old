@@ -21,7 +21,10 @@ var defaultSettings = {
   buildPath: 'build',
   releasePath: 'release',
   ffmpegPath: '/usr/local/bin/ffmpeg',
-  ffprobePath: '/usr/local/bin/ffprobe'
+  ffprobePath: '/usr/local/bin/ffprobe',
+  coverFolderName: 'Covers',
+  waveformFolderName: 'Waveforms',
+  playlistFolderName: 'Playlists'
 };
 
 var production = _.extend(_.extend({}, defaultSettings), {

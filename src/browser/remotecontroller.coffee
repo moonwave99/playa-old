@@ -21,6 +21,7 @@ class RemoteController
     @staticOpts =
       index: 'remote.html'
     @window = options.window
+    @coverPath = options.coverPath
 
   isActive: =>
     @started
@@ -60,6 +61,7 @@ class RemoteController
             when 'prev' then @window.prevTrack()
             when 'next' then @window.nextTrack()
             when 'gotoAlbum' then @window.gotoAlbum data
+            when 'gotoTrack' then @window.gotoTrack data
             when 'seekTo' then @window.seekTo data
       socketIO
 
@@ -70,8 +72,8 @@ class RemoteController
       app.use express.static @serverOpts.root, @staticOpts
       app.get '/', (req, res) =>
         res.sendFile 'remote.html', @serverOpts
-
       app.get '/js/:file(*)', (req, res) =>
         res.sendFile path.resolve __dirname, '../../node_modules/', req.params.file
-
+      app.get '/covers/:cover', (req, res) =>
+        res.sendFile path.resolve @coverPath, req.params.cover
       app
