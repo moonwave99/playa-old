@@ -7,6 +7,7 @@ path                        = require 'path'
 React                       = require 'react'
 ReactDOM                    = require 'react-dom'
 moment                      = require 'moment'
+Promise                     = require 'bluebird'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
@@ -384,15 +385,27 @@ module.exports = class Playa
 
     if selectedPlaylist and @getSetting 'user', 'allowRemote'
       serialisedPlaylist = selectedPlaylist.serializeForRemote()
-      Promise.all serialisedPlaylist.albums.map (album) =>
-        @coverLoader.load(album).then (cover) =>
-          album.cover = path.basename cover
-          album.tracks = album.tracks.map (track) =>
-            track.formattedDuration = moment.duration(track.duration, 'seconds').format 'mm:ss', trim: false
-            track
-          album
+      items = selectedPlaylist.getItems disabled: false
+      Promise.settle items.map (album, index) =>
+        if album.disabled
+          Promise.reject 'Album disabled'
+        else
+          _album = serialisedPlaylist.albums[index]
+          @coverLoader.load(album).then (cover) =>
+            _album.cover = path.basename cover
+            _album
+          .catch (e) =>
+            _album.cover = null
+            _album
+          .finally =>
+            _album.tracks = _album.tracks.map (track) =>
+              track.formattedDuration = moment.duration(track.duration, 'seconds').format 'mm:ss', trim: false
+              track
+            _album
+
       .then (albums) ->
-        serialisedPlaylist.albums = albums
+        _albums = albums.filter( (x) -> x.isFulfilled() ).map( (x) -> x.value() )
+        serialisedPlaylist.albums = _albums
         ipc.send 'remote:update',
           playlist: serialisedPlaylist
 
