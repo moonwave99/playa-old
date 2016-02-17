@@ -22,6 +22,7 @@ class RemoteController
       index: 'remote.html'
     @window = options.window
     @coverPath = options.coverPath
+    @dataKeys = ['playbackInfo', 'playlist']
 
   isActive: =>
     @started
@@ -46,15 +47,18 @@ class RemoteController
     "http://192.168.1.3:#{@port}"
 
   update: (data) =>
-    _.assign @data, data
-    @io.sockets.emit 'data', @data
+    @dataKeys.forEach (key) =>
+      if data[key]
+        @data[key] = data[key]
+        @io.sockets.emit key, @data[key]
 
   _initIO: (server) =>
     if @io then @io else
       socketIO = io server
       socketIO.on 'connection', (socket) =>
         console.log 'New incoming connection'
-        socket.emit 'data', @data
+        ['playbackInfo', 'playlist'].forEach (key) =>
+          socket.emit key, @data[key]
         socket.on 'control:playback', (data) =>
           switch data.action
             when 'toggle' then @window.togglePlayback()

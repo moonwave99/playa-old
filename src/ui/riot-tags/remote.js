@@ -76,13 +76,17 @@
     this.shownAlbum = {}
     this.showAlbum = false
 
-    this.socket.on('data', function(data){
-      var currentAlbum = _.findWhere(data.playlist.albums, { id: data.playbackInfo.currentAlbumID }) || {}
-      var currentTrack = _.findWhere(currentAlbum.tracks || [], { id: data.playbackInfo.currentTrackID }) || {}
+    this.socket.on('playlist', function(playlist){
       this.update({
-        playbackInfo: data.playbackInfo,
-        playlist: data.playlist,
-        albums: _.where(data.playlist.albums || [], { disabled: false }),
+        playlist: playlist
+      })
+    }.bind(this))
+
+    this.socket.on('playbackInfo', function(playbackInfo){
+      var currentAlbum = _.findWhere(this.playlist.albums, { id: playbackInfo.currentAlbumID }) || {}
+      var currentTrack = _.findWhere(currentAlbum.tracks || [], { id: playbackInfo.currentTrackID }) || {}
+      this.update({
+        playbackInfo: playbackInfo,
         currentAlbum: currentAlbum,
         currentTrack: currentTrack
       })
@@ -106,7 +110,7 @@
     this.onAlbumClick = function(event){
       event.preventDefault()
       this.showAlbum = true
-      this.shownAlbum = _.findWhere(this.albums, { id: event.currentTarget.dataset.id })
+      this.shownAlbum = _.findWhere(this.playlist.albums, { id: event.currentTarget.dataset.id })
     }
 
     this.onProgressClick = function(event){
