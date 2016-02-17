@@ -1,6 +1,8 @@
 _               = require 'lodash'
 path            = require 'path'
 http            = require 'http'
+os              = require 'os'
+Promise         = require 'bluebird'
 express         = require 'express'
 io              = require 'socket.io'
 {EventEmitter}  = require 'events'
@@ -42,9 +44,17 @@ class RemoteController
       console.info 'Remote control stopped.'
     @started = false
 
-  #TODO: check http://stackoverflow.com/a/9542157/1073758
+  #SEE http://stackoverflow.com/a/9542157/1073758
   getAddress: =>
-    "http://192.168.1.3:#{@port}"
+    ifaces = os.networkInterfaces()
+    ipAddress = ''
+    Object.keys(ifaces)
+      .forEach (ifname) ->
+        addresses = ifaces[ifname]
+          .filter (iface) -> 'IPv4' == iface.family && !iface.internal
+          .map (x) -> x.address
+        if addresses.length then ipAddress = addresses[0]
+    "http://#{ipAddress}:#{@port}"
 
   update: (data) =>
     @dataKeys.forEach (key) =>
