@@ -38,8 +38,9 @@ module.exports = class AlbumPlaylist{
   getFileList(){
     return _.flatten(this.items.toArray().map( i => i.tracks.map(t => t.filename) ))
   }
-  getItems(){
-    return this.items.toArray()
+  getItems(opts){
+    let items = this.items.toArray()
+    return opts ? _.where(items, opts) : items
   }
   getLength(){
     return this.items.getLength()
@@ -172,9 +173,7 @@ module.exports = class AlbumPlaylist{
     return {
       id: this.id,
       title: this.title,
-      albums: this.getItems()
-        .filter( (album) => !album.disabled )
-        .map( (album) => album.serializeForRemote() )
+      albums: this.getItems({ disabled: false }).map( (album) => album.serializeForRemote() )
     }
   }
   _process(results, opts={}){
