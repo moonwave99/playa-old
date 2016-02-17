@@ -10,6 +10,9 @@ module.exports = class PlaylistItem{
     this.id = 't_' + md5(this.filename)
     this.disabled = options.disabled
   }
+  formattedTitle(){
+    return this.metadata.artist + ' - ' + this.metadata.title
+  }
   getDiscNumber(){
     return this.disabled ? 0 : this.metadata.disk.no
   }

@@ -2,6 +2,8 @@
 
 var assign = require('object-assign')
 var ipc = require('electron').ipcRenderer
+var moment = require('moment')
+require("moment-duration-format")
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
@@ -21,10 +23,13 @@ var PlayerStore = assign({}, EventEmitter.prototype, {
         totalTime: totalTime,
         currentTime: currentTime,
         remainingTime: totalTime - currentTime,
+        formattedCurrentTime: moment.duration(currentTime, "seconds").format("mm:ss", { trim: false }),
+        formattedRemainingTime: moment.duration(totalTime - currentTime, "seconds").format("mm:ss", { trim: false }),
         playing: !!info.playing,
         hideInfo: !info.currentTrack,
         currentTrackID: info.currentTrack && info.currentTrack.id,
-        currentAlbumID: info.currentAlbum && info.currentAlbum.id
+        currentAlbumID: info.currentAlbum && info.currentAlbum.id,
+        formattedTitle: info.currentTrack && info.currentTrack.formattedTitle()
       }
 
     }else{

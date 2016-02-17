@@ -62,7 +62,11 @@
       onclick={this.onProgressClick.bind(this)}
       data-action="seekTo">
     </progress>
-    <p class="playback-info">{ this.currentTrack.artist ? (this.currentTrack.artist + ' - ' + this.currentTrack.title) : '' }</p>
+    <p class="playback-info">
+      <span class="time-progress">{ this.playbackInfo.formattedCurrentTime }</span>
+      <span class="current-track">{ this.playbackInfo.formattedTitle }</span>
+      <span class="time-remaining">{ this.playbackInfo.formattedRemainingTime }</span>
+    </p>
     <div class="footer playlist-title">
       <i class="fa fa-fw fa-file-audio-o"></i> { this.playlist.title }
     </div>
