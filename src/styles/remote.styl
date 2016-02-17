@@ -3,8 +3,6 @@
 @import '_mixins'
 @import '_typography'
 
-$mainColor = #111
-$backgroundColor = #ECECEC
 $playlistTitleHeight = 3 * $baseFontSize
 $playbackBarHeight = 9 * $baseFontSize
 $playlistAlbumHeight = 4 * $baseFontSize
@@ -72,13 +70,18 @@ a, a:hover, a:visited
             padding-left .5rem
             line-height 1.5rem
             height $playlistAlbumHeight
-            box-shadow inset 0 -1px rgba(white, .8)
+            box-shadow inset 0 -1px rgba($mainColor, .1)
             transition background-color .2s ease-in-out
+            &:first-child
+              box-shadow inset 0 -1px rgba($mainColor, .1), inset 0 1px rgba($mainColor, .1)
             &:hover
               cursor pointer
               background-color darken($backgroundColor, 10%)
             &.playing
-              background-color lighten($backgroundColor, 100%)
+              background-color lighten($backgroundColor, 90%)
+              color black
+              .artist
+                color black
               .playing-icon
                 display inline-block
             .playing-icon
@@ -88,13 +91,16 @@ a, a:hover, a:visited
               display block
               margin 0 $playlistAlbumHeight
               ellipsed()
-              &.title
-                font-weight bold
+            .artist
+              color $albumArtistColor
+            .title
+              font-weight bold
             .year
               position absolute
               top 1.25rem
               right .5rem
               font-weight 300
+              color $albumArtistColor
             .cover
               display block
               position absolute
@@ -107,9 +113,28 @@ a, a:hover, a:visited
                 width 100%
                 opacity 1
                 transition opacity .3s ease-in-out
+              &:after
+                content '►'
+                display block
+                background-color rgba(black, .5)
+                position absolute
+                top 0
+                left 0
+                right 0
+                bottom 0
+                transition transform .3s ease-in-out
+                transform translateX(-100%)
+                color white
+                text-align center
+                font-size 1.5rem
+                vertical-align middle
+                line-height $playlistAlbumHeight
               &:hover
                 img
                   opacity .8
+                &:after
+                  transform translateX(0)
+
 
       &.album-detail
         transform translateX(100%)
@@ -132,7 +157,7 @@ a, a:hover, a:visited
               margin-top 1rem
               font-weight 300
           .cover
-            box-shadow 0 0 .25rem 0 rgba(0,0,0,0.75)
+            box-shadow 0 0 .125rem 0 rgba($mainColor, .25)
             position absolute
             top 0
             left 0
@@ -146,12 +171,13 @@ a, a:hover, a:visited
             font-size .9rem
             cursor pointer
             &:nth-child(odd)
-              background-color rgba($mainColor, .1)
+              background-color lighten($backgroundColor, 2%)
             .playing-icon
               visibility hidden
               margin-left .5rem
             &.playing
               background-color lighten($backgroundColor, 100%)
+              color black
               .playing-icon
                 visibility visible
             .track-title
@@ -172,7 +198,7 @@ a, a:hover, a:visited
     text-align center
     height $playbackBarHeight
     width 100vw
-    background-color rgba($mainColor, .9)
+    background-color lighten($backgroundColor, 5%)
     z-index 1010
     padding-top 1rem
     progress
@@ -202,10 +228,10 @@ a, a:hover, a:visited
         padding 0
         border 0
         color white
-        font-size $playbackBarHeight * .25
+        font-size $playbackBarHeight * .2
         background-color transparent
         outline none
-        height 2 * $playbackBarHeight / 3
+        height $playbackBarHeight * .25
     .footer
       font-size .333333333333 * $playlistTitleHeight
       padding 0 .5rem
