@@ -2,9 +2,7 @@
 
 var _ = require('lodash')
 var path = require('path')
-
-var _variousArtistThreshold = 5
-var _variousArtistsLabel = 'Various Artists'
+var AlbumConstants = require('../constants/AlbumConstants')
 
 module.exports = class Album{
   constructor(options){
@@ -16,11 +14,11 @@ module.exports = class Album{
       this._artists = []
       return
     }
-    this._title = _.find(this.tracks, t => t.metadata.album).metadata.album || '_noalbum'
-    this._year = _.find(this.tracks, t => t.metadata.year).metadata.year
+    this._title = _.find(this.tracks, t => t.metadata.album).metadata.album || AlbumConstants.NO_ALBUM
+    this._year = +_.find(this.tracks, t => t.metadata.year).metadata.year
     this._artists = _(this.tracks.map( t => t.metadata.artist)).uniq( a => a ? a.toLowerCase() : null ).compact().value()
     this._isCompilation = (this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i))
-      || this._artists.length > _variousArtistThreshold
+      || this._artists.length > AlbumConstants.VARIOUS_ARTISTS_THRESHOLD
     this._isSplit = this._artists.length > 1 && !this._isCompilation
     this._isMultiple = _.uniq(this.tracks.map( t => t.getDiscNumber() )).length > 1
   }
@@ -31,10 +29,10 @@ module.exports = class Album{
     return _.findWhere(this.tracks, { id: id })
   }
   isCompilation(){
-    return this._isCompilation
+    return !!this._isCompilation
   }
   isMultiple(){
-    return this._isMultiple
+    return !!this._isMultiple
   }
   getTitle(){
     return this._title
@@ -43,7 +41,7 @@ module.exports = class Album{
     return this._artists.length
   }
   getArtist(){
-    return this._isCompilation ? _variousArtistsLabel : this._artists.join(', ')
+    return this._isCompilation ? AlbumConstants.VARIOUS_ARTISTS_LABEL : this._artists.join(', ')
   }
   getYear(){
     return this._year
@@ -55,7 +53,7 @@ module.exports = class Album{
         memo.totalTime += track.duration
       }
       return memo
-    }, { tracks: 0, totalTime: 0})
+    }, { tracks: 0, totalTime: 0 })
   }
   missingTracksCount(){
     return this.tracks.filter( t => t.disabled ).length
