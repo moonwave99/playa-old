@@ -26,19 +26,13 @@ As I haven't found a way to pack it with the app itself yet, you have to install
 
     $ brew install libgroove
 
-Then either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually (warning: it takes ages, because it has to build the whole Electron):
+Then either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually:
 
-    // NOTE: you should run everything w/ node 0.10.36, nvm is your friend
-    $ script/bootstrap
-    $ script/build
-    // take a coffee, or better watch an episode of your favourite series...
-    // ...
-    // [it really takes a while, consider running w/ --verbose]
-    // ...
-    // ... et voilá, les jeux sont faits!
-    $ script/run
+    // npm i gulp -g, if you do not have gulp installed
+    $ npm install
+    $ gulp release
 
-I know there are [prebuilt Electron packages](https://github.com/mafintosh/electron-prebuilt), but you cannot brand your app with custom name / icon that way.
+You'll find built app in the `/release` folder.
 
 ---
 

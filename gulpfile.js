@@ -24,7 +24,6 @@ require('gulp-task-list')(gulp);
 const SRC_DIR = 'src';
 const DOCS_DIR = 'docs';
 const RELEASE_IGNORE_PKGS = [ //any npm packages that should not be included in the release
-  "bower",
   "electron-packager",
   "electron-prebuilt",
   "fontcustom",
@@ -107,6 +106,11 @@ gulp.task('fonts', function () {
   return gulp.src('./fonts.list')
     .pipe(googleWebFonts({}))
     .pipe(gulp.dest('src/ui/fonts'));
+});
+
+gulp.task('font-awesome', function () {
+  return gulp.src('./node_modules/font-awesome/**')
+    .pipe(gulp.dest('src/ui/vendor/font-awesome'));
 });
 
 gulp.task('jshint', () => {
@@ -192,7 +196,7 @@ gulp.task('dev-sym-links', () => {
   });
 });
 
-gulp.task('build', ['clean', 'fonts', 'css', 'coffee', 'dev-sym-links']);
+gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'coffee', 'dev-sym-links']);
 
 gulp.task('watch', () => {
   gulp.watch(SRC_DIR + '/styles/*.styl', ['css']);
