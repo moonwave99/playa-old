@@ -7,7 +7,7 @@ $playlistTitleHeight = 3 * $baseFontSize
 $playbackBarHeight = 10 * $baseFontSize
 $playlistAlbumHeight = 4 * $baseFontSize
 $albumDetailCoverWidth = 8 * $baseFontSize
-$footerHeight = 2.5 * $baseFontSize
+$headerHeight = 2.5 * $baseFontSize
 
 html
   box-sizing border-box
@@ -31,6 +31,19 @@ a, a:hover, a:visited
   text-decoration underline
 
 .remote-controller
+  .load-icon
+    display none
+    color $playlistLoaderColor
+    font-size size($playlistLoaderSize)
+    pointer-events none
+  &.loading
+    .load-icon
+      display block
+      position absolute
+      top 'calc(%s - %s - %s)' % ( 50vh 0.5 * $playbackBarHeight size(0.5 * $playlistLoaderSize) )
+      left 'calc(50% - %s)' % size($playlistLoaderSize / 2)
+    .panel-wrapper
+      opacity 0
   &.show-album
     .panel-wrapper
       .panel
@@ -38,15 +51,50 @@ a, a:hover, a:visited
           transform translateX(-100%)
         &.album-detail
           transform translateX(0)
-    .playback-bar
-      .footer
-        &.playlist-title
-          display none
-        &.back-button
-          display block
+    .header
+      &.playlist-title
+        transform translateY(-100%)
+      &.back-button
+        transform translateY(0)
+  .playlist-header
+    ellipsed()
+    height $headerHeight
+    line-height $headerHeight
+    position relative
+  .header
+    font-size .333333333333 * $playlistTitleHeight
+    padding 0 .5rem
+    margin 0
+    color white
+    text-align center
+    display block
+    vertical-align middle
+    background-color lighten($backgroundColor, 10%)
+    transition transform .2s ease-in-out
+    position absolute
+    top 0
+    left 0
+    right 0
+    &.playlist-title
+      transform translateY(0)
+      text-align left
+      label
+        margin 0
+      select
+        background none
+        -webkit-appearance menulist-button
+        height $headerHeight
+        border 0
+        outline none
+        font-size 16px // #SEE http://stackoverflow.com/a/16255670
+        ellipsed()
+    &.back-button
+      transform translateY(100%)
   .panel-wrapper
     position relative
     height "calc(100vh - %s)" % ($playbackBarHeight)
+    opacity 1
+    transition opacity .2s ease-in-out
     .panel
       overflow-x hidden
       overflow-y auto
@@ -245,33 +293,6 @@ a, a:hover, a:visited
         background-color transparent
         outline none
         height $playbackBarHeight * .25
-    .footer
-      font-size .333333333333 * $playlistTitleHeight
-      padding 0 .5rem
-      margin 0
-      color white
-      text-align center
-      display block
-      ellipsed()
-      height $footerHeight
-      line-height $footerHeight
-      vertical-align middle
-      background-color lighten($backgroundColor, 10%)
-      &.playlist-title
-        display block
-        text-align left
-        label
-          margin 0
-        select
-          background none
-          -webkit-appearance menulist-button
-          height $footerHeight
-          border 0
-          outline none
-          font-size 16px // #SEE http://stackoverflow.com/a/16255670
-          ellipsed()
-      &.back-button
-        display none
     .play-icon
       display inline-block
     .pause-icon

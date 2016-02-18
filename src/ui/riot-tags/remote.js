@@ -1,4 +1,20 @@
-<remote class="{ remote-controller: true, show-album: this.showAlbum }">
+<remote class="{ remote-controller: true, show-album: this.showAlbum, loading: this.loading }">
+  <i class="fa fa-circle-o-notch fa-spin load-icon"></i>
+
+  <header class="playlist-header">
+    <div class="header playlist-title">
+      <label for="playlist"><i class="fa fa-fw fa-file-audio-o"></i></label>
+      <select id="playlist" onchange={this.onPlaylistChange.bind(this)} data-action="selectPlaylist">
+        <option
+          each={playlist, p in this.playlists }
+          value={ playlist.id }
+          selected={ playlist.id == parent.selectedPlaylist.id }>{ playlist.title }</option>
+      </select>
+    </div>
+    <a href="#" class="header back-button" onclick={this.backToAlbumList.bind(this)}>
+      <i class="fa fa-fw fa-chevron-left"></i> Back to Album List
+    </a>
+  </header>
 
   <div class="panel-wrapper">
     <section class="panel playlist">
@@ -67,18 +83,6 @@
       <span class="current-track">{ this.playbackInfo.formattedTitle }</span>
       <span class="time-remaining">{ this.playbackInfo.formattedRemainingTime }</span>
     </p>
-    <div class="footer playlist-title">
-      <label for="playlist"><i class="fa fa-fw fa-file-audio-o"></i></label>
-      <select id="playlist" onchange={this.onPlaylistChange.bind(this)} data-action="selectPlaylist">
-        <option
-          each={playlist, p in this.playlists }
-          value={ playlist.id }
-          selected={ playlist.id == parent.selectedPlaylist.id }>{ playlist.title }</option>
-      </select>
-    </div>
-    <a href="#" class="footer back-button" onclick={this.backToAlbumList.bind(this)}>
-      <i class="fa fa-fw fa-chevron-left"></i> Back to Album List
-    </a>
   </section>
 
   <script>
@@ -90,6 +94,7 @@
     this.currentAlbum = {}
     this.shownAlbum = {}
     this.showAlbum = false
+    this.loading = true
 
     this.socket.on('playlists', function(playlists){
       this.update({
@@ -99,7 +104,8 @@
 
     this.socket.on('selectedPlaylist', function(selectedPlaylist){
       this.update({
-        selectedPlaylist: selectedPlaylist
+        selectedPlaylist: selectedPlaylist,
+        loading: false
       })
     }.bind(this))
 
@@ -161,6 +167,9 @@
       this.socket.emit('control:playback', {
         action: event.currentTarget.dataset.action,
         playlistId: event.currentTarget.value
+      })
+      this.update({
+        loading: true
       })
     }
 
