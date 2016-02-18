@@ -16,7 +16,8 @@ class RemoteController
     @defaultPort = 1337
     @port = options.port || @defaultPort
     @data =
-      playlist: {}
+      selectedPlaylist: {}
+      playlists: []
       playbackInfo: {}
     @serverOpts =
       root: path.join __dirname, '../ui'
@@ -24,7 +25,6 @@ class RemoteController
       index: 'remote.html'
     @window = options.window
     @coverPath = options.coverPath
-    @dataKeys = ['playbackInfo', 'playlist']
 
   isActive: =>
     @started
@@ -48,7 +48,7 @@ class RemoteController
   getAddress: =>
     ifaces = os.networkInterfaces()
     ipAddress = ''
-    Object.keys(ifaces)
+    Object.keys ifaces
       .forEach (ifname) ->
         addresses = ifaces[ifname]
           .filter (iface) -> 'IPv4' == iface.family && !iface.internal
@@ -57,7 +57,7 @@ class RemoteController
     "http://#{ipAddress}:#{@port}"
 
   update: (data) =>
-    @dataKeys.forEach (key) =>
+    Object.keys(@data).forEach (key) =>
       if data[key]
         @data[key] = data[key]
         @io.sockets.emit key, @data[key]
@@ -67,7 +67,7 @@ class RemoteController
       socketIO = io server
       socketIO.on 'connection', (socket) =>
         console.log 'New incoming connection'
-        ['playbackInfo', 'playlist'].forEach (key) =>
+        Object.keys(@data).forEach (key) =>
           socket.emit key, @data[key]
         socket.on 'control:playback', (data) =>
           switch data.action
@@ -77,6 +77,7 @@ class RemoteController
             when 'gotoAlbum' then @window.gotoAlbum data
             when 'gotoTrack' then @window.gotoTrack data
             when 'seekTo' then @window.seekTo data
+            when 'selectPlaylist' then @window.selectPlaylist data
       socketIO
 
   _initExpress: =>

@@ -4,7 +4,7 @@
     <section class="panel playlist">
       <ul class="list-unstyled">
         <li
-          each={ album, a in playlist.albums }
+          each={ album, a in selectedPlaylist.albums }
           class={ clearfix: true, disabled: album.disabled, playing: album.id == parent.currentAlbum.id }
           onclick={parent.onAlbumClick.bind(parent)} data-id={album.id}>
           <span class="cover" onclick={parent.onCoverClick.bind(parent)} data-action="gotoAlbum">
@@ -62,13 +62,19 @@
       onclick={this.onProgressClick.bind(this)}
       data-action="seekTo">
     </progress>
-    <p class="playback-info">
+    <p class={playback-info: true, show-info: this.playbackInfo.formattedTitle}>
       <span class="time-progress">{ this.playbackInfo.formattedCurrentTime }</span>
       <span class="current-track">{ this.playbackInfo.formattedTitle }</span>
       <span class="time-remaining">{ this.playbackInfo.formattedRemainingTime }</span>
     </p>
     <div class="footer playlist-title">
-      <i class="fa fa-fw fa-file-audio-o"></i> { this.playlist.title }
+      <label for="playlist"><i class="fa fa-fw fa-file-audio-o"></i></label>
+      <select id="playlist" onchange={this.onPlaylistChange.bind(this)} data-action="selectPlaylist">
+        <option
+          each={playlist, p in this.playlists }
+          value={ playlist.id }
+          selected={ playlist.id == parent.selectedPlaylist.id }>{ playlist.title }</option>
+      </select>
     </div>
     <a href="#" class="footer back-button" onclick={this.backToAlbumList.bind(this)}>
       <i class="fa fa-fw fa-chevron-left"></i> Back to Album List
@@ -77,21 +83,28 @@
 
   <script>
     this.socket = opts.socket
-    this.playlist = {}
+    this.playlists = []
+    this.selectedPlaylist = {}
     this.albums = []
     this.playbackInfo = {}
     this.currentAlbum = {}
     this.shownAlbum = {}
     this.showAlbum = false
 
-    this.socket.on('playlist', function(playlist){
+    this.socket.on('playlists', function(playlists){
       this.update({
-        playlist: playlist
+        playlists: playlists
+      })
+    }.bind(this))
+
+    this.socket.on('selectedPlaylist', function(selectedPlaylist){
+      this.update({
+        selectedPlaylist: selectedPlaylist
       })
     }.bind(this))
 
     this.socket.on('playbackInfo', function(playbackInfo){
-      var currentAlbum = _.findWhere(this.playlist.albums, { id: playbackInfo.currentAlbumID }) || {}
+      var currentAlbum = _.findWhere(this.selectedPlaylist.albums, { id: playbackInfo.currentAlbumID }) || {}
       var currentTrack = _.findWhere(currentAlbum.tracks || [], { id: playbackInfo.currentTrackID }) || {}
       this.update({
         playbackInfo: playbackInfo,
@@ -110,7 +123,7 @@
       event.stopPropagation()
       this.socket.emit('control:playback', {
         action: event.currentTarget.dataset.action,
-        playlistId: this.playlist.id,
+        playlistId: this.selectedPlaylist.id,
         albumId: event.item.album.id
       })
     }
@@ -118,7 +131,7 @@
     this.onAlbumClick = function(event){
       event.preventDefault()
       this.showAlbum = true
-      this.shownAlbum = _.findWhere(this.playlist.albums, { id: event.currentTarget.dataset.id })
+      this.shownAlbum = _.findWhere(this.selectedPlaylist.albums, { id: event.currentTarget.dataset.id })
     }
 
     this.onProgressClick = function(event){
@@ -127,7 +140,7 @@
       var position = (event.clientX - bounds.left) / bounds.width
       this.socket.emit('control:playback', {
         action: event.currentTarget.dataset.action,
-        playlistId: this.playlist.id,
+        playlistId: this.selectedPlaylist.id,
         albumId: event.currentTarget.dataset.id,
         seekTo: position
       })
@@ -137,9 +150,17 @@
       event.preventDefault()
       this.socket.emit('control:playback', {
         action: event.currentTarget.dataset.action,
-        playlistId: this.playlist.id,
+        playlistId: this.selectedPlaylist.id,
         albumId: event.currentTarget.dataset.albumId,
         trackId: event.currentTarget.dataset.id
+      })
+    }
+
+    this.onPlaylistChange = function(event){
+      event.preventDefault()
+      this.socket.emit('control:playback', {
+        action: event.currentTarget.dataset.action,
+        playlistId: event.currentTarget.value
       })
     }
 

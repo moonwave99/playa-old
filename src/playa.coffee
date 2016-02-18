@@ -313,6 +313,11 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
 
+    ipc.on 'playlist:select', (event, params) ->
+      AppDispatcher.dispatch
+        actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID
+        id:         params.playlistId
+
     ipc.on 'playlist:gotoAlbum', (event, message) =>
       selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
       if !selectedPlaylist then return
@@ -381,7 +386,13 @@ module.exports = class Playa
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
-    if playlistPaths.length then @saveSetting 'session', 'openPlaylists', playlistPaths
+    if playlistPaths.length
+      @saveSetting 'session', 'openPlaylists', playlistPaths
+      if @getSetting 'user', 'allowRemote'
+        ipc.send 'remote:update',
+          playlists: playlists.map (x) ->
+            id: x.id
+            title: x.title
 
     if selectedPlaylist and @getSetting 'user', 'allowRemote'
       serialisedPlaylist = selectedPlaylist.serializeForRemote()
@@ -407,7 +418,7 @@ module.exports = class Playa
         _albums = albums.filter( (x) -> x.isFulfilled() ).map( (x) -> x.value() )
         serialisedPlaylist.albums = _albums
         ipc.send 'remote:update',
-          playlist: serialisedPlaylist
+          selectedPlaylist: serialisedPlaylist
 
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true

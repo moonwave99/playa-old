@@ -4,9 +4,10 @@
 @import '_typography'
 
 $playlistTitleHeight = 3 * $baseFontSize
-$playbackBarHeight = 9 * $baseFontSize
+$playbackBarHeight = 10 * $baseFontSize
 $playlistAlbumHeight = 4 * $baseFontSize
 $albumDetailCoverWidth = 8 * $baseFontSize
+$footerHeight = 2.5 * $baseFontSize
 
 html
   box-sizing border-box
@@ -44,12 +45,13 @@ a, a:hover, a:visited
         &.back-button
           display block
   .panel-wrapper
-    overflow-x hidden
-    overflow-y auto
-    -webkit-overflow-scrolling touch
-    height "calc(100vh - %s)" % ($playbackBarHeight)
     position relative
+    height "calc(100vh - %s)" % ($playbackBarHeight)
     .panel
+      overflow-x hidden
+      overflow-y auto
+      -webkit-overflow-scrolling touch
+      height "calc(100vh - %s)" % ($playbackBarHeight)
       width 100vw
       position absolute
       top 0
@@ -221,6 +223,9 @@ a, a:hover, a:visited
       min-height 2.5rem
       line-height 2.5rem
       font-size .9rem
+      visibility hidden
+      &.show-info
+        visibility visible
       .time-progress
         float left
         margin-left .5rem
@@ -248,8 +253,23 @@ a, a:hover, a:visited
       text-align center
       display block
       ellipsed()
+      height $footerHeight
+      line-height $footerHeight
+      vertical-align middle
+      background-color lighten($backgroundColor, 10%)
       &.playlist-title
         display block
+        text-align left
+        label
+          margin 0
+        select
+          background none
+          -webkit-appearance menulist-button
+          height $footerHeight
+          border 0
+          outline none
+          font-size 16px // #SEE http://stackoverflow.com/a/16255670
+          ellipsed()
       &.back-button
         display none
     .play-icon
