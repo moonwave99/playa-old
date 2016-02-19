@@ -192,8 +192,9 @@ class Application
       @sessionSettings.set params.key, params.value
       @sessionSettings.save()
 
-    ipc.on 'remote:start', (event, params={}) =>
-      if !@remote.isActive() then @remote.start(params.playa)
+    ipc.on 'remote:start', (event) =>
+      if !@remote.isActive() then @remote.start()
+      event.returnValue = true
 
     ipc.on 'remote:stop', (event, params) =>
       if @remote.isActive() then @remote.stop()

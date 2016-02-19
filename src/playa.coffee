@@ -253,8 +253,7 @@ module.exports = class Playa
         when 1 then @loadSidebarFileBrowser()
 
   initRemote: =>
-    if @getSetting 'user', 'allowRemote'
-      ipc.send 'remote:start', playa: @
+    if @getSetting 'user', 'allowRemote' then ipc.send 'remote:start'
 
   initIPC: ->
     ipc.on 'sidebar:show', (event, tabName) =>

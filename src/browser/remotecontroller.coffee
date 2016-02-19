@@ -29,7 +29,7 @@ class RemoteController
   isActive: =>
     @started
 
-  start: ()=>
+  start: =>
     @app = @_initExpress()
     @http ||= http.createServer @app
     @io = @_initIO @http
