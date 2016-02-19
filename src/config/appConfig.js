@@ -1,7 +1,7 @@
 /* =========================================================================
  * Dependencies
  * ========================================================================= */
-var _ = require('underscore');
+var _ = require('underscore-plus');
 var path = require('path-extra');
 
 var packageJson = require('../../package.json');
