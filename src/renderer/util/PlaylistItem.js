@@ -14,7 +14,7 @@ module.exports = class PlaylistItem{
     return this.metadata.artist + ' - ' + this.metadata.title
   }
   getDiscNumber(){
-    return this.disabled ? 0 : this.metadata.disk.no
+    return this.disabled ? 0 : Math.max(1, +this.metadata.disk.no)
   }
   serializeForRemote(){
     if(this.disabled){

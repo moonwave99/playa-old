@@ -31,7 +31,7 @@ module.exports = class PlaylistLoader {
       }else{
         resolve(this.parse(playlist.path).then((data)=>{
           playlist.hydrate(data)
-          return playlist.load(data.tracklist, opts)
+          return playlist.load(_.uniq(data.tracklist), opts)
         }))
       }
     })

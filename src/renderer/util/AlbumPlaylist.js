@@ -178,7 +178,15 @@ module.exports = class AlbumPlaylist{
   }
   _process(results, opts={}){
     var processedAlbums = _(results)
-      .groupBy( r => path.dirname( r.isFulfilled() ? r.value().filename : r.reason() ))
+      .groupBy( (r) => {
+        if(r.isFulfilled()){
+          let track = r.value()
+          let artist = track.metadata.albumartist.match(/various/i) ? 'Various' : (track.metadata.albumartist ? track.metadata.albumartist : track.metadata.artist)
+          return artist + track.metadata.album;
+        }else{
+          return r.reason()
+        }
+      })
       .map((album, directory)=>{
         var candidateTrack = null
         var tracks = album.map((track, index)=>{
@@ -195,15 +203,19 @@ module.exports = class AlbumPlaylist{
             })
           }
         })
-        return new Album({
+        var _tracks = _(tracks)
+          .sortBy( t => t.getDiscNumber() * 1000 + t.metadata.track )
+          .value()
+        var a =  new Album({
           id: ['a',
             candidateTrack
-              ? md5(candidateTrack.metadata.artist + candidateTrack.metadata.album)
-              : md5(tracks[0].filename)
+              ? md5(path.dirname(candidateTrack.filename) + candidateTrack.metadata.artist + candidateTrack.metadata.album)
+              : md5(path.dirname(tracks[0].filename))
             ].join('_'),
-          tracks: tracks,
+          tracks: _tracks,
           disabled: !candidateTrack
         })
+        return a
       }).value()
 
     if(opts.insertAt){
