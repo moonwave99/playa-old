@@ -117,6 +117,7 @@ module.exports = class Playa
 
     @coverLoader = new CoverLoader
       root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').covers
+      enableLog: @getSetting 'config', 'coverLoaderLog'
       discogs:
         key:      @getSetting 'discogs', 'DISCOGS_KEY'
         secret:   @getSetting 'discogs', 'DISCOGS_SECRET'
@@ -124,6 +125,7 @@ module.exports = class Playa
 
     @waveformLoader = new WaveformLoader
       root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').waveforms
+      enableLog: @getSetting 'config', 'waveformLoaderLog'
       config:
         'wait'              : 300,
         'png-width'         : 1600,

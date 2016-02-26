@@ -107,7 +107,7 @@ module.exports = class CoverLoader {
         if(err){
           reject(err)
         }else{
-          this.log('Saved ' + targetPath + '[' + album.title + ']')
+          this.log('Saved ' + targetPath + ' [' + album.getArtist() + ' - ' + album.getTitle() + ']')
           resolve(targetPath)
         }
       })

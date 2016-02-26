@@ -24,7 +24,9 @@ var defaultSettings = {
   ffprobePath: '/usr/local/bin/ffprobe',
   coverFolderName: 'Covers',
   waveformFolderName: 'Waveforms',
-  playlistFolderName: 'Playlists'
+  playlistFolderName: 'Playlists',
+  coverLoaderLog: false,
+  waveformLoaderLog: false
 };
 
 var production = _.extend(_.extend({}, defaultSettings), {
