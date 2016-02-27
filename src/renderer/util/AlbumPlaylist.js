@@ -182,7 +182,7 @@ module.exports = class AlbumPlaylist{
         if(r.isFulfilled()){
           let track = r.value()
           let artist = track.metadata.albumartist.match(/various/i) ? 'Various' : (track.metadata.albumartist ? track.metadata.albumartist : track.metadata.artist)
-          return artist + track.metadata.album;
+          return (artist + track.metadata.album).toLowerCase();
         }else{
           return r.reason()
         }
@@ -206,7 +206,7 @@ module.exports = class AlbumPlaylist{
         var _tracks = _(tracks)
           .sortBy( t => t.getDiscNumber() * 1000 + t.metadata.track )
           .value()
-        var a =  new Album({
+        return new Album({
           id: ['a',
             candidateTrack
               ? md5(path.dirname(candidateTrack.filename) + candidateTrack.metadata.artist + candidateTrack.metadata.album)
@@ -215,7 +215,6 @@ module.exports = class AlbumPlaylist{
           tracks: _tracks,
           disabled: !candidateTrack
         })
-        return a
       }).value()
 
     if(opts.insertAt){
