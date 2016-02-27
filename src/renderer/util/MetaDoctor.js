@@ -10,7 +10,7 @@ var MetaDoctor = {
         case 'artist':
         case 'albumartist':
           if(_.isArray(value)){
-            value = value.map( a => this.normaliseArtist(a) ).join(', ')
+            value = _(value).map(this.normaliseArtist).uniq().value().join(', ')
           }else{
             value = this.normaliseArtist(value)
           }
@@ -33,7 +33,7 @@ var MetaDoctor = {
   normaliseArtist(artist){
     return artist.match(/, The$/)
       ? artist = 'The ' + artist.replace(/, The$/, '')
-      : artist 
+      : artist
   }
 }
 
