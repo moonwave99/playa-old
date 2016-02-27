@@ -177,6 +177,7 @@ module.exports = class AlbumPlaylist{
     }
   }
   _process(results, opts={}){
+    // #TODO create PlaylistItems here, use _.reduce, _.memoize, ASCII normalisation (#SEE http://stackoverflow.com/questions/286921/efficiently-replace-all-accented-characters-in-a-string )
     var processedAlbums = _(results)
       .groupBy( (r) => {
         if(r.isFulfilled()){
@@ -184,7 +185,7 @@ module.exports = class AlbumPlaylist{
           let artist = track.metadata.albumartist.match(/various/i) ? 'Various' : (track.metadata.albumartist ? track.metadata.albumartist : track.metadata.artist)
           return (artist + track.metadata.album).toLowerCase();
         }else{
-          return r.reason()
+          return path.dirname(r.reason())
         }
       })
       .map((album, directory)=>{
@@ -206,7 +207,7 @@ module.exports = class AlbumPlaylist{
         var _tracks = _(tracks)
           .sortBy( t => t.getDiscNumber() * 1000 + t.metadata.track )
           .value()
-        return new Album({
+        return = new Album({
           id: ['a',
             candidateTrack
               ? md5(path.dirname(candidateTrack.filename) + candidateTrack.metadata.artist + candidateTrack.metadata.album)
