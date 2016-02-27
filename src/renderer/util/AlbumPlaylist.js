@@ -207,7 +207,7 @@ module.exports = class AlbumPlaylist{
         var _tracks = _(tracks)
           .sortBy( t => t.getDiscNumber() * 1000 + t.metadata.track )
           .value()
-        return = new Album({
+        return new Album({
           id: ['a',
             candidateTrack
               ? md5(path.dirname(candidateTrack.filename) + candidateTrack.metadata.artist + candidateTrack.metadata.album)
