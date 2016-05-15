@@ -50,7 +50,6 @@ module.exports = class Playa
       readOnly: true
       data:
         userDataFolder:     options.userDataFolder
-        fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
         playlistRoot:       path.join options.userDataFolder, 'Playlists'
         fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
         playlistExtension:  '.yml'
@@ -81,6 +80,8 @@ module.exports = class Playa
       path: path.join options.userDataFolder, 'user_settings.json'
 
     @settings.user.load()
+    if !@settings.user.get 'fileBrowserRoot'
+      @settings.user.set 'fileBrowserRoot', path.join process.env.HOME, 'Downloads'
 
     ['discogs', 'lastfm'].forEach (x) =>
       @settings[x] = new SettingsBag
@@ -92,8 +93,8 @@ module.exports = class Playa
 
     @fileTree = new FileTree
       fileBrowser:  @fileBrowser
-      rootFolder:   @getSetting 'common', 'fileBrowserRoot'
-      rootName:     path.basename @getSetting 'common', 'fileBrowserRoot'
+      rootFolder:   @getSetting 'user', 'fileBrowserRoot'
+      rootName:     path.basename @getSetting 'user', 'fileBrowserRoot'
       filter:       'directory'
 
     @playlistTree = new FileTree
@@ -217,7 +218,7 @@ module.exports = class Playa
   loadSidebarFileBrowser: =>
     AppDispatcher.dispatch
       actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT
-      folder:     @getSetting 'session', 'fileBrowserRoot'
+      folder:     @getSetting 'user', 'fileBrowserRoot'
 
   selectTab: (tab, tabScopeName) =>
     AppDispatcher.dispatch

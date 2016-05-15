@@ -51,7 +51,7 @@ var Sidebar = React.createClass({
   },
   renderTabs: function(){
     return [
-      <Tabs.Panel title={<i className="fa fa-fw fa-list"></i>} key="playlists">
+      <Tabs.Panel title={<i className="fa fa-fw fa-file-audio-o"></i>} key="playlists">
         <PlaylistBrowserTab
           handleScrollToElement={this.handleScrollToElement}
           isFocused={this.props.isOpen && this.props.selectedTab == 0}/>
