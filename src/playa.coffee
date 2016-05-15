@@ -54,7 +54,6 @@ module.exports = class Playa
       readOnly: true
       data:
         userDataFolder:     options.userDataFolder
-        fileBrowserRoot:    path.join process.env.HOME, 'Downloads'
         playlistRoot:       path.join options.userDataFolder, @getSetting 'config', 'playlistFolderName'
         fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
         playlistExtension:  '.yml'
