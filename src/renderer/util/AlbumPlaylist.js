@@ -60,6 +60,9 @@ module.exports = class AlbumPlaylist{
   getLastPlayedAlbum(){
     return this.getAlbumById(this.lastPlayedAlbumId)
   }
+  find(buffer){
+    return _.find(this.items.toArray(), a => a.getArtist().toLowerCase().startsWith(buffer) || a.getTitle().toLowerCase().startsWith(buffer))
+  }
   getStats(){
     var albums = this.getItems()
     var stats

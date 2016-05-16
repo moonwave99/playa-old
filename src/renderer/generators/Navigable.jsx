@@ -9,10 +9,13 @@ var KeyboardFocusActions = require('../actions/KeyboardFocusActions')
 
 var NavigableConstants = require('../constants/NavigableConstants')
 
-module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds){
+var _alphanumericRegex = new RegExp("^[a-zA-Z0-9\\s]+$")
+
+module.exports = function(Component, scopeName, getIdList, getSelectedElement, getSelectedIds, searchForBuffer){
   getSelectedIds = getSelectedIds || function(component){
     return component.state.selection
   }
+  searchForBuffer = searchForBuffer || function(component, buffer){}
 
   const NavigableComponent = React.createClass({
     propTypes: {
@@ -33,6 +36,9 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     getSelectedIds(){
       return getSelectedIds(this)
     },
+    searchForBuffer(buffer){
+      return searchForBuffer(this, buffer)
+    },
     getInitialState() {
       return {
         selection: this.props.initSelection || [],
@@ -42,9 +48,12 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     },
     componentDidMount() {
       KeyboardFocusStore.addChangeListener(this._onKeyboardFocusChange)
+      this._keyBuffer = ''
+      this._resetBufferTimeout = null
     },
     componentWillUnmount() {
       KeyboardFocusStore.removeChangeListener(this._onKeyboardFocusChange)
+      this._clearBufferTimeout()
     },
     componentDidUpdate(prevProps, prevState){
       this.props.handleScrollToElement(this.state, this.getIdList(), this.refs.component)
@@ -171,6 +180,26 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
         lastAction: NavigableConstants.KEYBOARD_INPUT
       })
     },
+    handleTextKeyPress: function(event){
+      let pressedKey = String.fromCharCode(event.which)
+      if(!_alphanumericRegex.test(pressedKey)){
+        return
+      }
+      this._clearBufferTimeout();
+
+      this._keyBuffer += pressedKey.toLowerCase()
+      this.gotoItemForBuffer(this._keyBuffer)
+      this._scheduleBufferReset()
+    },
+    gotoItemForBuffer(buffer){
+      let result = this.searchForBuffer(buffer)
+      if(!result){
+        return
+      }
+      this.setState({
+        selection: [result]
+      })
+    },
     openElements(ids){
       this.setState({
         openElements: _.uniq(this.state.openElements.concat(ids)),
@@ -190,7 +219,8 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
         'backspace, del'  : this.handleDelKeyPress,
         'enter'           : this.handleEnterKeyPress,
         'command+a'       : this.handleSelectAllKeyPress,
-        'left, right'     : this.handleLeftRightKeyPress
+        'left, right'     : this.handleLeftRightKeyPress,
+        '*'               : this.handleTextKeyPress
       }
       if(this.props.allowMultipleSelection){
         handlers['up, down, shift+up, shift+down, alt+up, alt+down, shift+alt+up, shift+alt+down'] = this.handleArrowKeyPress
@@ -202,8 +232,17 @@ module.exports = function(Component, scopeName, getIdList, getSelectedElement, g
     _onKeyboardFocusChange: function(){
       var currentScopeName = KeyboardFocusStore.getCurrentScopeName()
       if(scopeName == currentScopeName){
+        this._keyBuffer = ''
         KeyboardFocusActions.setFocus(this.getHandlers(), scopeName)
       }
+    },
+    _clearBufferTimeout: function(){
+      if(this._resetBufferTimeout){
+        clearTimeout(this._resetBufferTimeout)
+      }
+    },
+    _scheduleBufferReset: function(){
+      this._resetBufferTimeout = setTimeout( ()=> { this._keyBuffer = '' }, 500)
     }
   })
 

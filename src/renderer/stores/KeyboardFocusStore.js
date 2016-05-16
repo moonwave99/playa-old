@@ -16,13 +16,21 @@ var _handlers = {}
 
 var _bind = function(handlers, scopeName){
   _.map(handlers, (handler, keyMap)=>{
-    key(keyMap, scopeName, handler)
+    if(keyMap == '*'){
+      document.addEventListener('keydown', handler)
+    }else{
+      key(keyMap, scopeName, handler)
+    }
   })
 }
 
 var _unbind = function(handlers, scopeName){
   _.map(handlers, (handler, keyMap)=>{
-    keyMap.split(',').forEach( k => key.unbind(k.trim(), scopeName) )
+    if(keyMap == '*'){
+      document.removeEventListener('keydown', handler)
+    }else{
+      keyMap.split(',').forEach( k => key.unbind(k.trim(), scopeName) )
+    }
   })
 }
 

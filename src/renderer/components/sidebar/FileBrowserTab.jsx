@@ -21,6 +21,11 @@ var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants
   },
   function(component){
     return _.find(component.props.tree, { id: component.state.selection[0] })
+  },
+  null,
+  function(component, buffer){
+    let result = _.find(component.props.tree, x => x.name.toLowerCase().startsWith(buffer)) || {}
+    return result.id
   }
 )
 
