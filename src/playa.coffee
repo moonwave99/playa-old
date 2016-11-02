@@ -2,10 +2,12 @@ _                           = require 'lodash'
 fs                          = require 'fs-extra'
 fsPlus                      = require 'fs-plus'
 md5                         = require 'md5'
-ipc                         = require 'ipc'
+ipc                         = require('electron').ipcRenderer
 path                        = require 'path'
 React                       = require 'react'
 ReactDOM                    = require 'react-dom'
+moment                      = require 'moment'
+Promise                     = require 'bluebird'
 Main                        = require './renderer/components/Main.jsx'
 Player                      = require './renderer/util/Player'
 AlbumPlaylist               = require './renderer/util/AlbumPlaylist'
@@ -33,6 +35,8 @@ OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
 SettingsBag                 = require './SettingsBag'
 
+require 'moment-duration-format'
+
 _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   KeyboardNameSpaceConstants.FILE_BROWSER,
@@ -42,25 +46,25 @@ _tabScopeNames = [
 module.exports = class Playa
   constructor: (options) ->
     @settings = {}
-    @settings.pkg = new SettingsBag
+    @settings.config = new SettingsBag
       readOnly: true
-      data:     require '../package.json'
+      data:     require './config/appConfig'
 
     @settings.common = new SettingsBag
       readOnly: true
       data:
         userDataFolder:     options.userDataFolder
-        playlistRoot:       path.join options.userDataFolder, 'Playlists'
+        playlistRoot:       path.join options.userDataFolder, @getSetting 'config', 'playlistFolderName'
         fileExtensions:     ['mp3', 'm4a', 'flac', 'ogg']
         playlistExtension:  '.yml'
-        useragent:          "playa/v#{@getSetting 'pkg', 'version'}"
+        useragent:          "playa/v#{@getSetting 'config', 'version'}"
         scrobbleThreshold:
           percent:  0.5
           absolute: 4 * 60
         storeFolders:
-          covers:     'Covers'
-          waveforms:  'Waveforms'
-          playlists:  'Playlists'
+          covers:     @getSetting 'config', 'coverFolderName'
+          waveforms:  @getSetting 'config', 'waveformFolderName'
+          playlists:  @getSetting 'config', 'playlistFolderName'
 
     @settings.session = new SettingsBag
       data: options.sessionInfo.data
@@ -112,6 +116,7 @@ module.exports = class Playa
 
     @coverLoader = new CoverLoader
       root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').covers
+      enableLog: @getSetting 'config', 'coverLoaderLog'
       discogs:
         key:      @getSetting 'discogs', 'DISCOGS_KEY'
         secret:   @getSetting 'discogs', 'DISCOGS_SECRET'
@@ -119,6 +124,7 @@ module.exports = class Playa
 
     @waveformLoader = new WaveformLoader
       root: path.join options.userDataFolder, @getSetting('common', 'storeFolders').waveforms
+      enableLog: @getSetting 'config', 'waveformLoaderLog'
       config:
         'wait'              : 300,
         'png-width'         : 1600,
@@ -180,8 +186,10 @@ module.exports = class Playa
       if @getSetting 'user', 'scrobbleEnabled' then @lastFMClient.scrobble(track, after)
 
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
+    PlayerStore.addChangeListener @_onPlayerChange
 
     @initIPC()
+    @initRemote()
     @loadPlaylists()
 
   loadPlaylists: =>
@@ -245,8 +253,11 @@ module.exports = class Playa
         when 0 then @loadSidebarPlaylists()
         when 1 then @loadSidebarFileBrowser()
 
+  initRemote: =>
+    if @getSetting 'user', 'allowRemote' then ipc.send 'remote:start'
+
   initIPC: ->
-    ipc.on 'sidebar:show', (tabName) =>
+    ipc.on 'sidebar:show', (event, tabName) =>
       switch tabName
         when 'playlists'
           @loadSidebarPlaylists()
@@ -270,6 +281,11 @@ module.exports = class Playa
     ipc.on 'playback:toggle', =>
       AppDispatcher.dispatch
         actionType: if @player.playing then PlayerConstants.PAUSE else PlayerConstants.PLAY
+
+    ipc.on 'playback:seek', (event, params) ->
+      AppDispatcher.dispatch
+        actionType: PlayerConstants.SEEK
+        to: params.seekTo
 
     ipc.on 'sidebar:toggle', =>
       @toggleSidebar()
@@ -297,7 +313,38 @@ module.exports = class Playa
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
 
-    ipc.on 'open:folder', (folder)->
+    ipc.on 'playlist:select', (event, params) ->
+      AppDispatcher.dispatch
+        actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID
+        id:         params.playlistId
+
+    ipc.on 'playlist:gotoAlbum', (event, message) =>
+      selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
+      if !selectedPlaylist then return
+
+      selectedAlbum = selectedPlaylist.getAlbumById message.albumId
+      if selectedAlbum
+        AppDispatcher.dispatch
+          actionType: OpenPlaylistConstants.SELECT_ALBUM
+          playlist:   selectedPlaylist
+          album:      selectedAlbum
+          trackId:    selectedAlbum.tracks[0].id
+          play:       true
+
+    ipc.on 'playlist:gotoTrack', (event, message) =>
+      selectedPlaylist  = @openPlaylistManager.getSelectedPlaylist()
+      if !selectedPlaylist then return
+
+      selectedAlbum = selectedPlaylist.getAlbumById message.albumId
+      if selectedAlbum
+        AppDispatcher.dispatch
+          actionType: OpenPlaylistConstants.SELECT_ALBUM
+          playlist:   selectedPlaylist
+          album:      selectedAlbum
+          trackId:    message.trackId
+          play:       true
+
+    ipc.on 'open:folder', (event, folder)->
       AppDispatcher.dispatch
         actionType: OpenPlaylistConstants.ADD_FOLDER
         folder:     folder
@@ -307,7 +354,7 @@ module.exports = class Playa
     @postRender()
 
   postRender: =>
-    console.info "Welcome to Playa v#{@getSetting 'pkg', 'version'}"
+    console.info "Welcome to Playa v#{@getSetting 'config', 'version'}"
     AppDispatcher.dispatch
       actionType: KeyboardFocusConstants.REQUEST_FOCUS
       scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
@@ -339,7 +386,39 @@ module.exports = class Playa
         actionType: KeyboardFocusConstants.REQUEST_FOCUS
         scopeName:  KeyboardNameSpaceConstants.ALBUM_PLAYLIST
 
-    if playlistPaths.length then @saveSetting 'session', 'openPlaylists', playlistPaths
+    if playlistPaths.length
+      @saveSetting 'session', 'openPlaylists', playlistPaths
+      if @getSetting 'user', 'allowRemote'
+        ipc.send 'remote:update',
+          playlists: playlists.map (x) ->
+            id: x.id
+            title: x.title
+
+    if selectedPlaylist and @getSetting 'user', 'allowRemote'
+      serialisedPlaylist = selectedPlaylist.serializeForRemote()
+      items = selectedPlaylist.getItems disabled: false
+      Promise.settle items.map (album, index) =>
+        if album.disabled
+          Promise.reject 'Album disabled'
+        else
+          _album = serialisedPlaylist.albums[index]
+          @coverLoader.load(album).then (cover) =>
+            _album.cover = path.basename cover
+            _album
+          .catch (e) =>
+            _album.cover = null
+            _album
+          .finally =>
+            _album.tracks = _album.tracks.map (track) =>
+              track.formattedDuration = moment.duration(track.duration, 'seconds').format 'mm:ss', trim: false
+              track
+            _album
+
+      .then (albums) ->
+        _albums = albums.filter( (x) -> x.isFulfilled() ).map( (x) -> x.value() )
+        serialisedPlaylist.albums = _albums
+        ipc.send 'remote:update',
+          selectedPlaylist: serialisedPlaylist
 
     if !@firstPlaylistLoad and playlists.length > 0 and selectedPlaylist
       @firstPlaylistLoad = true
@@ -351,3 +430,7 @@ module.exports = class Playa
           album:      selectedAlbum
           trackId:    selectedPlaylist.lastPlayedTrackId
           play:       false
+
+  _onPlayerChange: =>
+    ipc.send 'remote:update',
+      playbackInfo: PlayerStore.getPlaybackInfo remote: true

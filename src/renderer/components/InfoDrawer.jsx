@@ -1,7 +1,7 @@
 "use babel"
 
 var _ = require('lodash')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var path = require('path')
 var React = require('react')
 var ReactPropTypes = React.PropTypes

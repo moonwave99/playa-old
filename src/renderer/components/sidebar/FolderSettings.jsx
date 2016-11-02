@@ -19,7 +19,7 @@ var FolderSettings = React.createClass({
         <h2><i className="fa fa-fw fa-folder-o"></i> Folders</h2>
         <p>Current file browser root: <strong>{ this.props.settings.user.fileBrowserRoot }</strong></p>
         <p>
-          <label htmlFor="fileBrowserRoot" className="btn btn-default btn-block">Change Folder</label>
+          <label htmlFor="fileBrowserRoot" className="btn btn-default btn-sm btn-block"><i className="fa fa-fw fa-folder-open"></i> Change Folder</label>
           <input type="file" onChange={this.handleFolderChange} className="hidden" id="fileBrowserRoot" ref={this.setCustomAttributes}/>
         </p>
       </form>

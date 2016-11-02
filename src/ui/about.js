@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
   document.querySelector('.version').innerHTML = 'Version <strong>' + appConfig.version + '</strong>'
   var links = document.querySelectorAll('a')
   for(var i = 0; i < links.length; i++){
-    links[i].addEventListener('click', function(e){
-      e.preventDefault()
+    links[i].addEventListener('click', function(event){
+      event.preventDefault()
       shell.openExternal(e.target.href)
     })
   }

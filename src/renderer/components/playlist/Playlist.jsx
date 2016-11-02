@@ -39,6 +39,11 @@ var AlbumPlaylistOnSteroids = NavGenerator(AlbumPlaylist, KeyboardNameSpaceConst
         trackId: component.state.selection[0]
       }
     }
+  },
+  null,
+  function(component, buffer){
+    let result = component.props.playlist.find(buffer) || {}
+    return result.id
   }
 )
 

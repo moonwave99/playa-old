@@ -1,7 +1,9 @@
 "use babel";
 
 var assign = require('object-assign')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
+var moment = require('moment')
+require("moment-duration-format")
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')
 var EventEmitter = require('events').EventEmitter
@@ -12,18 +14,35 @@ var CHANGE_EVENT = 'change'
 
 var PlayerStore = assign({}, EventEmitter.prototype, {
 
-  getPlaybackInfo: function(){
+  getPlaybackInfo: function(options={}){
     var info = playa.player.playbackInfo()
     var totalTime = info.currentTrack ? info.currentTrack.duration : 0
     var currentTime = info.position || 0
-    return{
-      totalTime: totalTime,
-      currentTime: currentTime,
-      remainingTime: totalTime - currentTime,
-      playing: !!info.playing,
-      hideInfo: !info.currentTrack,
-      currentTrack: info.currentTrack,
-      currentAlbum: info.currentAlbum
+    if(options.remote){
+      return{
+        totalTime: totalTime,
+        currentTime: currentTime,
+        remainingTime: totalTime - currentTime,
+        formattedCurrentTime: moment.duration(currentTime, "seconds").format("mm:ss", { trim: false }),
+        formattedRemainingTime: moment.duration(totalTime - currentTime, "seconds").format("mm:ss", { trim: false }),
+        playing: !!info.playing,
+        hideInfo: !info.currentTrack,
+        currentTrackID: info.currentTrack && info.currentTrack.id,
+        currentAlbumID: info.currentAlbum && info.currentAlbum.id,
+        formattedTitle: info.currentTrack && info.currentTrack.formattedTitle()
+      }
+
+    }else{
+      return{
+        totalTime: totalTime,
+        currentTime: currentTime,
+        remainingTime: totalTime - currentTime,
+        playing: !!info.playing,
+        hideInfo: !info.currentTrack,
+        currentTrack: info.currentTrack,
+        currentAlbum: info.currentAlbum
+      }
+
     }
   },
 

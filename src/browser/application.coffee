@@ -1,6 +1,6 @@
-Menu = require 'menu'
 BrowserWindow = require 'browser-window'
 app = require 'app'
+Menu = require 'menu'
 fs = require 'fs-plus'
 ipc = require('electron').ipcMain
 path = require 'path'
@@ -18,6 +18,7 @@ AppMenu = require './appmenu'
 AppWindow = require './appwindow'
 AboutWindow = require './aboutwindow'
 SettingsBag = require '../SettingsBag'
+RemoteController = require './remotecontroller'
 
 module.exports =
 class Application
@@ -30,6 +31,10 @@ class Application
 
     @pkgJson = require '../../package.json'
     @windows = []
+    @configSettings = new SettingsBag
+      data: require '../config/appConfig.js'
+      readOnly: true
+
     @sessionSettings = new SettingsBag
       path: path.join app.getPath('userData'), 'session_settings.json'
     @sessionSettings.load()
@@ -40,9 +45,10 @@ class Application
     app.on 'window-all-closed', ->
       app.quit() if process.platform in ['win32', 'linux']
 
-    app.on 'will-quit', ->
+    app.on 'will-quit', =>
       console.log 'Unregistering all global shortcuts...'
       globalShortcut.unregisterAll()
+      if @remote.isActive() then @remote.stop()
 
     @openWithOptions(options)
 
@@ -64,6 +70,7 @@ class Application
 
     newWindow.show()
     @windows.push(newWindow)
+    @initRemoteController newWindow
     newWindow.on 'closed', =>
       @removeAppWindow(newWindow)
 
@@ -185,6 +192,23 @@ class Application
       @sessionSettings.set params.key, params.value
       @sessionSettings.save()
 
+    ipc.on 'remote:start', (event) =>
+      if !@remote.isActive() then @remote.start()
+      event.returnValue = true
+
+    ipc.on 'remote:stop', (event, params) =>
+      if @remote.isActive() then @remote.stop()
+      event.returnValue = true
+
+    ipc.on 'remote:getAddress', (event, params) =>
+      event.returnValue = @remote.getAddress()
+
+    ipc.on 'remote:isActive', (event, params) =>
+      event.returnValue = @remote.isActive()
+
+    ipc.on 'remote:update', (event, params) =>
+      @remote.update params
+
     appWindow
 
   # Removes the given window from the list of windows, so it can be GC'd.
@@ -204,3 +228,9 @@ class Application
   openAboutWindow: =>
     @aboutwindow = new AboutWindow
     @aboutwindow.show()
+
+  # Inits remote controller instance
+  initRemoteController: (appWindow) =>
+    @remote = new RemoteController
+      window: appWindow
+      coverPath: path.join app.getPath('userData'), @configSettings.get 'coverFolderName'

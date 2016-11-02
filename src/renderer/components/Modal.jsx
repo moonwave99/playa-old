@@ -20,7 +20,7 @@ var Modal = React.createClass({
   componentDidUpdate: function(prevProps, prevState){
     if(prevProps.isVisible !== this.props.isVisible){
       if(this.props.isVisible){
-        ReactDOM.findDOMNode(this.refs.modal).classList.add('in')
+        this.refs.modal.classList.add('in')
         if(this.props.isDismissable && !this.state.isKeyBound){
           this.bindKeyHandler()
           this.setState({ isKeyBound: true})

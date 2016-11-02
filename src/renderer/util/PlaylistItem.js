@@ -10,7 +10,23 @@ module.exports = class PlaylistItem{
     this.id = 't_' + md5(this.filename)
     this.disabled = options.disabled
   }
+  formattedTitle(){
+    return this.metadata.artist + ' - ' + this.metadata.title
+  }
   getDiscNumber(){
-    return this.disabled ? 0 : this.metadata.disk.no
+    return this.disabled ? 0 : Math.max(1, +this.metadata.disk.no)
+  }
+  serializeForRemote(){
+    if(this.disabled){
+      return {}
+    }else{
+      return {
+        id: this.id,
+        title: this.metadata.title,
+        artist: this.metadata.artist,
+        track: this.metadata.track,
+        duration: this.duration
+      }
+    }
   }
 }

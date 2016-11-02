@@ -1,7 +1,7 @@
 Menu = require 'menu'
 app = require 'app'
 fs = require 'fs'
-ipc = require 'ipc'
+ipc = require('electron').ipcMain
 path = require 'path'
 os = require 'os'
 net = require 'net'
@@ -116,6 +116,18 @@ class AppWindow
 
   togglePlaylistInfo: ->
     @window.webContents.send('playlist:toggleInfo')
+
+  gotoAlbum: (data)->
+    @window.webContents.send('playlist:gotoAlbum', data)
+
+  gotoTrack: (data)->
+    @window.webContents.send('playlist:gotoTrack', data)
+
+  selectPlaylist: (data)->
+    @window.webContents.send('playlist:select', data)
+
+  seekTo: (data)->
+    @window.webContents.send('playback:seek', data)
 
   toggleSidebar: ->
     @window.webContents.send('sidebar:toggle')

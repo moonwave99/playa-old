@@ -3,7 +3,7 @@
 var _ = require('lodash')
 var Promise = require('bluebird')
 var fs = Promise.promisifyAll(require('fs-extra'))
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var md5 = require('md5')
 var path = require('path')
 var yaml = Promise.promisifyAll(require('js-yaml'))
@@ -31,7 +31,7 @@ module.exports = class PlaylistLoader {
       }else{
         resolve(this.parse(playlist.path).then((data)=>{
           playlist.hydrate(data)
-          return playlist.load(data.tracklist, opts)
+          return playlist.load(_.uniq(data.tracklist), opts)
         }))
       }
     })

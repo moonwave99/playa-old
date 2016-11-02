@@ -18,7 +18,7 @@ var Rename = React.createClass({
     }
   },
   componentDidMount: function(){
-    ReactDOM.findDOMNode(this.refs.formElement).querySelector('input[name="name"]').focus()
+    this.refs.formElement.querySelector('input[name="name"]').focus()
   },
   render: function() {
     var Model = t.struct({

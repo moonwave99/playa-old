@@ -1,6 +1,6 @@
 app = require 'app'
 fs = require 'fs'
-ipc = require 'ipc'
+ipc = require('electron').ipcMain
 path = require 'path'
 os = require 'os'
 net = require 'net'

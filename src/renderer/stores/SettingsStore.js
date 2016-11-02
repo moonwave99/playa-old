@@ -1,7 +1,7 @@
 "use babel";
 
 var _ = require('lodash')
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var assign = require('object-assign')
 
 var AppDispatcher = require('../dispatcher/AppDispatcher')

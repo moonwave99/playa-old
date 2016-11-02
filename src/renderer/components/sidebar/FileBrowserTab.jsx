@@ -21,6 +21,11 @@ var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants
   },
   function(component){
     return _.find(component.props.tree, { id: component.state.selection[0] })
+  },
+  null,
+  function(component, buffer){
+    let result = _.find(component.props.tree, x => x.name.toLowerCase().startsWith(buffer)) || {}
+    return result.id
   }
 )
 
@@ -64,7 +69,6 @@ var FileBrowserTab = React.createClass({
           handleContextMenu={this.handleContextMenu}
           handleOpen={this.handleOpen}
           handleClose={this.handleClose}
-          handleContextMenu={this.handleContextMenu}
           isFocused={this.props.isFocused}
           tree={this.state.fileTree}/>
       </div>

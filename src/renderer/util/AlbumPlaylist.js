@@ -38,8 +38,9 @@ module.exports = class AlbumPlaylist{
   getFileList(){
     return _.flatten(this.items.toArray().map( i => i.tracks.map(t => t.filename) ))
   }
-  getItems(){
-    return this.items.toArray()
+  getItems(opts){
+    let items = this.items.toArray()
+    return opts ? _.where(items, opts) : items
   }
   getLength(){
     return this.items.getLength()
@@ -59,6 +60,9 @@ module.exports = class AlbumPlaylist{
   }
   getLastPlayedAlbum(){
     return this.getAlbumById(this.lastPlayedAlbumId)
+  }
+  find(buffer){
+    return _.find(this.items.toArray(), a => a.getArtist().toLowerCase().startsWith(buffer) || a.getTitle().toLowerCase().startsWith(buffer))
   }
   getStats(){
     var albums = this.getItems()
@@ -165,9 +169,25 @@ module.exports = class AlbumPlaylist{
       tracklist: this.getFileList() || []
     }
   }
+  serializeForRemote(){
+    return {
+      id: this.id,
+      title: this.title,
+      albums: this.getItems({ disabled: false }).map( (album) => album.serializeForRemote() )
+    }
+  }
   _process(results, opts={}){
+    // #TODO create PlaylistItems here, use _.reduce, _.memoize, ASCII normalisation (#SEE http://stackoverflow.com/questions/286921/efficiently-replace-all-accented-characters-in-a-string )
     var processedAlbums = _(results)
-      .groupBy( r => path.dirname( r.isFulfilled() ? r.value().filename : r.reason() ))
+      .groupBy( (r) => {
+        if(r.isFulfilled()){
+          let track = r.value()
+          let artist = track.metadata.albumartist.match(/various/i) ? 'Various' : (track.metadata.albumartist ? track.metadata.albumartist : track.metadata.artist)
+          return (artist + track.metadata.album).toLowerCase();
+        }else{
+          return path.dirname(r.reason())
+        }
+      })
       .map((album, directory)=>{
         var candidateTrack = null
         var tracks = album.map((track, index)=>{
@@ -184,13 +204,16 @@ module.exports = class AlbumPlaylist{
             })
           }
         })
+        var _tracks = _(tracks)
+          .sortBy( t => t.getDiscNumber() * 1000 + t.metadata.track )
+          .value()
         return new Album({
           id: ['a',
             candidateTrack
-              ? md5(candidateTrack.metadata.artist + candidateTrack.metadata.album)
-              : md5(tracks[0].filename)
+              ? md5(path.dirname(candidateTrack.filename) + candidateTrack.metadata.artist + candidateTrack.metadata.album)
+              : md5(path.dirname(tracks[0].filename))
             ].join('_'),
-          tracks: tracks,
+          tracks: _tracks,
           disabled: !candidateTrack
         })
       }).value()

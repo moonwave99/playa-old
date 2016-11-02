@@ -1,7 +1,7 @@
 "use babel";
 
 let _ = require('lodash')
-let ipc = require('ipc')
+let ipc = require('electron').ipcRenderer
 let cx = require('classnames')
 let key = require('keymaster')
 let enquire = require('enquire.js')

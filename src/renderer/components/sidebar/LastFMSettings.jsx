@@ -41,12 +41,12 @@ var LastFMSettings = React.createClass({
       return (
         <div>
           <p>Signed in as: <a href="#" onClick={this.handleLastFMUserClick} title="Visit Last.FM profile"><strong>{this.props.lastFMClient.session.user}</strong></a></p>
-          <p><a className="btn btn-default btn-block" href="#" onClick={this.handleSignoutClick}>Sign out</a></p>
+          <p><a className="btn btn-default btn-sm btn-block" href="#" onClick={this.handleSignoutClick}><i className="fa fa-sign-out"></i> Sign out</a></p>
         </div>
       )
     }else{
       return (
-        <a className="btn btn-default btn-block" href="#" onClick={this.handleAuthoriseClick}>Authorise Playa</a>
+        <a className="btn btn-default btn-sm btn-block" href="#" onClick={this.handleAuthoriseClick}><i className="fa fa-sign-in"></i> Authorise Playa</a>
       )
     }
   },
