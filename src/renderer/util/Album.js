@@ -1,74 +1,86 @@
-"use babel"
+'use babel';
 
-var _ = require('lodash')
-var path = require('path')
-var AlbumConstants = require('../constants/AlbumConstants')
+import _, { find, uniq, findWhere } from 'lodash';
+import path from 'path';
+import AlbumConstants from '../constants/AlbumConstants';
 
-module.exports = class Album{
-  constructor(options){
-    this.id = options.id
-    this.tracks = options.tracks || []
-    this._folder = this.tracks.length && path.dirname(this.tracks[0].filename)
-    this.disabled = options.disabled
-    if(this.disabled){
-      this._artists = []
-      return
+const isCompilation = function isCompilation(album) {
+  return (
+    album.tracks[0].metadata.albumartist
+    && album.tracks[0].metadata.albumartist.match(/various/i)
+  ) || album._artists.length > AlbumConstants.VARIOUS_ARTISTS_THRESHOLD;
+};
+
+export default class Album {
+  constructor({ id, tracks = [], disabled = false }) {
+    this.id = id;
+    this.tracks = tracks;
+    this._folder = this.tracks.length && path.dirname(this.tracks[0].filename);
+    this.disabled = disabled;
+    if (this.disabled) {
+      this._artists = [];
+      return;
     }
-    this._title = _.find(this.tracks, t => t.metadata.album).metadata.album || AlbumConstants.NO_ALBUM
-    this._year = +_.find(this.tracks, t => t.metadata.year).metadata.year
-    this._artists = _(this.tracks.map( t => t.metadata.artist)).uniq( a => a ? a.toLowerCase() : null ).compact().value()
-    this._isCompilation = (this.tracks[0].metadata.albumartist && this.tracks[0].metadata.albumartist.match(/various/i))
-      || this._artists.length > AlbumConstants.VARIOUS_ARTISTS_THRESHOLD
-    this._isSplit = this._artists.length > 1 && !this._isCompilation
-    this._isMultiple = _.uniq(this.tracks.map( t => t.getDiscNumber() )).length > 1
+    this._title = find(this.tracks, t => t.metadata.album).metadata.album
+      || AlbumConstants.NO_ALBUM;
+    this._year = +find(this.tracks, t => t.metadata.year).metadata.year;
+    this._artists = _(this.tracks.map(t => t.metadata.artist))
+      .uniq(a => (a || '').toLowerCase())
+      .compact()
+      .value();
+    this._isCompilation = isCompilation(this);
+    this._isSplit = this._artists.length > 1 && !this._isCompilation;
+    this._isMultiple = uniq(this.tracks.map(t => t.getDiscNumber())).length > 1;
   }
-  contains(id){
-    return this.tracks.map(i => i.id).indexOf(id) > -1
+  contains(id) {
+    return this.tracks.map(i => i.id).indexOf(id) > -1;
   }
-  findById(id){
-    return _.findWhere(this.tracks, { id: id })
+  findById(id) {
+    return findWhere(this.tracks, { id });
   }
-  isCompilation(){
-    return !!this._isCompilation
+  isCompilation() {
+    return !!this._isCompilation;
   }
-  isMultiple(){
-    return !!this._isMultiple
+  isMultiple() {
+    return !!this._isMultiple;
   }
-  getTitle(){
-    return this._title
+  getTitle() {
+    return this._title;
   }
-  getArtistCount(){
-    return this._artists.length
+  getArtistCount() {
+    return this._artists.length;
   }
-  getArtist(){
-    return this._isCompilation ? AlbumConstants.VARIOUS_ARTISTS_LABEL : this._artists.join(', ')
+  getArtist() {
+    return this._isCompilation ? AlbumConstants.VARIOUS_ARTISTS_LABEL : this._artists.join(', ');
   }
-  getYear(){
-    return this._year
+  getYear() {
+    return this._year;
   }
-  getStats(){
-    return _.reduce(this.tracks, (memo, track)=>{
-      if(!track.disabled){
-        memo.tracks++
-        memo.totalTime += track.duration
+  getStats() {
+    return this.tracks.reduce((memo, track) => {
+      if (!track.disabled) {
+        return memo;
       }
-      return memo
-    }, { tracks: 0, totalTime: 0 })
+      return {
+        tracks: memo.tracks + 1,
+        totalTime: memo.totalTime + track.duration,
+      };
+    }, { tracks: 0, totalTime: 0 });
   }
-  missingTracksCount(){
-    return this.tracks.filter( t => t.disabled ).length
+  missingTracksCount() {
+    return this.tracks.filter(t => t.disabled).length;
   }
-  getFolder(){
-    return this._folder
+  getFolder() {
+    return this._folder;
   }
-  serializeForRemote(){
+  serializeForRemote() {
     return {
       id: this.id,
       disabled: this.disabled,
       title: this.getTitle(),
       artist: this.getArtist(),
       year: this.getYear(),
-      tracks: this.tracks.map( x => x.serializeForRemote() )
-    }
+      tracks: this.tracks.map(x => x.serializeForRemote()),
+    };
   }
 }
