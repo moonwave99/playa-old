@@ -1,8 +1,8 @@
 require('coffee-script').register();
 
-var Application, BrowserWindow, app, fs, nslog, parseCommandLine, path, setupCoffeeScript, spawn, start, url;
+var Application, BrowserWindow, electron, fs, nslog, parseCommandLine, path, setupCoffeeScript, spawn, start, url;
 
-app = require('app');
+electron = require('electron');
 
 url = require('url');
 
@@ -12,11 +12,12 @@ fs = require('fs-plus');
 
 spawn = require('child_process').spawn;
 
-BrowserWindow = require('browser-window');
-
 Application = require('./application');
 
 nslog = console.log;
+
+var app = electron.app;
+BrowserWindow = electron.BrowserWindow;
 
 global.shellStartTime = Date.now();
 

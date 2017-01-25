@@ -28,7 +28,7 @@ window.onload = function() {
     require('electron').ipcRenderer.send('window-command', 'window:loaded');
   }
   catch (error) {
-    var currentWindow = require('remote').getCurrentWindow();
+    var currentWindow = require('electron').remote.getCurrentWindow();
     currentWindow.setSize(1024, 768);
     currentWindow.center();
     currentWindow.show();

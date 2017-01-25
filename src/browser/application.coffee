@@ -1,14 +1,10 @@
-BrowserWindow = require 'browser-window'
-app = require 'app'
-Menu = require 'menu'
+{app, BrowserWindow, Menu, dialog, globalShortcut} = require 'electron'
 fs = require 'fs-plus'
 ipc = require('electron').ipcMain
 path = require 'path'
 os = require 'os'
 net = require 'net'
 url = require 'url'
-dialog = require 'dialog'
-globalShortcut = require('electron').globalShortcut
 
 {EventEmitter} = require 'events'
 _ = require 'underscore-plus'

@@ -1,4 +1,4 @@
-var shell = require('shell')
+var shell = require('electron').shell
 var appConfig = require('../config/appConfig')
 
 document.addEventListener("DOMContentLoaded", function() {

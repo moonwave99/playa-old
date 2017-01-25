@@ -1,15 +1,12 @@
-Menu = require 'menu'
-app = require 'app'
+{app, BrowserWindow, Menu, dialog} = require 'electron'
 fs = require 'fs'
 ipc = require('electron').ipcMain
 path = require 'path'
 os = require 'os'
 net = require 'net'
 url = require 'url'
-dialog = require 'dialog'
 
 {EventEmitter} = require 'events'
-BrowserWindow = require 'browser-window'
 _ = require 'underscore-plus'
 
 mediaControlMap =
@@ -74,7 +71,7 @@ class AppWindow
       slashes: true
       query: {loadSettings: JSON.stringify(@loadSettings)}
 
-    @window.loadUrl targetUrl
+    @window.loadURL targetUrl
     @window.show()
 
   openFolder: ->

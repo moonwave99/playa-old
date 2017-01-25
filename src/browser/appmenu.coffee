@@ -1,6 +1,5 @@
-app = require 'app'
+{app, Menu} = require 'electron'
 ipc = require('electron').ipcMain
-Menu = require 'menu'
 path = require 'path'
 
 season = require 'season'

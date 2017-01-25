@@ -1,4 +1,4 @@
-app = require 'app'
+{app, BrowserWindow} = require 'electron'
 fs = require 'fs'
 ipc = require('electron').ipcMain
 path = require 'path'
@@ -7,7 +7,6 @@ net = require 'net'
 url = require 'url'
 
 {EventEmitter} = require 'events'
-BrowserWindow = require 'browser-window'
 _ = require 'underscore-plus'
 
 module.exports =
@@ -32,5 +31,5 @@ class AboutWindow
       pathname: path.resolve __dirname, '..', '..', 'src', 'ui', 'about.html'
       slashes: true
 
-    @window.loadUrl targetUrl
+    @window.loadURL targetUrl
     @window.show()
