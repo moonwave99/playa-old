@@ -26,7 +26,9 @@ var defaultSettings = {
   waveformFolderName: 'Waveforms',
   playlistFolderName: 'Playlists',
   coverLoaderLog: false,
-  waveformLoaderLog: false
+  waveformLoaderLog: false,
+  discogsApiRoot: 'https://api.discogs.com/database/search',
+  lastfmAuthURL: 'https://www.last.fm/api/auth/',
 };
 
 var production = _.extend(_.extend({}, defaultSettings), {

@@ -93,7 +93,7 @@ module.exports = class Playa
         path:     path.join __dirname, '..',  'settings', "#{x}.json"
       @settings[x].load()
 
-    @fileBrowser = new FileBrowser()
+    @fileBrowser = FileBrowser.default
 
     @fileTree = new FileTree
       fileBrowser:  @fileBrowser
@@ -107,7 +107,7 @@ module.exports = class Playa
       rootName:     @getSetting('common', 'storeFolders').playlists
       filter:       @getSetting 'common', 'playlistExtension'
 
-    @playlistLoader = new PlaylistLoader
+    @playlistLoader = new PlaylistLoader.default
       root:               @getSetting 'common', 'playlistRoot'
       playlistExtension:  @getSetting 'common', 'playlistExtension'
 
@@ -120,6 +120,7 @@ module.exports = class Playa
       discogs:
         key:      @getSetting 'discogs', 'DISCOGS_KEY'
         secret:   @getSetting 'discogs', 'DISCOGS_SECRET'
+        apiRoot:  @getSetting 'config',  'discogsApiRoot'
         throttle: 1000
 
     @waveformLoader = new WaveformLoader
@@ -143,6 +144,7 @@ module.exports = class Playa
       secret:           @getSetting 'lastfm', 'LASTFM_SECRET'
       useragent:        @getSetting 'common', 'useragent'
       sessionInfo:      @getSetting 'session', 'lastFMSession'
+      authURL:          @getSetting 'config', 'lastfmAuthURL'
 
     @player = new Player
       mediaFileLoader: @mediaFileLoader
