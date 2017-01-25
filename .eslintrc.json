@@ -1,0 +1,20 @@
+{
+    "extends": "airbnb",
+    "plugins": [
+        "react",
+        "jsx-a11y",
+        "import"
+    ],
+    "globals": {
+      "window": true,
+      "playa": true
+    },
+    "settings": {
+        "import/core-modules": [
+            "electron"
+        ]
+    },
+    "rules" : {
+      "no-underscore-dangle" : "off"
+    }
+}

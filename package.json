@@ -9,7 +9,7 @@
     "email": "diego.caponera@gmail.com",
     "url": "http://www.diegocaponera.com"
   },
-  "engine": "node 4.2.0",
+  "engine": "node 6.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/moonwave99/playa.git"
@@ -40,6 +40,7 @@
     "font-awesome": "^4.5.0",
     "fs-extra": "^0.20.1",
     "fs-plus": "^2.3.1",
+    "fs-promise": "^1.0.0",
     "fstream": "0.1.24",
     "glob": "^5.0.10",
     "groove": "^2.4.0",
@@ -77,7 +78,13 @@
   },
   "devDependencies": {
     "electron-packager": "5.1.1",
-    "electron-prebuilt": "0.36.7",
+    "electron-prebuilt": "1.4.13",
+    "electron-rebuild": "^1.5.7",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^2.0.1",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.5.0",
     "gulp": "3.9.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-babel": "6.1.1",
@@ -108,6 +115,7 @@
     "start": "gulp serve",
     "build": "gulp release",
     "test": "gulp test",
+    "eslint": "eslint src",
     "postinstall": "make postinstall",
     "localInstall": "cp -r ./release/Playa-darwin-x64/Playa.app/ /Applications/Playa.app/"
   },
