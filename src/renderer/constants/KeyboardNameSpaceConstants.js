@@ -1,9 +1,11 @@
-var keyMirror = require('keymirror')
+'use babel';
+
+import keyMirror from 'keymirror';
 
 module.exports = keyMirror({
   ALBUM_PLAYLIST: null,
   PLAYLIST_BROWSER: null,
   FILE_BROWSER: null,
   SETTINGS: null,
-  CONTEXT_MENU: null
-})
+  CONTEXT_MENU: null,
+});

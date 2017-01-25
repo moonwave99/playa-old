@@ -1,5 +1,7 @@
-var keyMirror = require('keymirror')
+'use babel';
+
+import keyMirror from 'keymirror';
 
 module.exports = keyMirror({
-  SET_VALUE: null
-})
+  SET_VALUE: null,
+});

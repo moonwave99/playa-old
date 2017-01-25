@@ -1,4 +1,6 @@
-var keyMirror = require('keymirror')
+'use babel';
+
+import keyMirror from 'keymirror';
 
 module.exports = keyMirror({
   LOAD_PLAYLIST_ROOT: null,
@@ -6,5 +8,5 @@ module.exports = keyMirror({
   COLLAPSE_PLAYLIST_NODES: null,
   CREATE_PLAYLIST: null,
   DELETE_PLAYLIST: null,
-  CREATE_FOLDER: null
-})
+  CREATE_FOLDER: null,
+});

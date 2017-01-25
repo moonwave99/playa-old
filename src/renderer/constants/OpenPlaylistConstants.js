@@ -1,4 +1,6 @@
-var keyMirror = require('keymirror')
+'use babel';
+
+import keyMirror from 'keymirror';
 
 module.exports = keyMirror({
   ADD_PLAYLIST: null,
@@ -14,5 +16,5 @@ module.exports = keyMirror({
   SELECT_ALBUM: null,
   ADD_FOLDER: null,
   ADD_FOLDER_AT_POSITION: null,
-  LOCATE_FOLDER: null
-})
+  LOCATE_FOLDER: null,
+});

@@ -1,4 +1,6 @@
-var keyMirror = require('keymirror')
+'use babel';
+
+import keyMirror from 'keymirror';
 
 module.exports = keyMirror({
   TOGGLE: null,
@@ -7,5 +9,5 @@ module.exports = keyMirror({
   STOP: null,
   NEXT_TRACK: null,
   PREV_TRACK: null,
-  SEEK: null
-})
+  SEEK: null,
+});
