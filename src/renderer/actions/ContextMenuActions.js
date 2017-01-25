@@ -1,23 +1,21 @@
-"use babel";
+'use babel';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var ContextMenuConstants = require('../constants/ContextMenuConstants')
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import ContextMenuConstants from '../constants/ContextMenuConstants';
 
-var ContextMenuActions = {
-  show: function(actions, position, event, prevContext){
+module.exports = {
+  show(actions, position, event, prevContext) {
     AppDispatcher.dispatch({
       actionType: ContextMenuConstants.CONTEXT_MENU_SHOW,
-      actions: actions,
-      position: position,
-      event: event,
-      prevContext: prevContext
-    })
+      actions,
+      position,
+      event,
+      prevContext,
+    });
   },
-  hide: function(){
+  hide() {
     AppDispatcher.dispatch({
-      actionType: ContextMenuConstants.CONTEXT_MENU_HIDE
-    })
-  }
-}
-
-module.exports = ContextMenuActions
+      actionType: ContextMenuConstants.CONTEXT_MENU_HIDE,
+    });
+  },
+};

@@ -1,22 +1,20 @@
-"use babel";
+'use babel';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var KeyboardFocusConstants = require('../constants/KeyboardFocusConstants')
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import KeyboardFocusConstants from '../constants/KeyboardFocusConstants';
 
-var KeyboardFocusActions = {
-  requestFocus: function(scopeName){
+module.exports = {
+  requestFocus(scopeName) {
     AppDispatcher.dispatch({
       actionType: KeyboardFocusConstants.REQUEST_FOCUS,
-      scopeName: scopeName
-    })
+      scopeName,
+    });
   },
-  setFocus: function(handlers, scopeName){
+  setFocus(handlers, scopeName) {
     AppDispatcher.dispatch({
       actionType: KeyboardFocusConstants.SET_FOCUS,
-      handlers: handlers,
-      scopeName: scopeName
-    })
-  }
-}
-
-module.exports = KeyboardFocusActions
+      handlers,
+      scopeName,
+    });
+  },
+};

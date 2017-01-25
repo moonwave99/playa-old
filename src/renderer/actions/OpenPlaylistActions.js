@@ -1,100 +1,100 @@
-"use babel";
+'use babel';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var OpenPlaylistConstants = require('../constants/OpenPlaylistConstants')
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import OpenPlaylistConstants from '../constants/OpenPlaylistConstants';
 
 module.exports = {
-  add: function(playlists, params){
+  add(playlists, params) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.ADD_PLAYLIST,
-      playlists: playlists,
-      params: params
-    })
+      playlists,
+      params,
+    });
   },
-  savePlaylist: function(index){
+  savePlaylist() {
     AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.SAVE_PLAYLIST
-    })
+      actionType: OpenPlaylistConstants.SAVE_PLAYLIST,
+    });
   },
-  removeFiles: function(ids, playlist){
+  removeFiles(ids, playlist) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.REMOVE_FILES,
-      ids: ids,
-      playlist: playlist
-    })
+      ids,
+      playlist,
+    });
   },
-  closePlaylist: function(){
+  closePlaylist() {
     AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.CLOSE_PLAYLIST
-    })
+      actionType: OpenPlaylistConstants.CLOSE_PLAYLIST,
+    });
   },
-  addFolder: function(folder){
+  addFolder(folder) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.ADD_FOLDER,
-      folder: folder
-    })
+      folder,
+    });
   },
-  addFolderAtPosition: function(folder, positionId){
+  addFolderAtPosition(folder, positionId) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.ADD_FOLDER_AT_POSITION,
-      folder: folder,
-      positionId: positionId
-    })
+      folder,
+      positionId,
+    });
   },
-  selectAlbum: function(album, trackId, playlist, play){
+  selectAlbum(album, trackId, playlist, play) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SELECT_ALBUM,
-      album: album,
-      trackId: trackId,
-      playlist: playlist,
-      play: play
-    })
+      album,
+      trackId,
+      playlist,
+      play,
+    });
   },
-  select: function(index){
+  select(index) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST,
-      selected: index
-    })
+      selected: index,
+    });
   },
-  load: function(id){
+  load(id) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.LOAD_PLAYLIST,
-      id: id
-    })
+      id,
+    });
   },
-  selectById: function(id){
+  selectById(id) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID,
-      id: id
-    })
+      id,
+    });
   },
-  reload: function(){
+  reload() {
     AppDispatcher.dispatch({
-      actionType: OpenPlaylistConstants.RELOAD_PLAYLIST
-    })
+      actionType: OpenPlaylistConstants.RELOAD_PLAYLIST,
+    });
   },
-  update: function(id, values){
+  update(id, values) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.UPDATE_PLAYLIST,
-      id: id,
-      values: values
-    })
+      id,
+      values,
+    });
   },
-  reorder: function(id, from, to, position){
+  reorder(id, from, to, position) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.REORDER_PLAYLIST,
-      id: id,
-      from: from,
-      to: to,
-      position: position
-    })
+      id,
+      from,
+      to,
+      position,
+    });
   },
-  locateFolder: function(id, albumId, newFolder){
+  locateFolder(id, albumId, newFolder) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.LOCATE_FOLDER,
-      id: id,
-      albumId: albumId,
-      newFolder: newFolder
-    })
-  }
-}
+      id,
+      albumId,
+      newFolder,
+    });
+  },
+};

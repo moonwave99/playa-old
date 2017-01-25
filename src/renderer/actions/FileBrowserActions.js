@@ -1,26 +1,24 @@
-"use babel";
+'use babel';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var FileBrowserConstants = require('../constants/FileBrowserConstants')
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import FileBrowserConstants from '../constants/FileBrowserConstants';
 
-var FileBrowserActions = {
-  loadRoot: function(){
+module.exports = {
+  loadRoot() {
     AppDispatcher.dispatch({
-      actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT
-    })
+      actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT,
+    });
   },
-  expandNodes: function(nodes){
+  expandNodes(nodes) {
     AppDispatcher.dispatch({
       actionType: FileBrowserConstants.EXPAND_FILEBROWSER_NODES,
-      nodes: nodes
-    })
+      nodes,
+    });
   },
-  collapseNodes: function(nodes){
+  collapseNodes(nodes) {
     AppDispatcher.dispatch({
       actionType: FileBrowserConstants.COLLAPSE_FILEBROWSER_NODES,
-      nodes: nodes
-    })
-  }
-}
-
-module.exports = FileBrowserActions
+      nodes,
+    });
+  },
+};
