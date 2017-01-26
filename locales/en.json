@@ -1,4 +1,9 @@
 {
+  "footer" : {
+    "noPlaylist": "No playlist selected.",
+    "emptyPlaylist": "No tracks in this playlist yet.",
+    "stats": "{{albums}} albums · {{tracks}} tracks · {{totalTime}}"
+  },
   "infoDrawer": {
     "title": "Now playing",
     "placeholder": "Seems like you are enjoying the silence now"
