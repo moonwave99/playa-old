@@ -22,9 +22,12 @@ module.exports = function Navigable(
   scopeName,
   getIdList,
   getSelectedElement,
-  getSelectedIds = defaultGetSelectedIds,
-  searchForBuffer = defaultSearchForBuffer,
+  _getSelectedIds,
+  _searchForBuffer,
 ) {
+  const getSelectedIds = _getSelectedIds || defaultGetSelectedIds;
+  const searchForBuffer = _searchForBuffer || defaultSearchForBuffer;
+
   class NavigableComponent extends ReactComponent {
     constructor(props) {
       super(props);
@@ -186,7 +189,7 @@ module.exports = function Navigable(
       }
     }
     handleDelKeyPress(event) {
-      this.props.handleDelKeyPress(event, this, getSelectedIds(this));
+      this.props.handleDelKeyPress(event, this, this.getSelectedIds(this));
       this.setState({
         selection: [],
         lastAction: null,
