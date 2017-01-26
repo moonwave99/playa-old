@@ -1,16 +1,11 @@
 'use babel';
 
 import { EventEmitter } from 'events';
-import moment from 'moment';
-import momentDurationFormat from 'moment-duration-format';  // eslint-disable-line
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import PlayerConstants from '../constants/PlayerConstants';
+import { formatTimeShort } from '../util/helpers/formatters';
 
 const CHANGE_EVENT = 'change';
-
-const formatTime = function formatTime(time) {
-  return moment.duration(time, 'seconds').format('mm:ss', { trim: false });
-};
 
 const formatInfo = function formatRemoteInfo(info, totalTime, currentTime) {
   return {
@@ -29,8 +24,8 @@ const formatRemoteInfo = function formatRemoteInfo(info, totalTime, currentTime)
     totalTime,
     currentTime,
     remainingTime: totalTime - currentTime,
-    formattedCurrentTime: formatTime(currentTime),
-    formattedRemainingTime: formatTime(totalTime - currentTime),
+    formattedCurrentTime: formatTimeShort(currentTime),
+    formattedRemainingTime: formatTimeShort(totalTime - currentTime),
     playing: !!info.playing,
     hideInfo: !info.currentTrack,
     currentTrackID: info.currentTrack && info.currentTrack.id,
