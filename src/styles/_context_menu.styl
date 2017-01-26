@@ -24,10 +24,15 @@
       box-shadow none
       border-bottom-left-radius $contextMenuBorderRadius
       border-bottom-right-radius $contextMenuBorderRadius
-    a
+    button
       display block
+      margin 0
       padding 0 1rem
       transition background-color .1s ease-in
+      background-color transparent
+      border none
+      width 100%
+      text-align left
       &:hover
         color $mainColor
         background-color lighten($albumContextMenuBgColor, 35%)

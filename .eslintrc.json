@@ -16,6 +16,7 @@
         ]
     },
     "rules" : {
-      "no-underscore-dangle" : "off"
+      "no-underscore-dangle" : "off",
+      "jsx-a11y/no-static-element-interactions": "off"
     }
 }
