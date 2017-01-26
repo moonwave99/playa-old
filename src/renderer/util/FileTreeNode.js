@@ -8,6 +8,7 @@ module.exports = class FileTreeNode {
   constructor({
     name,
     path,
+    extension,
     parentNode,
     depth = 0,
     children = [],
@@ -15,6 +16,7 @@ module.exports = class FileTreeNode {
     Object.assign(this, {
       name,
       path,
+      extension,
       parentNode,
       depth,
       children,
