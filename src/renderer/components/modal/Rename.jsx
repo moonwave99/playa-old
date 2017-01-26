@@ -1,47 +1,59 @@
-"use babel"
+'use babel';
 
-var React = require('react')
-var ReactDOM = require('react-dom')
-var ReactPropTypes = React.PropTypes
-var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup')
-var cx = require('classnames')
+import React, { Component as ReactComponent, PropTypes } from 'react';
+import { form, struct, Str } from 'tcomb-form';
 
-var t = require('tcomb-form')
-var Form = t.form.Form
+const Form = form.Form;
 
-var Rename = React.createClass({
-  getInitialState: function(){
-    return {
+class Rename extends ReactComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
       value: {
-        name: this.props.item.name
-      }
-    }
-  },
-  componentDidMount: function(){
-    this.refs.formElement.querySelector('input[name="name"]').focus()
-  },
-  render: function() {
-    var Model = t.struct({
-      name: t.Str
-    })
-    var options = {
+        name: this.props.item.name,
+      },
+    };
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+  componentDidMount() {
+    this.formElement.querySelector('input[name="name"]').focus();
+  }
+  render() {
+    const Model = struct({
+      name: Str,
+    });
+    const options = {
       fields: {
         name: {
-          label: <span>Rename {this.props.item.name}:</span>
-        }
-      }
-    }
+          label: <span>Rename {this.props.item.name}:</span>,
+        },
+      },
+    };
     return (
-      <form onSubmit={this.onSubmit} ref="formElement">
-        <Form type={Model} value={this.state.value} options={options} ref="form"/>
+      <form
+        onSubmit={this.onSubmit}
+        ref={(c) => { this.formElement = c; }}
+      >
+        <Form
+          type={Model}
+          value={this.state.value}
+          options={options}
+          ref={(c) => { this.form = c; }}
+        />
       </form>
-    )
-  },
-  onSubmit(event) {
-    event.preventDefault()
-    var value = this.refs.form.getValue()
-    this.props.handleSubmit(this.props.item, value.name)
+    );
   }
-})
+  onSubmit(event) {
+    event.preventDefault();
+    const value = this.refs.form.getValue();
+    this.props.handleSubmit(this.props.item, value.name);
+  }
+}
 
-module.exports = Rename
+Rename.propTypes = {
+  item: PropTypes.shape({
+    name: PropTypes.string,
+  }),
+};
+
+module.exports = Rename;
