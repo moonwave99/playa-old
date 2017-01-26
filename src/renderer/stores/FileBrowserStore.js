@@ -1,61 +1,44 @@
-"use babel";
+'use babel';
 
-var assign = require('object-assign')
-var path = require('path')
-var ipc = require('electron').ipcRenderer
+import { EventEmitter } from 'events';
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import FileBrowserConstants from '../constants/FileBrowserConstants';
 
-var FileTree = require('../util/FileTree')
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var EventEmitter = require('events').EventEmitter
-var FileBrowserConstants = require('../constants/FileBrowserConstants')
+const CHANGE_EVENT = 'change';
 
-var CHANGE_EVENT = 'change'
+const FileBrowserStore = Object.assign({}, EventEmitter.prototype, {
 
-var FileBrowserStore = assign({}, EventEmitter.prototype, {
-
-  getFileTree: function(){
-    return playa.fileTree.flatten()
+  getFileTree() {
+    return playa.fileTree.flatten();
   },
-
-  emitChange: function() {
-    this.emit(CHANGE_EVENT)
+  emitChange() {
+    this.emit(CHANGE_EVENT);
   },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback)
+  addChangeListener(callback) {
+    this.on(CHANGE_EVENT, callback);
   },
-
-  /**
-   * @param {function} callback
-   */
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback)
+  removeChangeListener(callback) {
+    this.removeListener(CHANGE_EVENT, callback);
   },
-
-  dispatcherIndex: AppDispatcher.register(function(action) {
-    switch(action.actionType) {
+  dispatcherIndex: AppDispatcher.register((action) => {
+    switch (action.actionType) {
       case FileBrowserConstants.LOAD_FILEBROWSER_ROOT:
-        playa.fileTree.loadRoot().then(()=>{
-          FileBrowserStore.emitChange()
-        })
-        break
+        playa.fileTree.loadRoot()
+          .then(() => FileBrowserStore.emitChange());
+        break;
       case FileBrowserConstants.EXPAND_FILEBROWSER_NODES:
-        playa.fileTree.expand(action.nodes).then(()=>{
-          FileBrowserStore.emitChange()
-        })
-        break
+        playa.fileTree.expand(action.nodes)
+        .then(() => FileBrowserStore.emitChange());
+        break;
       case FileBrowserConstants.COLLAPSE_FILEBROWSER_NODES:
-        playa.fileTree.collapse(action.nodes)
-        FileBrowserStore.emitChange()
-        break
+        playa.fileTree.collapse(action.nodes);
+        FileBrowserStore.emitChange();
+        break;
+      default:
+        break;
     }
+    return true;
+  }),
+});
 
-    return true // No errors. Needed by promise in Dispatcher.
-  })
-
-})
-
-module.exports = FileBrowserStore
+module.exports = FileBrowserStore;
