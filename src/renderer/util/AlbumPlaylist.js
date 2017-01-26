@@ -96,6 +96,7 @@ module.exports = class AlbumPlaylist {
       return {
         tracks: memo.tracks + tracks,
         totalTime: memo.totalTime + totalTime,
+        albums: memo.albums,
       };
     }, {
       tracks: 0,

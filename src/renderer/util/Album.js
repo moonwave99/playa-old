@@ -57,15 +57,18 @@ export default class Album {
     return this._year;
   }
   getStats() {
-    return this.tracks.reduce((memo, track) => {
-      if (!track.disabled) {
-        return memo;
+    return this.tracks.reduce(({ tracks, totalTime }, track) => {
+      if (track.disabled) {
+        return { tracks, totalTime };
       }
       return {
-        tracks: memo.tracks + 1,
-        totalTime: memo.totalTime + track.duration,
+        tracks: tracks + 1,
+        totalTime: totalTime + track.duration,
       };
-    }, { tracks: 0, totalTime: 0 });
+    }, {
+      tracks: 0,
+      totalTime: 0,
+    });
   }
   missingTracksCount() {
     return this.tracks.filter(t => t.disabled).length;
