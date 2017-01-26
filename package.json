@@ -44,6 +44,7 @@
     "fstream": "0.1.24",
     "glob": "^5.0.10",
     "groove": "^2.4.0",
+    "i18next": "^6.0.2",
     "js-yaml": "^3.3.1",
     "keymaster": "^1.6.2",
     "keymirror": "^0.1.1",

@@ -6,6 +6,7 @@ ipc                         = require('electron').ipcRenderer
 path                        = require 'path'
 React                       = require 'react'
 ReactDOM                    = require 'react-dom'
+i18next                     = require 'i18next'
 moment                      = require 'moment'
 Promise                     = require 'bluebird'
 Main                        = require './renderer/components/Main.jsx'
@@ -34,6 +35,8 @@ KeyboardNameSpaceConstants  = require './renderer/constants/KeyboardNameSpaceCon
 OpenPlaylistManager         = require './renderer/util/OpenPlaylistManager'
 FileTree                    = require './renderer/util/FileTree'
 SettingsBag                 = require './SettingsBag'
+
+Promise.promisifyAll fs
 
 require 'moment-duration-format'
 
@@ -190,6 +193,7 @@ module.exports = class Playa
     OpenPlaylistStore.addChangeListener @_onOpenPlaylistChange
     PlayerStore.addChangeListener @_onPlayerChange
 
+    @initI18n()
     @initIPC()
     @initRemote()
     @loadPlaylists()
@@ -257,6 +261,15 @@ module.exports = class Playa
 
   initRemote: =>
     if @getSetting 'user', 'allowRemote' then ipc.send 'remote:start'
+
+  initI18n: ->
+    fs.readJsonAsync path.join __dirname, '../locales/en.json'
+    .then (data) ->
+      i18next.init
+        lng: 'en',
+        resources:
+          en:
+            translation: data
 
   initIPC: ->
     ipc.on 'sidebar:show', (event, tabName) =>
