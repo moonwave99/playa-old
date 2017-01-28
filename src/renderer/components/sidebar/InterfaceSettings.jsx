@@ -1,37 +1,52 @@
-"use babel"
+'use babel';
 
-var _ = require('lodash')
-var cx = require('classnames')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
+import React, { PropTypes, Component } from 'react';
+import i18n from 'i18next';
+import SettingsActions from '../../actions/SettingsActions';
 
-var SettingsActions = require('../../actions/SettingsActions')
-
-var InterfaceSettings = React.createClass({
-  getInitialState: function(){
-    return {
-      openSidebar: this.props.settings.user.openSidebar
-    }
-  },
-  render: function(){
+class InterfaceSettings extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      openSidebar: props.settings.user.openSidebar,
+    };
+    this.handleSidebarChange = this.handleSidebarChange.bind(this);
+  }
+  handleSidebarChange() {
+    SettingsActions.set('user', 'openSidebar', !this.state.openSidebar);
+    this.setState({
+      openSidebar: !this.state.openSidebar,
+    });
+  }
+  render() {
     return (
       <form className="settings-block">
-        <h2><i className="fa fa-fw fa-mouse-pointer"></i> Interface</h2>
+        <h2>
+          <i className="fa fa-fw fa-mouse-pointer" />
+          {i18n.t('sidebar.settings.interface.title')}
+        </h2>
         <div className="checkbox">
-          <label>
-            <input type="checkbox" checked={this.state.openSidebar} onChange={this.handleSidebarChange}/> Leave Sidebar open on wide screens
+          <label htmlFor="wideScreen">
+            <input
+              id="wideScreen"
+              type="checkbox"
+              checked={this.state.openSidebar}
+              onChange={this.handleSidebarChange}
+            />
+            {i18n.t('sidebar.settings.interface.wideScreen')}
           </label>
         </div>
       </form>
-    )
-  },
-  handleSidebarChange: function(event){
-    SettingsActions.set('user', 'openSidebar', !this.state.openSidebar)
-    this.setState({
-      openSidebar: !this.state.openSidebar
-    })
+    );
   }
+}
 
-})
+InterfaceSettings.propTypes = {
+  settings: PropTypes.shape({
+    user: PropTypes.shape({
+      openSidebar: PropTypes.bool,
+    }),
+  }),
+};
 
-module.exports = InterfaceSettings
+module.exports = InterfaceSettings;

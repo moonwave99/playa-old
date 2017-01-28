@@ -1,37 +1,52 @@
-"use babel"
+'use babel';
 
-var _ = require('lodash')
-var cx = require('classnames')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
+import React, { PropTypes, Component } from 'react';
+import i18n from 'i18next';
+import SettingsActions from '../../actions/SettingsActions';
 
-var SettingsActions = require('../../actions/SettingsActions')
-
-var PlaylistSettings = React.createClass({
-  getInitialState: function(){
-    return {
-      autosave: this.props.settings.user.autosave
-    }
-  },
-  render: function(){
+class PlaylistSettings extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      autosave: props.settings.user.autosave,
+    };
+    this.handleAutosaveChange = this.handleAutosaveChange.bind(this);
+  }
+  handleAutosaveChange() {
+    SettingsActions.set('user', 'autosave', !this.state.autosave);
+    this.setState({
+      autosave: !this.state.autosave,
+    });
+  }
+  render() {
     return (
       <form className="settings-block">
-        <h2><i className="fa fa-fw fa-file-audio-o"></i> Playlists</h2>
+        <h2>
+          <i className="fa fa-fw fa-file-audio-o" />
+          {i18n.t('sidebar.settings.playlist.title')}
+        </h2>
         <div className="checkbox">
-          <label>
-            <input type="checkbox" checked={this.state.autosave} onChange={this.handleAutosaveChange}/> Autosave
+          <label htmlFor="autosave">
+            <input
+              id="autosave"
+              type="checkbox"
+              checked={this.state.autosave}
+              onChange={this.handleAutosaveChange}
+            />
+            {i18n.t('sidebar.settings.playlist.autosave')}
           </label>
         </div>
       </form>
-    )
-  },
-  handleAutosaveChange: function(event){
-    SettingsActions.set('user', 'autosave', !this.state.autosave)
-    this.setState({
-      autosave: !this.state.autosave
-    })
+    );
   }
+}
 
-})
+PlaylistSettings.propTypes = {
+  settings: PropTypes.shape({
+    user: PropTypes.shape({
+      autosave: PropTypes.bool,
+    }),
+  }),
+};
 
-module.exports = PlaylistSettings
+module.exports = PlaylistSettings;

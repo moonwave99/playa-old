@@ -112,7 +112,11 @@ let Main = React.createClass({
       <div className={classes} onClick={this.handleGlobalClick}>
         <Modal {...this.state.modal}/>
         <PlaybackBar/>
-        <Sidebar settings={this.state.settings} {...this.state.sidebar}/>
+        <Sidebar
+          lastFMClient={playa.lastFMClient}
+          settings={this.state.settings}
+          {...this.state.sidebar}
+        />
         <div className="playa-main-wrapper">
           <Tabs
             ref="tabs"

@@ -10,7 +10,36 @@
       }
     }
   },
-  "footer" : {
+  "sidebar": {
+    "settings": {
+      "folders": {
+        "title": "Folder",
+        "root": "Current file browser root:",
+        "change": "Change folder"
+      },
+      "interface": {
+        "title": "Interface",
+        "wideScreen": "Leave Sidebar open on wide screens"
+      },
+      "lastfm": {
+        "title": "Last.fm",
+        "authorise": "Authorise Playa",
+        "signedin": "Signed in as:",
+        "signout": "Sign out",
+        "enable": "Enable scrobbling",
+        "visit": "Visit Last.FM profile of {{user}}"
+      },
+      "playlist": {
+        "title": "Playlists",
+        "autosave": "Autosave"
+      },
+      "remote": {
+        "title": "Remote Control",
+        "allow": "Allow HTTP Remote Control"
+      }
+    }
+  },
+  "footer": {
     "noPlaylist": "No playlist selected.",
     "emptyPlaylist": "No tracks in this playlist yet.",
     "stats": "{{albums}} albums · {{tracks}} tracks · {{totalTime}}"

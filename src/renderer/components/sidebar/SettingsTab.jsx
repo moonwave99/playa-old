@@ -1,29 +1,27 @@
-"use babel"
+'use babel';
 
-var _ = require('lodash')
-var cx = require('classnames')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
+import React, { PropTypes } from 'react';
+import InterfaceSettings from './InterfaceSettings.jsx';
+import PlaylistSettings from './PlaylistSettings.jsx';
+import FolderSettings from './FolderSettings.jsx';
+import LastFMSettings from './LastFMSettings.jsx';
+import RemoteSettings from './RemoteSettings.jsx';
 
-var InterfaceSettings = require('./InterfaceSettings.jsx')
-var PlaylistSettings = require('./PlaylistSettings.jsx')
-var FolderSettings = require('./FolderSettings.jsx')
-var LastFMSettings = require('./LastFMSettings.jsx')
-var RemoteSettings = require('./RemoteSettings.jsx')
+const settingsTab = function settingsTab(props) {
+  return (
+    <div className="settings">
+      <InterfaceSettings settings={props.settings} />
+      <PlaylistSettings settings={props.settings} />
+      <FolderSettings settings={props.settings} />
+      <LastFMSettings lastFMClient={props.lastFMClient} settings={props.settings} />
+      <RemoteSettings settings={props.settings} />
+    </div>
+  );
+};
 
-var SettingsTab = React.createClass({
-  render: function(){
-    var lastFMClient = playa.lastFMClient
-    return (
-      <div className="settings">
-        <InterfaceSettings settings={this.props.settings}/>
-        <PlaylistSettings settings={this.props.settings}/>
-        <FolderSettings settings={this.props.settings}/>
-        <LastFMSettings lastFMClient={lastFMClient} settings={this.props.settings}/>
-        <RemoteSettings settings={this.props.settings}/>
-      </div>
-    )
-  }
-})
+settingsTab.propTypes = {
+  settings: PropTypes.shape({}),
+  lastFMClient: PropTypes.shape({}),
+};
 
-module.exports = SettingsTab
+module.exports = settingsTab;
