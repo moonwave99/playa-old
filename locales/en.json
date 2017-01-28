@@ -1,4 +1,15 @@
 {
+  "playlist": {
+    "item": {
+      "contextMenu": {
+        "locateFolder": "Locate folder for {{folder}}",
+        "finder": "Reveal in Finder",
+        "discogs": "Search on Discogs",
+        "rym": "Search on RYM",
+        "lastfm": "Search on Last.fm"
+      }
+    }
+  },
   "footer" : {
     "noPlaylist": "No playlist selected.",
     "emptyPlaylist": "No tracks in this playlist yet.",

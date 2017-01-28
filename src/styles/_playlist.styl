@@ -4,6 +4,11 @@
   user-select none
   .sidebar-offset
     transition transform .2s linear
+    border none
+    outline none
+    width 1.5rem
+    height 1.5rem
+    padding 0
   &.sidebar-open
     .sidebar-offset
     .album.selected:after
@@ -139,6 +144,7 @@
         position absolute
         right 5rem
         top size(($albumItemHeight - $albumDateFontSize) * .5)
+        background none
         &.album-error
           color $errorIconColor
         &.album-warning
