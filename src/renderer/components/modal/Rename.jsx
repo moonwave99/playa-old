@@ -45,8 +45,8 @@ class Rename extends ReactComponent {
   }
   onSubmit(event) {
     event.preventDefault();
-    const value = this.refs.form.getValue();
-    this.props.handleSubmit(this.props.item, value.name);
+    const { name } = this.form.getValue();
+    this.props.handleSubmit(this.props.item, name);
   }
 }
 
@@ -54,6 +54,7 @@ Rename.propTypes = {
   item: PropTypes.shape({
     name: PropTypes.string,
   }),
+  handleSubmit: PropTypes.func,
 };
 
 module.exports = Rename;
