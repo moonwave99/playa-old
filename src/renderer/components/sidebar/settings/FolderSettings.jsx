@@ -2,7 +2,7 @@
 
 import React, { PropTypes, Component } from 'react';
 import i18n from 'i18next';
-import SettingsActions from '../../actions/SettingsActions';
+import SettingsActions from '../../../actions/SettingsActions';
 
 const setCustomAttributes = function setCustomAttributes(input) {
   if (!input) {

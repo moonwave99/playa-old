@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import Tabs from 'react-simpletabs';
 import PlaylistBrowserTab from './PlaylistBrowserTab.jsx';
 import FileBrowserTab from './FileBrowserTab.jsx';
-import SettingsTab from './SettingsTab.jsx';
+import SettingsTab from './settings/SettingsTab.jsx';
 import SidebarActions from '../../actions/SidebarActions';
 import KeyboardFocusActions from '../../actions/KeyboardFocusActions';
 import KeyboardNameSpaceConstants from '../../constants/KeyboardNameSpaceConstants';

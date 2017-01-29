@@ -2,8 +2,8 @@
 
 import React, { PropTypes, Component } from 'react';
 import i18n from 'i18next';
-import SettingsActions from '../../actions/SettingsActions';
-import { openLastfmUser } from '../../util/helpers/openLink';
+import SettingsActions from '../../../actions/SettingsActions';
+import { openLastfmUser } from '../../../util/helpers/openLink';
 
 class LastFMSettings extends Component {
   constructor(props) {
