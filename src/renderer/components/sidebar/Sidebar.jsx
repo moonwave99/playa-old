@@ -10,22 +10,7 @@ import SettingsTab from './settings/SettingsTab.jsx';
 import SidebarActions from '../../actions/SidebarActions';
 import KeyboardFocusActions from '../../actions/KeyboardFocusActions';
 import KeyboardNameSpaceConstants from '../../constants/KeyboardNameSpaceConstants';
-
-const _overflows = function _overflows(parent, element) {
-  const parentBounds = parent.getBoundingClientRect();
-  const elBounds = element.getBoundingClientRect();
-  let direction = 0;
-  if ((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)) {
-    direction = 1;
-  } else if (elBounds.top < parentBounds.top) {
-    direction = -1;
-  }
-  return {
-    direction,
-    parentBounds,
-    elBounds,
-  };
-};
+import { overflowsParent } from '../../util/helpers/overflow';
 
 const handleAfter = function handleAfter(selectedIndex) {
   SidebarActions.select(selectedIndex - 1);
@@ -47,7 +32,7 @@ class Sidebar extends Component {
     if (!targetElement) {
       return;
     }
-    const { direction, parentBounds, elBounds } = _overflows(wrapper, targetElement);
+    const { direction, parentBounds, elBounds } = overflowsParent(wrapper, targetElement);
     if (direction < 0) {
       wrapper.scrollTop = targetElement.offsetTop;
     } else if (direction > 0) {

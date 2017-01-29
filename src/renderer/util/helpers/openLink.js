@@ -10,7 +10,7 @@ const LASTFM_USER_URL = 'http://www.last.fm/user/';
 const openLink = function openLink(base, queryTerm) {
   let link = base;
   if (queryTerm) {
-    link = link + encodeURIComponent(queryTerm);
+    link += encodeURIComponent(queryTerm);
   }
   shell.openExternal(link);
 };
@@ -29,7 +29,7 @@ export const searchOnLastfm = function searchOnLastfm(queryTerm) {
 };
 export const openLastfmUser = function openLastfmUser(user) {
   openLink(`${LASTFM_USER_URL}${user}`);
-}
+};
 
 export default {
   revealInFinder,

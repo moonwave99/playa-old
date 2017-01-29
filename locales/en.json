@@ -11,6 +11,26 @@
     }
   },
   "sidebar": {
+    "playlist": {
+      "delete": {
+        "confirm": "Are you sure to delete {{name}}?",
+        "cannotDelete": "You cannot delete an open playlist."
+      },
+      "contextMenu": {
+        "load": "Load playlist",
+        "delete": "Delete playlist",
+        "rename": "Rename playlist"
+      },
+      "rename": {
+        "fileExists": "File already exists."
+      }
+    },
+    "fileBrowser": {
+      "contextMenu": {
+        "reveal": "Reveal in Finder",
+        "addToPlaylist": "Add {{folder}} to current playlist"
+      }
+    },
     "settings": {
       "folders": {
         "title": "Folder",

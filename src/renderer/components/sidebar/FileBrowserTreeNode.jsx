@@ -1,13 +1,9 @@
-"use babel"
+'use babel';
 
-var _ = require('lodash')
-var cx = require('classnames')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
-var DragSource = require('react-dnd').DragSource
-var TreeView = require('react-treeview')
-
-var DragDropConstants = require('../../constants/DragDropConstants')
+import cx from 'classnames';
+import React, { PropTypes, Component } from 'react';
+import { DragSource as dragSource } from 'react-dnd';
+import DragDropConstants from '../../constants/DragDropConstants';
 
 const fileBrowserTreeNodeSource = {
   beginDrag(props) {
@@ -15,50 +11,79 @@ const fileBrowserTreeNodeSource = {
       id: props.itemKey,
       originalIndex: props.index,
       node: props.node,
-      source: DragDropConstants.FILEBROWSER_FOLDER
-    }
+      source: DragDropConstants.FILEBROWSER_FOLDER,
+    };
   },
-  endDrag(props, monitor) {
+  endDrag() {},
+};
 
+const getNodePadding = function getNodePadding(node) {
+  const padding = ((node.depth * 1) + (node.isDirectory() ? 0 : 1.25) + 0.5);
+  return `${padding}rem`;
+};
+
+class FileBrowserTreeNode extends Component {
+  constructor(props) {
+    super(props);
+    this.playlistExtension = playa.getSetting('common', 'playlistExtension');
+    this.handleClick = this.handleClick.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
+    this.handleArrowClick = this.handleArrowClick.bind(this);
+    this.handleContextMenu = this.handleContextMenu.bind(this);
   }
-}
-
-var FileBrowserTreeNode = React.createClass({
-  renderNodeArrow: function(){
-    var classes = cx({
-      'node-arrow'  : true
-    })
-    return (
-      <span onClick={this.handleArrowClick} className={classes}></span>
-    )
-  },
-  renderNodeLabel: function(){
-    var classes = cx({
-      'node-label': true
-    })
-    var iconClasses = cx({
-      'fa' : true,
-      'fa-fw' : true,
+  handleClick(event) {
+    if (this.props.handleClick) {
+      this.props.handleClick(event, this);
+    }
+  }
+  handleDoubleClick(event) {
+    if (this.props.handleDoubleClick) {
+      this.props.handleDoubleClick(event, this);
+    }
+  }
+  handleContextMenu(event) {
+    if (this.props.handleContextMenu) {
+      this.props.handleContextMenu(event, this);
+    }
+  }
+  handleArrowClick(event) {
+    event.stopPropagation();
+    this.props.handleArrowClick(event, this);
+  }
+  renderNodeArrow() {
+    const classes = cx({
+      'node-arrow': true,
+    });
+    return <span onClick={this.handleArrowClick} className={classes} />;
+  }
+  renderNodeLabel() {
+    const classes = cx({
+      'node-label': true,
+    });
+    const iconClasses = cx({
+      fa: true,
+      'fa-fw': true,
       'fa-folder': this.props.node.isDirectory(),
-      'fa-file-audio-o' : this.props.node.extension == playa.getSetting('common', 'playlistExtension')
-    })
+      'fa-file-audio-o': this.props.node.extension === this.playlistExtension,
+    });
     return (
       <span className={classes}>
-        <i className={iconClasses}></i> {this.props.node.name}
+        <i className={iconClasses} />
+        {this.props.node.name}
       </span>
-    )
-  },
-  render: function(){
-    var node = this.props.node
-    var classes = cx({
-      'browser-node'  : true,
-      'selected'      : this.props.isSelected,
-      'collapsed'     : this.props.collapsed,
-      'has-arrow'     : node.isDirectory()
-    })
-    var style = {
-      paddingLeft: ( node.depth * 1 + ( node.isDirectory() ? 0 : 1.25) + 0.5 )+ 'rem'
-    }
+    );
+  }
+  render() {
+    const node = this.props.node;
+    const classes = cx({
+      'browser-node': true,
+      selected: this.props.isSelected,
+      collapsed: this.props.collapsed,
+      'has-arrow': node.isDirectory(),
+    });
+    const style = {
+      paddingLeft: getNodePadding(node),
+    };
     return this.props.connectDragSource(
       <li
         data-id={node.id}
@@ -66,30 +91,37 @@ var FileBrowserTreeNode = React.createClass({
         className={classes}
         onClick={this.handleClick}
         onDoubleClick={this.handleDoubleClick}
-        onContextMenu={this.handleContextMenu}>
+        onContextMenu={this.handleContextMenu}
+      >
         { node.isDirectory() ? this.renderNodeArrow() : null }
         { this.renderNodeLabel() }
       </li>
-    )
-  },
-  handleClick: function(event){
-    this.props.handleClick && this.props.handleClick(event, this)
-  },
-  handleDoubleClick(event){
-    this.props.handleDoubleClick && this.props.handleDoubleClick(event, this)
-  },
-  handleContextMenu(event){
-    this.props.handleContextMenu && this.props.handleContextMenu(event, this)
-  },
-  handleArrowClick(event){
-    event.stopPropagation()
-    this.props.handleArrowClick(event, this)
+    );
   }
-})
+}
 
-FileBrowserTreeNode = DragSource(DragDropConstants.FILEBROWSER_FOLDER, fileBrowserTreeNodeSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
-}))(FileBrowserTreeNode)
+FileBrowserTreeNode.propTypes = {
+  collapsed: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  connectDragSource: PropTypes.func,
+  handleClick: PropTypes.func,
+  handleDoubleClick: PropTypes.func,
+  handleArrowClick: PropTypes.func,
+  handleContextMenu: PropTypes.func,
+  node: PropTypes.shape({
+    extension: PropTypes.string,
+    name: PropTypes.string,
+    isDirectory: PropTypes.func,
+  }),
+};
 
-module.exports = FileBrowserTreeNode
+const DraggedFileBrowserTreeNode = dragSource(
+  DragDropConstants.FILEBROWSER_FOLDER,
+  fileBrowserTreeNodeSource,
+  (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }),
+)(FileBrowserTreeNode);
+
+module.exports = DraggedFileBrowserTreeNode;

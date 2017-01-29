@@ -8,7 +8,8 @@
     "globals": {
       "window": true,
       "document": true,
-      "playa": true
+      "playa": true,
+      "confirm": true
     },
     "settings": {
         "import/core-modules": [
@@ -17,6 +18,7 @@
     },
     "rules" : {
       "import/extensions": "off",
+      "no-alert": "off",
       "no-underscore-dangle": "off",
       "jsx-a11y/no-static-element-interactions": "off"
     }
