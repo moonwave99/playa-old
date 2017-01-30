@@ -94,4 +94,4 @@ const PlayerStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = PlayerStore;
+export default PlayerStore;

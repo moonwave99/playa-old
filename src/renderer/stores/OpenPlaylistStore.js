@@ -147,4 +147,4 @@ const OpenPlaylistStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = OpenPlaylistStore;
+export default OpenPlaylistStore;

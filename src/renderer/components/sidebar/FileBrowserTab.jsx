@@ -121,4 +121,4 @@ FileBrowserTab.propTypes = {
   isFocused: PropTypes.bool,
 };
 
-module.exports = FileBrowserTab;
+export default FileBrowserTab;

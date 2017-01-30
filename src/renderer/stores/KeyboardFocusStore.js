@@ -59,9 +59,8 @@ const KeyboardFocusStore = Object.assign({}, EventEmitter.prototype, {
       default:
         break;
     }
-
     return true;
   }),
 });
 
-module.exports = KeyboardFocusStore;
+export default KeyboardFocusStore;

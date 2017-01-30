@@ -33,4 +33,4 @@ Dispatcher.prototype = Object.assign({
   },
 });
 
-module.exports = Dispatcher;
+export default Dispatcher;

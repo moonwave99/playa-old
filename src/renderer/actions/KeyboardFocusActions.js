@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import KeyboardFocusConstants from '../constants/KeyboardFocusConstants';
 
-module.exports = {
+export default {
   requestFocus(scopeName) {
     AppDispatcher.dispatch({
       actionType: KeyboardFocusConstants.REQUEST_FOCUS,

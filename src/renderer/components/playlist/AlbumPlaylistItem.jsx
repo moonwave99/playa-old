@@ -282,4 +282,4 @@ const DraggedAndDroppedPlaylistItem = dragSource(
   }),
 )(DroppedAlbumPlaylistItem);
 
-module.exports = DraggedAndDroppedPlaylistItem;
+export default DraggedAndDroppedPlaylistItem;

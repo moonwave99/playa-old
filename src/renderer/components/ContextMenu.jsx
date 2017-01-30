@@ -113,4 +113,4 @@ ContextMenu.propTypes = {
   isVisible: PropTypes.bool.isRequired,
 };
 
-module.exports = ContextMenu;
+export default ContextMenu;

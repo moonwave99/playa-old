@@ -67,4 +67,4 @@ FolderSettings.propTypes = {
   }),
 };
 
-module.exports = FolderSettings;
+export default FolderSettings;

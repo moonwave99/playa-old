@@ -76,4 +76,4 @@ AlbumTracklistItem.propTypes = {
   handleDoubleClick: PropTypes.func,
 };
 
-module.exports = AlbumTracklistItem;
+export default AlbumTracklistItem;

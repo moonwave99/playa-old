@@ -6,7 +6,7 @@ import appConfig from '../../config/appConfig';
 
 Promise.promisifyAll(ffmpeg);
 
-module.exports = class AudioMetadata {
+export default class AudioMetadata {
   constructor(filename) {
     this.filename = filename;
     this.data = {};
@@ -36,4 +36,4 @@ module.exports = class AudioMetadata {
   toJSON() {
     return this.data;
   }
-};
+}

@@ -7,7 +7,6 @@ import FileBrowserConstants from '../constants/FileBrowserConstants';
 const CHANGE_EVENT = 'change';
 
 const FileBrowserStore = Object.assign({}, EventEmitter.prototype, {
-
   getFileTree() {
     return playa.fileTree.flatten();
   },
@@ -41,4 +40,4 @@ const FileBrowserStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = FileBrowserStore;
+export default FileBrowserStore;

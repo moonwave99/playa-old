@@ -17,7 +17,7 @@ const defaultGetSelectedIds = function defaultGetSelectedIds(component) {
 
 const defaultSearchForBuffer = function defaultSearchForBuffer() {};
 
-module.exports = function Navigable(
+export default function navigable(
   Component,
   scopeName,
   getIdList,

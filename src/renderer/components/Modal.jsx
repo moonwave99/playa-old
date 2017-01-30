@@ -81,4 +81,4 @@ Modal.propTypes = {
   }),
 };
 
-module.exports = Modal;
+export default Modal;

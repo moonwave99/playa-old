@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import PlaylistBrowserConstants from '../constants/PlaylistBrowserConstants';
 
-module.exports = {
+export default {
   loadRoot() {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT,

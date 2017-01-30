@@ -11,7 +11,7 @@ import needle from 'needle';
 Promise.promisifyAll(fs);
 Promise.promisifyAll(needle);
 
-module.exports = class CoverLoader {
+export default class CoverLoader {
   constructor({ root, discogs = {}, enableLog = false }) {
     this.root = root;
     this.discogs = discogs;
@@ -132,4 +132,4 @@ module.exports = class CoverLoader {
     }
     response ? console.info(message, response) : console.info(message); // eslint-disable-line
   }
-};
+}

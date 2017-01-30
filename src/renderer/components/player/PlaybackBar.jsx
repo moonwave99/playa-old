@@ -138,4 +138,4 @@ class PlaybackBar extends Component {
   }
 }
 
-module.exports = PlaybackBar;
+export default PlaybackBar;

@@ -37,7 +37,7 @@ const openTrack = function openTrack(filename) {
   );
 };
 
-module.exports = class Player extends EventEmitter {
+export default class Player extends EventEmitter {
   constructor({
     mediaFileLoader,
     resolution = 1000,
@@ -298,4 +298,4 @@ module.exports = class Player extends EventEmitter {
         return album;
       });
   }
-};
+}

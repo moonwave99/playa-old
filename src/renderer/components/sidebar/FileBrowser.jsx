@@ -69,4 +69,4 @@ FileBrowser.propTypes = {
   selection: PropTypes.arrayOf(PropTypes.string),
 };
 
-module.exports = FileBrowser;
+export default FileBrowser;

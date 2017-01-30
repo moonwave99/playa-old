@@ -291,4 +291,4 @@ AlbumPlaylist.propTypes = {
   }),
 };
 
-module.exports = AlbumPlaylist;
+export default AlbumPlaylist;

@@ -7,7 +7,7 @@ import { omit } from 'lodash';
 
 const OUTPUT_EXT = '.png';
 
-module.exports = class WaveformLoader {
+export default class WaveformLoader {
   constructor({ root, config = {}, enableLog = false }) {
     this.root = root;
     this.config = config;
@@ -60,4 +60,4 @@ module.exports = class WaveformLoader {
     }
     response ? console.info(message, response) : console.info(message); // eslint-disable-line
   }
-};
+}

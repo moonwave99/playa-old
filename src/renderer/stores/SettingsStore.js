@@ -35,4 +35,4 @@ const SettingsStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = SettingsStore;
+export default SettingsStore;

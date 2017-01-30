@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import OpenPlaylistConstants from '../constants/OpenPlaylistConstants';
 
-module.exports = {
+export default {
   add(playlists, params) {
     AppDispatcher.dispatch({
       actionType: OpenPlaylistConstants.ADD_PLAYLIST,

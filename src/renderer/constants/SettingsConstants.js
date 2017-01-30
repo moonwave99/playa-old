@@ -2,6 +2,6 @@
 
 import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   SET_VALUE: null,
 });

@@ -24,4 +24,4 @@ settingsTab.propTypes = {
   lastFMClient: PropTypes.shape({}),
 };
 
-module.exports = settingsTab;
+export default settingsTab;

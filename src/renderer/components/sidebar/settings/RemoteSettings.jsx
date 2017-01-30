@@ -65,4 +65,4 @@ RemoteSettings.propTypes = {
   }),
 };
 
-module.exports = RemoteSettings;
+export default RemoteSettings;

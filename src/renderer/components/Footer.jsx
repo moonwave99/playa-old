@@ -98,4 +98,4 @@ Footer.propTypes = {
   }),
 };
 
-module.exports = Footer;
+export default Footer;

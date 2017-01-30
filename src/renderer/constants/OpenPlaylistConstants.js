@@ -2,7 +2,7 @@
 
 import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   ADD_PLAYLIST: null,
   SAVE_PLAYLIST: null,
   REMOVE_FILES: null,

@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import ContextMenuConstants from '../constants/ContextMenuConstants';
 
-module.exports = {
+export default {
   show(actions, position, event, prevContext) {
     AppDispatcher.dispatch({
       actionType: ContextMenuConstants.CONTEXT_MENU_SHOW,

@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import SidebarConstants from '../constants/SidebarConstants';
 
-module.exports = {
+export default {
   toggle(toggle) {
     AppDispatcher.dispatch({
       actionType: SidebarConstants.TOGGLE,

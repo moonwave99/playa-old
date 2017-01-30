@@ -126,4 +126,4 @@ LastFMSettings.propTypes = {
   }),
 };
 
-module.exports = LastFMSettings;
+export default LastFMSettings;

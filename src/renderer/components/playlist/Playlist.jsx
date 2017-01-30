@@ -134,4 +134,4 @@ Playlist.propTypes = {
   }),
 };
 
-module.exports = Playlist;
+export default Playlist;

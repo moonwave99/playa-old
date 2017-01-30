@@ -97,4 +97,4 @@ ProgressBar.propTypes = {
   playing: PropTypes.bool,
 };
 
-module.exports = ProgressBar;
+export default ProgressBar;

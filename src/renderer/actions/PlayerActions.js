@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import PlayerConstants from '../constants/PlayerConstants';
 
-module.exports = {
+export default {
   toggle() {
     AppDispatcher.dispatch({
       actionType: PlayerConstants.TOGGLE_PLAYBACK,

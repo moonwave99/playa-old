@@ -2,7 +2,7 @@
 
 import Dispatcher from './Dispatcher';
 
-module.exports = Object.assign({}, Dispatcher.prototype, {
+export default Object.assign({}, Dispatcher.prototype, {
   handleViewAction(action) {
     this.dispatch({
       source: 'VIEW_ACTION',

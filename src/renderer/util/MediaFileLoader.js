@@ -10,7 +10,7 @@ import Promise from 'bluebird';
 
 import MetaDoctor from './MetaDoctor';
 
-module.exports = class MediaFileLoader {
+export default class MediaFileLoader {
   constructor({ fileExtensions, fileAmountThreshold = 0 }) {
     this.fileExtensions = fileExtensions;
     this.fileAmountThreshold = fileAmountThreshold;
@@ -72,4 +72,4 @@ module.exports = class MediaFileLoader {
   invalidate(ids) {
     ids.forEach(id => delete this.cache[md5(id)]);
   }
-};
+}

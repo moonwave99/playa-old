@@ -2,7 +2,7 @@
 
 import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   LOAD_PLAYLIST_ROOT: null,
   EXPAND_PLAYLIST_NODES: null,
   COLLAPSE_PLAYLIST_NODES: null,

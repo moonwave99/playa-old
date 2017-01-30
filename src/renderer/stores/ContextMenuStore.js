@@ -55,4 +55,4 @@ const ContextMenuStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = ContextMenuStore;
+export default ContextMenuStore;

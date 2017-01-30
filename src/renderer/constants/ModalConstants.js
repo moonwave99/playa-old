@@ -2,7 +2,7 @@
 
 import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   MODAL_SHOW: null,
   MODAL_HIDE: null,
 });

@@ -2,7 +2,7 @@
 
 import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   TOGGLE: null,
   PLAY: null,
   PAUSE: null,

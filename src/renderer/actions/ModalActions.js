@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import ModalConstants from '../constants/ModalConstants';
 
-module.exports = {
+export default {
   show(params) {
     AppDispatcher.dispatch({
       actionType: ModalConstants.MODAL_SHOW,

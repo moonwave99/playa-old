@@ -47,4 +47,4 @@ const PlaylistBrowserStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = PlaylistBrowserStore;
+export default PlaylistBrowserStore;

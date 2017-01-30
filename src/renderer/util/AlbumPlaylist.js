@@ -21,7 +21,7 @@ const processArtist = function processArtist(metadata) {
     : metadata.artist;
 };
 
-module.exports = class AlbumPlaylist {
+export default class AlbumPlaylist {
   constructor(options) {
     this.items = new DoublyLinkedList();
     this.id = options.id || uid();
@@ -262,4 +262,4 @@ module.exports = class AlbumPlaylist {
     }
     return this;
   }
-};
+}

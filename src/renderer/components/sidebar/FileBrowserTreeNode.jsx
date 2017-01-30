@@ -124,4 +124,4 @@ const DraggedFileBrowserTreeNode = dragSource(
   }),
 )(FileBrowserTreeNode);
 
-module.exports = DraggedFileBrowserTreeNode;
+export default DraggedFileBrowserTreeNode;

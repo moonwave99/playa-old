@@ -50,4 +50,4 @@ const SidebarStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = SidebarStore;
+export default SidebarStore;

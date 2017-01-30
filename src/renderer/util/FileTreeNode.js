@@ -4,7 +4,7 @@ import { findWhere } from 'lodash';
 import fs from 'fs-extra';
 import md5 from 'md5';
 
-module.exports = class FileTreeNode {
+export default class FileTreeNode {
   constructor({
     name,
     path,
@@ -54,4 +54,4 @@ module.exports = class FileTreeNode {
       });
     });
   }
-};
+}

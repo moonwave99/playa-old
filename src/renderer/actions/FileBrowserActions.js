@@ -3,7 +3,7 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import FileBrowserConstants from '../constants/FileBrowserConstants';
 
-module.exports = {
+export default {
   loadRoot() {
     AppDispatcher.dispatch({
       actionType: FileBrowserConstants.LOAD_FILEBROWSER_ROOT,

@@ -2,11 +2,11 @@
 
 import path from 'path';
 import FileTreeNode from './FileTreeNode';
+import fileBrowser from './fileBrowser';
 
 module.exports = class FileTree {
-  constructor({ rootFolder, rootName = '/', fileBrowser, filter = 'directory' }) {
+  constructor({ rootFolder, rootName = '/', filter = 'directory' }) {
     this.rootFolder = rootFolder;
-    this.fileBrowser = fileBrowser;
     this.rootNode = null;
     this.filter = filter;
     this.rootNode = new FileTreeNode({
@@ -20,7 +20,7 @@ module.exports = class FileTree {
     return this.expand([this.rootNode]);
   }
   expandSingleNode(node) {
-    return this.fileBrowser.load(node.path, this.filter)
+    return fileBrowser.load(node.path, this.filter)
       .then((content) => {
         const children = content.sort().map((folder) => {
           const relativePath = path.relative(this.rootFolder, folder);

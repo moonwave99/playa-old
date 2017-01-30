@@ -54,4 +54,4 @@ class InfoDrawer extends Component {
   }
 }
 
-module.exports = InfoDrawer;
+export default InfoDrawer;

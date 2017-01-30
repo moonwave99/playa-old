@@ -5,7 +5,7 @@ import { shell } from 'electron';
 import { EventEmitter } from 'events';
 import { LastFmNode } from 'lastfm';
 
-module.exports = class LastFMClient extends EventEmitter {
+export default class LastFMClient extends EventEmitter {
   constructor(options) {
     super(options);
     this.key = options.key;
@@ -78,4 +78,4 @@ module.exports = class LastFMClient extends EventEmitter {
       },
     });
   }
-};
+}

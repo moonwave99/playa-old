@@ -89,4 +89,4 @@ Sidebar.propTypes = {
   settings: PropTypes.shape({}),
 };
 
-module.exports = Sidebar;
+export default Sidebar;

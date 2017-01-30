@@ -49,4 +49,4 @@ InterfaceSettings.propTypes = {
   }),
 };
 
-module.exports = InterfaceSettings;
+export default InterfaceSettings;

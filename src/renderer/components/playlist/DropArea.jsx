@@ -74,7 +74,7 @@ DropArea.propTypes = {
   connectDropTarget: PropTypes.func,
 };
 
-module.exports = dropTarget([
+export default dropTarget([
   DragDropConstants.PLAYLIST_ALBUM,
   DragDropConstants.FILEBROWSER_FOLDER,
   NativeTypes.FILE,

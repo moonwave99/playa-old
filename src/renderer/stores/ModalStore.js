@@ -49,4 +49,4 @@ const ModalStore = Object.assign({}, EventEmitter.prototype, {
   }),
 });
 
-module.exports = ModalStore;
+export default ModalStore;

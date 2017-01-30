@@ -196,4 +196,4 @@ PlaylistBrowserTab.propTypes = {
   isFocused: PropTypes.bool,
 };
 
-module.exports = PlaylistBrowserTab;
+export default PlaylistBrowserTab;

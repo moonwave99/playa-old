@@ -57,4 +57,4 @@ Rename.propTypes = {
   handleSubmit: PropTypes.func,
 };
 
-module.exports = Rename;
+export default Rename;

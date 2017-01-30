@@ -49,4 +49,4 @@ PlaylistSettings.propTypes = {
   }),
 };
 
-module.exports = PlaylistSettings;
+export default PlaylistSettings;

@@ -11,7 +11,7 @@ const newPlaylist = function newPlaylist() {
   });
 };
 
-module.exports = class OpenPlaylistManager {
+export default class OpenPlaylistManager {
   constructor({ loader, mediaFileLoader }) {
     this.loader = loader;
     this.mediaFileLoader = mediaFileLoader;
@@ -169,4 +169,4 @@ module.exports = class OpenPlaylistManager {
     this.selectedId = playlist.id;
     return true;
   }
-};
+}
