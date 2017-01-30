@@ -1,7 +1,7 @@
 'use babel';
 
 import { ipcRenderer as ipc } from 'electron';
-import Playa from '../playa.coffee';
+import Playa from '../playa';
 
 window.playa = new Playa({
   userDataFolder: ipc.sendSync('request:app:path', { key: 'userData' }),
