@@ -121,8 +121,8 @@ class PlaybackBar extends Component {
             {formatTime(this.state.currentTime)}
           </span>
           <div className="playback-track-info">
-            <span className="playback-track-info-title">{ title }</span>
-            <span className="playback-track-info-artist">{ artistInfo }</span>
+            <span className="playback-track-info-title">{title}</span>
+            <span className="playback-track-info-artist">{artistInfo}</span>
           </div>
           <span
             className="playback-time-indicator time-remaining"

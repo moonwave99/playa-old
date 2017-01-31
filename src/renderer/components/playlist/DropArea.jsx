@@ -1,4 +1,5 @@
-import _, { } from 'lodash';
+import _ from 'lodash';
+import i18n from 'i18next';
 import path from 'path';
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
@@ -61,7 +62,9 @@ class DropArea extends Component {
     };
     return this.props.connectDropTarget(
       <div className={classes} style={style}>
-        <span className="text">Drop albums here!</span>
+        <span className="text">
+          {i18n.t('dropArea.placeholder')}
+        </span>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 {
   "playlist": {
-    "item": {
+    "album": {
+      "disc": "Disc {{disc}}",
       "contextMenu": {
         "locateFolder": "Locate folder for {{folder}}",
         "finder": "Reveal in Finder",
@@ -58,6 +59,9 @@
         "allow": "Allow HTTP Remote Control"
       }
     }
+  },
+  "dropArea": {
+    "placeholder": "Drop albums here!"
   },
   "footer": {
     "noPlaylist": "No playlist selected.",

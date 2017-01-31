@@ -1,5 +1,6 @@
 import { debounce, findIndex, forEach } from 'lodash';
 import cx from 'classnames';
+import i18n from 'i18next';
 import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
 import ReactList from 'react-list';
@@ -145,7 +146,9 @@ class AlbumPlaylist extends Component {
       }
       case 'discNumber':
         return (
-          <li key={item.key} className="disc-number">Disc {item.disc}</li>
+          <li key={item.key} className="disc-number">
+            {i18n.t('playlist.album.disc', { disc: item.disc })}
+          </li>
         );
       default:
         return null;

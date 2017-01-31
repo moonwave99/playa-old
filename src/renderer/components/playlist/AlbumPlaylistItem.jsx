@@ -95,7 +95,7 @@ class AlbumPlaylistItem extends Component {
         handler: () => {
           const folder = this.props.album.getFolder();
           const remoteFolder = ipc.sendSync('request:open:dialog', {
-            title: i18n.t('playlist.item.contextMenu.locateFolder', { folder }),
+            title: i18n.t('playlist.album.contextMenu.locateFolder', { folder }),
             properties: ['openDirectory'],
           });
           if (remoteFolder[0]) {
@@ -113,19 +113,19 @@ class AlbumPlaylistItem extends Component {
     const queryTerm = `${this.props.album.getArtist()}' '${this.props.album.getTitle()}`;
     return [
       {
-        label: i18n.t('playlist.item.contextMenu.finder'),
+        label: i18n.t('playlist.album.contextMenu.finder'),
         handler: () => revealInFinder(this.props.album.getFolder()),
       },
       {
-        label: i18n.t('playlist.item.contextMenu.discogs'),
+        label: i18n.t('playlist.album.contextMenu.discogs'),
         handler: () => searchOnDiscogs(queryTerm),
       },
       {
-        label: i18n.t('playlist.item.contextMenu.rym'),
+        label: i18n.t('playlist.album.contextMenu.rym'),
         handler: () => searchOnRym(queryTerm),
       },
       {
-        label: i18n.t('playlist.item.contextMenu.lastfm'),
+        label: i18n.t('playlist.album.contextMenu.lastfm'),
         handler: () => searchOnLastfm(queryTerm),
       },
     ];
