@@ -1,6 +1,6 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   CONTEXT_MENU_SHOW: null,
-  CONTEXT_MENU_HIDE: null
-})
+  CONTEXT_MENU_HIDE: null,
+});

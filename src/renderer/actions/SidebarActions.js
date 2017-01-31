@@ -1,21 +1,17 @@
-"use babel";
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import SidebarConstants from '../constants/SidebarConstants';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var SidebarConstants = require('../constants/SidebarConstants')
-
-var SidebarActions = {
-  toggle: function(toggle){
+export default {
+  toggle(toggle) {
     AppDispatcher.dispatch({
       actionType: SidebarConstants.TOGGLE,
-      toggle: toggle
-    })
+      toggle,
+    });
   },
-  select: function(tab){
+  select(tab) {
     AppDispatcher.dispatch({
       actionType: SidebarConstants.SELECT_TAB,
-      tab: tab
-    })
-  }
-}
-
-module.exports = SidebarActions;
+      tab,
+    });
+  },
+};

@@ -1,6 +1,6 @@
-let keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   MOUSE_INPUT: null,
-  KEYBOARD_INPUT: null
-})
+  KEYBOARD_INPUT: null,
+});

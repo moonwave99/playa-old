@@ -1,44 +1,40 @@
-"use babel";
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import PlaylistBrowserConstants from '../constants/PlaylistBrowserConstants';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var PlaylistBrowserConstants = require('../constants/PlaylistBrowserConstants')
-
-var PlaylistBrowserActions = {
-  loadRoot: function(){
+export default {
+  loadRoot() {
     AppDispatcher.dispatch({
-      actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT
-    })
+      actionType: PlaylistBrowserConstants.LOAD_PLAYLIST_ROOT,
+    });
   },
-  expandNodes: function(nodes){
+  expandNodes(nodes) {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.EXPAND_PLAYLIST_NODES,
-      nodes: nodes
-    })
+      nodes,
+    });
   },
-  collapseNodes: function(nodes){
+  collapseNodes(nodes) {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.COLLAPSE_PLAYLIST_NODES,
-      nodes: nodes
-    })
+      nodes,
+    });
   },
-  createPlaylist: function(parent){
+  createPlaylist(parent) {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.CREATE_PLAYLIST,
-      parent: parent
-    })
+      parent,
+    });
   },
-  deletePlaylist: function(node){
+  deletePlaylist(node) {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.DELETE_PLAYLIST,
-      node: node
-    })
+      node,
+    });
   },
-  createFolder: function(parent){
+  createFolder(parent) {
     AppDispatcher.dispatch({
       actionType: PlaylistBrowserConstants.CREATE_FOLDER,
-      parent: parent
-    })
-  }
-}
-
-module.exports = PlaylistBrowserActions
+      parent,
+    });
+  },
+};

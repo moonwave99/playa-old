@@ -1,6 +1,6 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   TOGGLE: null,
-  SELECT_TAB: null
-})
+  SELECT_TAB: null,
+});

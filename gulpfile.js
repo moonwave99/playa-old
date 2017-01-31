@@ -1,57 +1,20 @@
-/* =========================================================================
- * Dependencies
- * ========================================================================= */
 const gulp = require('gulp');
-const jshint = require('gulp-jshint');
 const sh = require('shelljs');
 const runSequence = require('run-sequence');
 const _ = require('lodash');
 const childProcess = require('child_process');
-const babel = require('gulp-babel');
+const jetpack = require('fs-jetpack');
 const stylus = require('gulp-stylus');
 const autoprefixer = require('gulp-autoprefixer');
-const coffee = require('gulp-coffee');
 const merge = require('merge-stream');
 const googleWebFonts = require('gulp-google-webfonts');
 
-const appConfig = require('./src/config/appConfig');
-
 require('gulp-task-list')(gulp);
 
-/* =========================================================================
- * Constants
- * ========================================================================= */
+const pkg = jetpack.read('./package.json', 'json');
+const bundle = require('./tasks/bundle');
 const SRC_DIR = 'src';
-const DOCS_DIR = 'docs';
-const RELEASE_IGNORE_PKGS = [ //any npm packages that should not be included in the release
-  "electron-packager",
-  "electron-prebuilt",
-  "gulp",
-  "gulp-autoprefixer",
-  "gulp-babel",
-  "gulp-coffee",
-  "gulp-google-webfonts",
-  "gulp-jshint",
-  "gulp-spawn-mocha",
-  "gulp-stylus",
-  "gulp-task-list",
-  "jasmine",
-  "jasmine-core",
-  "jshint-stylish",
-  "karma",
-  "karma-electron-launcher",
-  "karma-jasmine",
-  "karma-phantomjs-launcher",
-  "karma-sinon",
-  "karma-spec-reporter",
-  "merge-stream",
-  "run-sequence",
-  "shelljs",
-  "should",
-  "sinon",
-  "sinon-as-promised",
-  "supertest"
-].join('|');
+const RELEASE_IGNORE_PKGS = Object.keys(pkg.devDependencies).join('|');
 const RELEASE_IMAGE_ICON = __dirname + '/src/ui/images/app.icns';
 
 const STYLUSOPTIONS = {
@@ -60,35 +23,33 @@ const STYLUSOPTIONS = {
   urlfunc: 'embedurl',
 };
 
-const MOCHA_SETTINGS = {
-  reporter: 'spec',
-  growl: true,
-  env: {
-    NODE_ENV: 'test'
-  }
+const projectDir = jetpack;
+const srcDir = jetpack.cwd('./src');
+const destDir = jetpack.cwd('./build');
+const buildPath = 'build';
+const releasePath = 'release';
+
+const _init = function _init(stream) {
+  stream.setMaxListeners(0);
+  return stream;
 };
 
-/* =========================================================================
- * Tasks
- * ========================================================================= */
-/**
- * List gulp tasks
- */
 gulp.task('?', (next) => {
   sh.exec('gulp task-list');
   next();
 });
 
 gulp.task('clean', (next) => {
-  sh.rm('-rf', appConfig.releasePath);
-  sh.rm('-rf', appConfig.buildPath);
+  sh.rm('-rf', buildPath);
+  sh.rm('-rf', releasePath);
   next();
 });
 
-gulp.task('coffee', () => {
-  return gulp.src(SRC_DIR + '/**/*.coffee')
-    .pipe(coffee({ bare: true }))
-    .pipe(gulp.dest(appConfig.buildPath));
+gulp.task('bundle', () => {
+  return Promise.all([
+    bundle(srcDir.path('browser/main.js'), destDir.path('browser.js'), pkg),
+    bundle(srcDir.path('renderer/main.js'), destDir.path('renderer.js'), pkg),
+  ]);
 });
 
 gulp.task('css', () => {
@@ -102,44 +63,58 @@ gulp.task('css', () => {
   }));
 });
 
-gulp.task('fonts', function () {
+gulp.task('fonts', () => {
   return gulp.src('./fonts.list')
     .pipe(googleWebFonts({}))
     .pipe(gulp.dest('src/ui/fonts'));
 });
 
-gulp.task('font-awesome', function () {
+gulp.task('font-awesome', () => {
   return gulp.src('./node_modules/font-awesome/**')
     .pipe(gulp.dest('src/ui/vendor/font-awesome'));
 });
 
-gulp.task('jshint', () => {
-  return _init(gulp.src(['src/**/*.js', '!src/ui/vendor/**/*.js', '!src/ui/riot-tags/**/*.js']))
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
+gulp.task('assets', () => {
+  return gulp.src('src/ui/**')
+    .pipe(gulp.dest(buildPath + '/ui'));
+});
+
+gulp.task('pkg', () => {
+  return gulp.src('package.json')
+    .pipe(gulp.dest(buildPath));
+});
+
+
+gulp.task('lib', () => {
+  return gulp.src('src/lib/**')
+    .pipe(gulp.dest(buildPath + '/lib'));
+});
+
+gulp.task('pre-release', (next) => {
+  runSequence('build', 'prod-sym-links', next);
 });
 
 gulp.task('release', ['pre-release'], (next) => {
-  var env = _.extend({}, process.env);
+  const env = Object.assign({}, process.env);
   env.NODE_ENV = 'production';
-  var child = childProcess.spawn('./node_modules/.bin/electron-packager', [
+  const packageArgs = [
     '.',
-    appConfig.productName,
+    pkg.productName,
     '--out',
-    appConfig.releasePath,
+    releasePath,
     '--platform',
     'darwin',
     '--arch',
     'x64',
-    '--version',
-    '0.36.7',
+    '--electron-version',
+    pkg.devDependencies.electron,
     '--ignore', ('node_modules/(' + RELEASE_IGNORE_PKGS + ')'),
     '--icon',
     RELEASE_IMAGE_ICON,
     '--appPath',
-    'build/browser/main.js'
-  ], {
+    'build/browser.js'
+  ];
+  const child = childProcess.spawn('./node_modules/.bin/electron-packager', packageArgs, {
     env: env
   });
 
@@ -153,40 +128,18 @@ gulp.task('release', ['pre-release'], (next) => {
   });
 });
 
-gulp.task('pre-release', (next) => {
-  // Build Steps:
-  //-------------------------------------
-  // run build to cleanup dirs and compile stylus
-  // run babel to compile ES6 => ES5
-  // run prod-sym-links to change symlinks in node_modules that point to src dir to the build dir (which will contain the compiled ES5 code)
-  //-------------------------------------
-  runSequence('build', 'babel', 'prod-sym-links', next);
-});
-
-gulp.task('babel', () => {
-  return gulp.src(['./src/**/*.js', './src/**/*.jsx'])
-    .pipe(babel({
-      presets: ['es2015', 'react'],
-      ignore: ['src/ui/vendor/*', 'src/ui/riot-tags/*'],
-    }))
-    .pipe(gulp.dest(appConfig.buildPath));
-});
-
 gulp.task('prod-sym-links', (next) => {
-
   childProcess.exec('make createProductionSymLinks', (err, stdout, stderr) => {
     console.log('stdout: ' + stdout);
     console.log('stderr: ' + stderr);
     if (err !== null) {
       console.log('exec error: ' + err);
     }
-
     return next(err);
   });
 });
 
 gulp.task('dev-sym-links', () => {
-
   childProcess.exec('make createDevelopmentSymLinks', (error, stdout, stderr) => {
     console.log('stdout: ' + stdout);
     console.log('stderr: ' + stderr);
@@ -196,16 +149,15 @@ gulp.task('dev-sym-links', () => {
   });
 });
 
-gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'coffee', 'dev-sym-links']);
+gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'bundle', 'dev-sym-links', 'lib', 'pkg', 'assets']);
 
 gulp.task('watch', () => {
   gulp.watch(SRC_DIR + '/styles/*.styl', ['css']);
 });
 
 gulp.task('serve', ['watch', 'build'], (next) => {
-
-  var env = _.extend({}, process.env);
-  var child = childProcess.spawn('./node_modules/.bin/electron', ['./'], {
+  const env = Object.assign({}, process.env);
+  const child = childProcess.spawn('./node_modules/.bin/electron', ['./'], {
     env: env
   });
 
@@ -220,11 +172,3 @@ gulp.task('serve', ['watch', 'build'], (next) => {
 });
 
 gulp.task('default', ['serve']);
-
-/* =========================================================================
- * Helper Functions
- * ========================================================================= */
-function _init(stream) {
-  stream.setMaxListeners(0);
-  return stream;
-}

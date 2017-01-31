@@ -1,61 +1,77 @@
-"use babel"
+import React, { PropTypes, Component } from 'react';
+import cx from 'classnames';
+import { formatTimeShort as formatTime } from '../../util/helpers/formatters';
 
-var _ = require('lodash')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
-var cx = require('classnames')
-var moment = require('moment')
-require("moment-duration-format")
-
-var AlbumTracklistItem = React.createClass({
-  propTypes: {
-
-  },
-  formatTime: function(time){
-    return moment.duration(time, "seconds").format("mm:ss", { trim: false })
-  },
-  renderTrackTitle: function(track){
-    var track = this.props.track
-    if(track.disabled){
-        return <span className="track-filename">{track.filename}</span>
-    }else if(this.props.album.getArtistCount() > 1){
+class AlbumTracklistItem extends Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
+  }
+  handleClick(event) {
+    this.props.handleClick(event, this);
+  }
+  handleDoubleClick(event) {
+    this.props.handleDoubleClick(event, this);
+  }
+  renderTrackTitle() {
+    const track = this.props.track;
+    if (track.disabled) {
+      return <span className="track-filename">{track.filename}</span>;
+    } else if (this.props.album.getArtistCount() > 1) {
       return (
         <span className="track-title">
           <span className="track-artist">{track.metadata.artist}</span>
-          <span className="separator"></span>
+          <span className="separator" />
           <span>{track.metadata.title}</span>
         </span>
-      )
-    }else{
-      return <span className="track-title">{track.metadata.title}</span>
+      );
     }
-  },
-  render: function(){
-    var track = this.props.track
-    var even = this.props.index % 2 == 0
-    var classes = cx({
-      'track'     : true,
-      'playing'   : this.props.isPlaying,
-      'selected'  : this.props.isSelected,
-      'odd'       : !even,
-      'even'      : even,
-      'disabled'  : this.props.track.disabled
-    })
-    return (
-      <li className={classes} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick} data-id={track.id}>
-        <span className="track-playing-indicator">{ this.props.isPlaying ? <i className="fa fa-fw fa-volume-up"></i> : null }</span>
-        <span className="track-number">{ track.metadata.track }.</span>
-        { this.renderTrackTitle() }
-        <span className="track-duration sidebar-offset">{ this.formatTime(track.duration) }</span>
-      </li>
-    )
-  },
-  handleClick: function(event){
-    this.props.handleClick(event, this)
-  },
-  handleDoubleClick: function(event){
-    this.props.handleDoubleClick(event, this)
+    return <span className="track-title">{track.metadata.title}</span>;
   }
-})
+  render() {
+    const track = this.props.track;
+    const even = this.props.index % 2 === 0;
+    const classes = cx({
+      track: true,
+      playing: this.props.isPlaying,
+      selected: this.props.isSelected,
+      odd: !even,
+      even,
+      disabled: this.props.track.disabled,
+    });
+    return (
+      <li
+        className={classes}
+        onClick={this.handleClick}
+        onDoubleClick={this.handleDoubleClick}
+        data-id={track.id}
+      >
+        <span className="track-playing-indicator">
+          { this.props.isPlaying ? <i className="fa fa-fw fa-volume-up" /> : null }
+        </span>
+        <span className="track-number">{track.metadata.track}.</span>
+        {this.renderTrackTitle()}
+        <span className="track-duration sidebar-offset">
+          {formatTime(track.duration)}
+        </span>
+      </li>
+    );
+  }
+}
 
-module.exports = AlbumTracklistItem
+AlbumTracklistItem.propTypes = {
+  index: PropTypes.number,
+  album: PropTypes.shape({
+    getArtistCount: PropTypes.func,
+  }),
+  track: PropTypes.shape({
+    disabled: PropTypes.bool,
+  }),
+  isPlaying: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  handleClick: PropTypes.func,
+  handleDoubleClick: PropTypes.func,
+};
+
+export default AlbumTracklistItem;

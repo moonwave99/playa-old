@@ -1,132 +1,122 @@
-"use babel"
+import { contains, find } from 'lodash';
+import i18n from 'i18next';
+import React, { PropTypes, Component } from 'react';
+import FileBrowser from './FileBrowser.jsx';
+import FileBrowserActions from '../../actions/FileBrowserActions';
+import FileBrowserStore from '../../stores/FileBrowserStore';
+import navGenerator from '../../generators/Navigable.jsx';
+import KeyboardFocusActions from '../../actions/KeyboardFocusActions';
+import KeyboardNameSpaceConstants from '../../constants/KeyboardNameSpaceConstants';
+import ContextMenuActions from '../../actions/ContextMenuActions';
+import OpenPlaylistActions from '../../actions/OpenPlaylistActions';
+import { revealInFinder } from '../../util/helpers/openLink';
 
-var _ = require('lodash')
-var cx = require('classnames')
-var shell = require('shell')
-var React = require('react')
-var ReactPropTypes = React.PropTypes
-var FileBrowser = require('./FileBrowser.jsx')
-var FileBrowserActions = require('../../actions/FileBrowserActions')
-var FileBrowserStore = require('../../stores/FileBrowserStore')
-var NavGenerator = require('../../generators/Navigable.jsx')
-
-var KeyboardFocusActions = require('../../actions/KeyboardFocusActions')
-var KeyboardNameSpaceConstants = require('../../constants/KeyboardNameSpaceConstants')
-var ContextMenuActions = require('../../actions/ContextMenuActions')
-var OpenPlaylistActions = require('../../actions/OpenPlaylistActions')
-
-var FileBrowserOnSteroids = NavGenerator(FileBrowser, KeyboardNameSpaceConstants.FILE_BROWSER,
-  function(component){
-    return component.props.tree.map( i => i.id )
-  },
-  function(component){
-    return _.find(component.props.tree, { id: component.state.selection[0] })
-  },
+const FileBrowserOnSteroids = navGenerator(FileBrowser, KeyboardNameSpaceConstants.FILE_BROWSER,
+  component => component.props.tree.map(({ id }) => id),
+  component => find(component.props.tree, { id: component.state.selection[0] }),
   null,
-  function(component, buffer){
-    let result = _.find(component.props.tree, x => x.name.toLowerCase().startsWith(buffer)) || {}
-    return result.id
-  }
-)
+  (component, buffer) => {
+    const result = find(component.props.tree,
+      x => x.name.toLowerCase().startsWith(buffer)
+    ) || {};
+    return result.id;
+  },
+);
 
-var _overflows = function(parent, element){
-  var parentBounds = parent.getBoundingClientRect()
-  var elBounds = element.getBoundingClientRect()
-  var direction = 0
-  if((elBounds.top + elBounds.height) > (parentBounds.top + parentBounds.height)){
-    direction = 1
-  }else if(elBounds.top < parentBounds.top){
-    direction = -1
-  }
-  return {
-    direction: direction,
-    parentBounds: parentBounds,
-    elBounds: elBounds
-  }
-}
+const getContextMenuActions = function getContextMenuActions(item) {
+  return [
+    {
+      label: i18n.t('sidebar.fileBrowser.contextMenu.reveal'),
+      handler: () => revealInFinder(item.props.node.path),
+    },
+    {
+      label: i18n.t('sidebar.fileBrowser.contextMenu.addToPlaylist', { folder: item.props.node.name }),
+      handler: () => OpenPlaylistActions.addFolder(item.props.node.path),
+    },
+  ];
+};
 
-var FileBrowserTab = React.createClass({
-  getInitialState: function(){
-    return {
-      fileTree: FileBrowserStore.getFileTree()
-    }
-  },
-  componentDidMount: function(){
-    FileBrowserStore.addChangeListener(this._onFileBrowserChange)
-  },
-  componentWillUnmount: function(){
-    FileBrowserStore.removeChangeListener(this._onFileBrowserChange)
-  },
-  render: function() {
+const handleArrowClick = function handleArrowClick(event, item) {
+  if (item.props.collapsed) {
+    FileBrowserActions.expandNodes([item.props.node]);
+  } else {
+    FileBrowserActions.collapseNodes([item.props.node]);
+  }
+};
+
+const handleContextMenu = function handleContextMenu(event, item) {
+  ContextMenuActions.show(
+    getContextMenuActions(item),
+    { top: event.clientY, left: event.clientX },
+    event,
+  );
+};
+
+const handleGlobalClick = function handleGlobalClick() {
+  KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.FILE_BROWSER);
+};
+
+const handleDelKeyPress = function handleDelKeyPress() {};
+const handleEnterKeyPress = function handleEnterKeyPress() {};
+
+class FileBrowserTab extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fileTree: FileBrowserStore.getFileTree(),
+    };
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleScrollToElement = this.handleScrollToElement.bind(this);
+    this.onFileBrowserChange = this.onFileBrowserChange.bind(this);
+  }
+  componentDidMount() {
+    FileBrowserStore.addChangeListener(this.onFileBrowserChange);
+  }
+  componentWillUnmount() {
+    FileBrowserStore.removeChangeListener(this.onFileBrowserChange);
+  }
+  onFileBrowserChange() {
+    this.setState({
+      fileTree: FileBrowserStore.getFileTree(),
+    });
+  }
+  handleScrollToElement(state, list) {
+    this.props.handleScrollToElement(state, list);
+  }
+  handleOpen(ids) {
+    FileBrowserActions.expandNodes(
+      this.state.fileTree.filter(node => contains(ids, node.id))
+    );
+  }
+  handleClose(ids) {
+    FileBrowserActions.collapseNodes(
+      this.state.fileTree.filter(node => contains(ids, node.id))
+    );
+  }
+  render() {
     return (
-      <div onClick={this.handleGlobalClick}>
+      <div onClick={handleGlobalClick}>
         <FileBrowserOnSteroids
-          allowMultipleSelection={true}
-          handleDelKeyPress={this.handleDelKeyPress}
-          handleEnterKeyPress={this.handleEnterKeyPress}
+          allowMultipleSelection
+          handleDelKeyPress={handleDelKeyPress}
+          handleEnterKeyPress={handleEnterKeyPress}
           handleScrollToElement={this.handleScrollToElement}
-          handleArrowClick={this.handleArrowClick}
-          handleContextMenu={this.handleContextMenu}
+          handleArrowClick={handleArrowClick}
+          handleContextMenu={handleContextMenu}
           handleOpen={this.handleOpen}
           handleClose={this.handleClose}
           isFocused={this.props.isFocused}
-          tree={this.state.fileTree}/>
+          tree={this.state.fileTree}
+        />
       </div>
-    )
-  },
-  handleGlobalClick: function(event){
-    KeyboardFocusActions.requestFocus(KeyboardNameSpaceConstants.FILE_BROWSER)
-  },
-  handleDelKeyPress: function(event, item, elementsToRemove){
-
-  },
-  handleEnterKeyPress: function(event, item){
-
-  },
-  handleScrollToElement: function(state, list){
-    this.props.handleScrollToElement(state, list)
-  },
-  handleArrowClick: function(event, item){
-    if(item.props.collapsed){
-      FileBrowserActions.expandNodes([item.props.node])
-    }else{
-      FileBrowserActions.collapseNodes([item.props.node])
-    }
-  },
-  handleContextMenu: function(event, item){
-    ContextMenuActions.show(this.getContextMenuActions(item), { top: event.clientY, left: event.clientX }, event)
-  },
-  handleOpen: function(ids){
-    FileBrowserActions.expandNodes(this.state.fileTree.filter((node)=>{
-      return _.contains(ids, node.id)
-    }))
-  },
-  handleClose: function(ids){
-    FileBrowserActions.collapseNodes(this.state.fileTree.filter((node)=>{
-      return _.contains(ids, node.id)
-    }))
-  },
-  _onFileBrowserChange: function(){
-    this.setState({
-      fileTree: FileBrowserStore.getFileTree()
-    })
-  },
-  getContextMenuActions: function(item){
-    return [
-      {
-        'label'   : 'Reveal in Finder',
-        'handler' : function(){
-          shell.openExternal('file://' + item.props.node.path)
-        }.bind(this)
-      },
-      {
-        'label'   : 'Add ' + item.props.node.name + ' to current playlist',
-        'handler' : function(){
-          OpenPlaylistActions.addFolder(item.props.node.path)
-        }.bind(this)
-      }
-    ]
+    );
   }
-})
+}
 
-module.exports = FileBrowserTab
+FileBrowserTab.propTypes = {
+  handleScrollToElement: PropTypes.func,
+  isFocused: PropTypes.bool,
+};
+
+export default FileBrowserTab;

@@ -1,55 +1,53 @@
-"use babel"
+import path from 'path';
+import FileTreeNode from './FileTreeNode';
+import fileBrowser from './fileBrowser';
 
-var _ = require('lodash')
-var path = require('path')
-var Promise = require('bluebird')
-var FileTreeNode = require('./FileTreeNode')
-
-module.exports = class FileTree {
-  constructor(options) {
-    this.rootFolder = options.rootFolder
-    this.fileBrowser = options.fileBrowser
-    this.rootNode = null
-    this.filter = options.filter || 'directory'
+export default class FileTree {
+  constructor({ rootFolder, rootName = '/', filter = 'directory' }) {
+    this.rootFolder = rootFolder;
+    this.rootNode = null;
+    this.filter = filter;
     this.rootNode = new FileTreeNode({
-      name: options.rootName || '/',
-      path: this.rootFolder,
+      name: rootName,
+      path: rootFolder,
       relativePath: '',
-      depth: 0
-    })
+      depth: 0,
+    });
   }
-  loadRoot(){
-    return this.expand([this.rootNode])
+  loadRoot() {
+    return this.expand([this.rootNode]);
   }
-  expandSingleNode(node){
-    return this.fileBrowser.load(node.path, this.filter).then((content)=>{
-      node.children = content.sort().map((folder)=>{
-        var relativePath = path.relative(this.rootFolder, folder)
-        var ext = this.filter == 'directory' ? '' : path.extname(relativePath)
-        return new FileTreeNode({
-          name: path.basename(relativePath, ext),
-          path: folder,
-          extension: ext,
-          relativePath: relativePath,
-          parentNode: node,
-          depth: node.depth+1
-        })
-      })
-    })
+  expandSingleNode(node) {
+    return fileBrowser.load(node.path, this.filter)
+      .then((content) => {
+        const children = content.sort().map((folder) => {
+          const relativePath = path.relative(this.rootFolder, folder);
+          const extension = this.filter === 'directory' ? '' : path.extname(relativePath);
+          return new FileTreeNode({
+            name: path.basename(relativePath, extension),
+            path: folder,
+            extension,
+            relativePath,
+            parentNode: node,
+            depth: node.depth + 1,
+          });
+        });
+        node.setChildren(children);
+      });
   }
-  expand(nodes){
-    return Promise.all(nodes.map( n => this.expandSingleNode(n) ))
+  expand(nodes) {
+    return Promise.all(nodes.map(n => this.expandSingleNode(n)));
   }
-  collapse(nodes){
-    nodes.forEach( n => n.collapse() )
-  }
-  flatten(){
-    var memo = []
-    var _flatten = function(node){
-      memo.push(node)
-      node.children.forEach( i => _flatten(i) )
-    }
-    _flatten(this.rootNode)
-    return memo
+  collapse(nodes) { // eslint-disable-line
+    nodes.forEach(n => n.collapse()); // eslint-disable-line
+  } // eslint-disable-line
+  flatten() {
+    const memo = [];
+    const _flatten = function _flatten(node) {
+      memo.push(node);
+      node.children.forEach(i => _flatten(i));
+    };
+    _flatten(this.rootNode);
+    return memo;
   }
 }

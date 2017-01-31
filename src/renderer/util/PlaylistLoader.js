@@ -1,68 +1,66 @@
-"use babel"
+import { uniq } from 'lodash';
+import fs from 'fs-extra';
+import Promise from 'bluebird';
+import { ipcRenderer as ipc } from 'electron';
+import md5 from 'md5';
+import path from 'path';
+import yaml from 'js-yaml';
+import glob from 'glob';
 
-var _ = require('lodash')
-var Promise = require('bluebird')
-var fs = Promise.promisifyAll(require('fs-extra'))
-var ipc = require('electron').ipcRenderer
-var md5 = require('md5')
-var path = require('path')
-var yaml = Promise.promisifyAll(require('js-yaml'))
-var glob = Promise.promisifyAll(require('glob'))
+Promise.promisifyAll(fs);
+Promise.promisifyAll(yaml);
+Promise.promisifyAll(glob);
 
-var AlbumPlaylist = require('./AlbumPlaylist')
-
-module.exports = class PlaylistLoader {
-  constructor(options) {
-    this.root = options.root
-    this.playlistExtension = options.playlistExtension
-    this.treeCache = []
+export default class PlaylistLoader {
+  constructor({ root, playlistExtension }) {
+    this.root = root;
+    this.playlistExtension = playlistExtension;
+    this.treeCache = [];
   }
-  parse(playlistPath){
-    return fs.readFileAsync(playlistPath, 'utf8').bind(this)
+  parse(playlistPath) {
+    return fs.readFileAsync(playlistPath, 'utf8')
+      .bind(this)
       .then(yaml.safeLoad)
-      .catch((err)=>{
-        console.error(err, err.stack)
-      })
+      .catch(err => console.error(err, err.stack)); // eslint-disable-line
   }
   load(playlist, opts) {
-    return new Promise((resolve, reject)=>{
-      if(playlist.isNew()){
-        resolve(playlist)
-      }else{
-        resolve(this.parse(playlist.path).then((data)=>{
-          playlist.hydrate(data)
-          return playlist.load(_.uniq(data.tracklist), opts)
-        }))
-      }
-    })
+    if (playlist.isNew()) {
+      return Promise.resolve(playlist);
+    }
+    return this.parse(playlist.path).then(data =>
+      playlist.hydrate(data).load(uniq(data.tracklist), opts)
+    );
   }
-  save(playlist){
-    var targetPath
-    if(playlist.isNew()){
+  save(playlist) {
+    let targetPath;
+    if (playlist.isNew()) {
       targetPath = ipc.sendSync('request:save:dialog', {
         title: 'Save Playlist as',
         defaultPath: this.root,
         filters: [
-          { name: 'Playlist files', extensions: [this.playlistExtension.replace('.', '')] }
-        ]
-      })
-      if(!targetPath){
-        return Promise.reject('Cancel save')
-      }else{
-        playlist.title = path.basename(targetPath.replace(this.root, ''), this.playlistExtension)
+          {
+            name: 'Playlist files',
+            extensions: [this.playlistExtension.replace('.', '')],
+          },
+        ],
+      });
+      if (!targetPath) {
+        return Promise.reject('Cancel save');
       }
-    }else{
-      targetPath = path.join(this.root, playlist.title + this.playlistExtension)
+      playlist.setTitle(path.basename(
+        targetPath.replace(this.root, ''),
+        this.playlistExtension,
+      ));
+    } else {
+      targetPath = path.join(this.root, playlist.title + this.playlistExtension);
     }
     return fs.outputFileAsync(
       targetPath,
-      yaml.safeDump(playlist.serialize())
-    ).then(()=>{
-      playlist.path = targetPath
-      playlist.id = md5(targetPath)
-      return playlist
-    }).catch((error)=>{
-      console.error(error, error.stack)
-    })
+      yaml.safeDump(playlist.serialize()),
+    ).then(() => {
+      playlist.setPath(targetPath);
+      playlist.setId(md5(targetPath));
+      return playlist;
+    }).catch(error => console.error(error, error.stack)); // eslint-disable-line
   }
 }

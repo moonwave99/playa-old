@@ -1,6 +1,6 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   REQUEST_FOCUS: null,
-  SET_FOCUS: null
-})
+  SET_FOCUS: null,
+});

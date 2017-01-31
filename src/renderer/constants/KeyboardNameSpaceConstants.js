@@ -1,9 +1,9 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   ALBUM_PLAYLIST: null,
   PLAYLIST_BROWSER: null,
   FILE_BROWSER: null,
   SETTINGS: null,
-  CONTEXT_MENU: null
-})
+  CONTEXT_MENU: null,
+});

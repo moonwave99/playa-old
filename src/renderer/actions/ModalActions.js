@@ -1,20 +1,16 @@
-"use babel";
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import ModalConstants from '../constants/ModalConstants';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var ModalConstants = require('../constants/ModalConstants')
-
-var ModalActions = {
-  show: function(params){
+export default {
+  show(params) {
     AppDispatcher.dispatch({
       actionType: ModalConstants.MODAL_SHOW,
-      params: params
-    })
+      params,
+    });
   },
-  hide: function(){
+  hide() {
     AppDispatcher.dispatch({
-      actionType: ModalConstants.MODAL_HIDE
-    })
-  }
-}
-
-module.exports = ModalActions
+      actionType: ModalConstants.MODAL_HIDE,
+    });
+  },
+};

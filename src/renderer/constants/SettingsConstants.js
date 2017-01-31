@@ -1,5 +1,5 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
-  SET_VALUE: null
-})
+export default keyMirror({
+  SET_VALUE: null,
+});

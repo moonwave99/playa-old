@@ -1,45 +1,41 @@
-"use babel";
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import PlayerConstants from '../constants/PlayerConstants';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var PlayerConstants = require('../constants/PlayerConstants')
-
-var PlayerActions = {
-  toggle: function(){
+export default {
+  toggle() {
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.TOGGLE_PLAYBACK
-    })
-  },  
-  play: function(){
-    AppDispatcher.dispatch({
-      actionType: PlayerConstants.PLAY
-    })
+      actionType: PlayerConstants.TOGGLE_PLAYBACK,
+    });
   },
-  pause: function(){
+  play() {
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.PAUSE
-    })
+      actionType: PlayerConstants.PLAY,
+    });
   },
-  stop: function(){
+  pause() {
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.STOP
-    })
-  },    
-  nextTrack: function(){
-    AppDispatcher.dispatch({
-      actionType: PlayerConstants.NEXT_TRACK
-    })
+      actionType: PlayerConstants.PAUSE,
+    });
   },
-  prevTrack: function(){
+  stop() {
     AppDispatcher.dispatch({
-      actionType: PlayerConstants.PREV_TRACK
-    })
+      actionType: PlayerConstants.STOP,
+    });
   },
-  seek: function(to){
+  nextTrack() {
+    AppDispatcher.dispatch({
+      actionType: PlayerConstants.NEXT_TRACK,
+    });
+  },
+  prevTrack() {
+    AppDispatcher.dispatch({
+      actionType: PlayerConstants.PREV_TRACK,
+    });
+  },
+  seek(to) {
     AppDispatcher.dispatch({
       actionType: PlayerConstants.SEEK,
-      to: to
-    })    
-  }
-}
-
-module.exports = PlayerActions;
+      to,
+    });
+  },
+};

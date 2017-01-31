@@ -1,6 +1,6 @@
-var keyMirror = require('keymirror')
+import keyMirror from 'keymirror';
 
-module.exports = keyMirror({
+export default keyMirror({
   MODAL_SHOW: null,
-  MODAL_HIDE: null
-})
+  MODAL_HIDE: null,
+});

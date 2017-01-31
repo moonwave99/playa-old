@@ -1,67 +1,51 @@
-"use babel";
+import { isBoolean } from 'lodash';
+import { EventEmitter } from 'events';
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import SidebarConstants from '../constants/SidebarConstants';
 
-var _ = require('lodash')
-var ipc = require('electron').ipcRenderer
-var assign = require('object-assign')
+const CHANGE_EVENT = 'change';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher')
-var EventEmitter = require('events').EventEmitter
-var SidebarConstants = require('../constants/SidebarConstants')
+let _isOpen = false;
+let _selectedTab = 0;
+const _tabs = ['playlists', 'files', 'settings'];
 
-var CHANGE_EVENT = 'change'
-
-var _isOpen = false
-var _selectedTab = 0
-var _tabs = ['playlists', 'files', 'settings']
-
-var SidebarStore = assign({}, EventEmitter.prototype, {
-
-  getInfo: function(){
+const SidebarStore = Object.assign({}, EventEmitter.prototype, {
+  getInfo() {
     return {
       isOpen: _isOpen,
       selectedTab: _selectedTab,
-      tabs: _tabs
-    }
+      tabs: _tabs,
+    };
   },
-
-  emitChange: function() {
-    this.emit(CHANGE_EVENT)
+  emitChange() {
+    this.emit(CHANGE_EVENT);
   },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback)
+  addChangeListener(callback) {
+    this.on(CHANGE_EVENT, callback);
   },
-
-  /**
-   * @param {function} callback
-   */
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback)
+  removeChangeListener(callback) {
+    this.removeListener(CHANGE_EVENT, callback);
   },
-
-  dispatcherIndex: AppDispatcher.register(function(action) {
-    switch(action.actionType) {
+  dispatcherIndex: AppDispatcher.register((action) => {
+    switch (action.actionType) {
       case SidebarConstants.SELECT_TAB:
-        if(_isOpen && _selectedTab == action.tab){
-          _isOpen = false
-        }else{
-          _isOpen = true
-          _selectedTab = action.tab
+        if (_isOpen && _selectedTab === action.tab) {
+          _isOpen = false;
+        } else {
+          _isOpen = true;
+          _selectedTab = action.tab;
         }
-        SidebarStore.emitChange()
-        break
+        SidebarStore.emitChange();
+        break;
       case SidebarConstants.TOGGLE:
-        _isOpen = _.isBoolean(action.toggle) ? action.toggle : !_isOpen
-        SidebarStore.emitChange()
-        break
+        _isOpen = isBoolean(action.toggle) ? action.toggle : !_isOpen;
+        SidebarStore.emitChange();
+        break;
+      default:
+        break;
     }
+    return true;
+  }),
+});
 
-    return true // No errors. Needed by promise in Dispatcher.
-  })
-
-})
-
-module.exports = SidebarStore
+export default SidebarStore;

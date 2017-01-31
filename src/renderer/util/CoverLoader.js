@@ -1,132 +1,133 @@
-"use babel"
+import path from 'path';
+import { contains, find } from 'lodash';
+import fs from 'fs-extra';
+import async from 'async';
+import musicmetadata from 'musicmetadata';
+import Promise from 'bluebird';
+import needle from 'needle';
 
-var _ = require('lodash')
-var fs = require('fs-extra')
-var path = require('path')
-var async = require('async')
-var musicmetadata = require('musicmetadata')
-var Promise = require('bluebird')
-var needle = Promise.promisifyAll(require('needle'))
+Promise.promisifyAll(fs);
+Promise.promisifyAll(needle);
 
-module.exports = class CoverLoader {
-  constructor(options) {
-    this.root = options.root
-    this.discogs = options.discogs
-    this.enableLog = !!options.enableLog
-    this.notFound = []
-    this.requestQueue = async.queue((album, callback)=>{
-      setTimeout(()=>{
+export default class CoverLoader {
+  constructor({ root, discogs = {}, enableLog = false }) {
+    this.root = root;
+    this.discogs = discogs;
+    this.enableLog = enableLog;
+    this.notFound = [];
+    this.requestQueue = async.queue((album, callback) =>
+      setTimeout(() =>
         this.loadCoverFromDiscogs(album)
-          .then((cover)=>{
-            callback()
-          })
+          .then(() => callback())
           .catch(callback)
-      }, this.discogs.throttle)
-    }, 1)
+      , this.discogs.throttle)
+    , 1);
   }
-  load(album){
-    return new Promise((resolve, reject)=>{
-      var coverPath = this.getCached(album)
-      if(coverPath){
-        resolve(coverPath)
-      }else if(_.contains(this.notFound, album.id)){
-        this.log('Skipping req for: ' + album.title)
-        reject(coverPath)
-      }else{
-        this.requestQueue.push(album, (err)=>{
-          if(err){
-            reject(err)
-          }else{
-            resolve(this.getAlbumCoverPath(album))
+  load(album) {
+    return new Promise((resolve, reject) => {
+      const coverPath = this.getCached(album);
+      if (coverPath) {
+        resolve(coverPath);
+      } else if (contains(this.notFound, album.id)) {
+        this.log(`Skipping req for: ${album.title}`);
+        reject(coverPath);
+      } else {
+        this.requestQueue.push(album, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(this.getAlbumCoverPath(album));
           }
-        })
+        });
       }
-    })
+    });
   }
-  loadCoverFromMetadata(album){
-    return new Promise((resolve, reject)=>{
-      var coverPath = this.getCached(album)
-      if(coverPath){
-        resolve(coverPath)
-      }else{
-        async.detect(album.tracks, (item, cb)=>{
-          this.getCoverFromFile(album, item, cb)
-        }, (result)=>{
-          resolve(result ? this.getAlbumCoverPath(album) : null)
-        })
+  loadCoverFromMetadata(album) {
+    return new Promise((resolve) => {
+      const coverPath = this.getCached(album);
+      if (coverPath) {
+        resolve(coverPath);
+      } else {
+        async.detect(album.tracks, (item, cb) => {
+          this.getCoverFromFile(album, item, cb);
+        }, (result) => {
+          resolve(result ? this.getAlbumCoverPath(album) : null);
+        });
       }
-    })
+    });
   }
-  loadCoverFromDiscogs(album){
-    var title = album.getTitle()
-    this.log('Looking up for ' + title)
-    return needle.requestAsync('get', 'https://api.discogs.com/database/search', {
-      q: album.getArtist() + ' ' + title,
+  loadCoverFromDiscogs(album) {
+    const title = album.getTitle();
+    this.log(`Looking up for ${title}`);
+    return needle.requestAsync('get', this.discogs.apiRoot, {
+      q: `${album.getArtist()} ${title}`,
       key: this.discogs.key,
-      secret: this.discogs.secret
-    }).then((response)=>{
-      this.log('Successful request: ' + response[0].req.path)
-      if(!response[1].results.length){
-        throw new Error('No results for: ' + title)
-      }else{
-        this.log('Found ' + title, response)
-        var thumbResult = _.find(response[1].results, (result) => {
-          return result.thumb.length > 0
-            && _.contains(['release', 'master'], result.type)
-        })
-        if(!thumbResult)
-          throw new Error('No results for: ' + title)
-        return needle.getAsync(thumbResult.thumb)
-      }
-    }).then((response)=>{
-      return this.saveImageFromBuffer(response[1], 'jpg', album)
-    }).catch((err)=>{
-      this.notFound.push(album.id)
-      throw err
-    })
-  }
-  getCoverFromFile(album, file, callback){
-    var stream
-    musicmetadata(stream = fs.createReadStream(file.filename), (err, metadata)=> {
-      if (err) throw err
-      if(metadata.picture.length){
-        this.saveImageFromBuffer(metadata.picture[0].data, metadata.picture[0].format, album)
-        .then(callback)
-        .catch((err)=>{
-          console.error('Error saving cover for ' + album, err.stack)
-        })
-      }else{
-        callback(false)
-      }
-    })
-  }
-  saveImageFromBuffer(buffer, format, album){
-    return new Promise((resolve, reject)=>{
-      var targetPath = this.getAlbumCoverPath(album, format)
-      fs.writeFile(targetPath, buffer, (err)=>{
-        if(err){
-          reject(err)
-        }else{
-          this.log('Saved ' + targetPath + ' [' + album.getArtist() + ' - ' + album.getTitle() + ']')
-          resolve(targetPath)
+      secret: this.discogs.secret,
+    }).then((response) => {
+      this.log(`Successful request: ${response[0].req.path}`);
+      if (!response[1].results.length) {
+        throw new Error(`No results for: ${title}`);
+      } else {
+        this.log(`Found ${title}`, response);
+        const thumbResult = find(response[1].results, result =>
+          result.thumb.length > 0 && contains(['release', 'master'], result.type)
+        );
+        if (!thumbResult) {
+          throw new Error(`No results for: ${title}`);
         }
-      })
-    })
+        return needle.getAsync(thumbResult.thumb);
+      }
+    }).then(response => this.saveImageFromBuffer(response[1], 'jpg', album)
+    ).catch((err) => {
+      this.notFound.push(album.id);
+      throw err;
+    });
   }
-  getAlbumCoverPath(album, format){
-    format = format || 'jpg'
-    return path.join(this.root, album.id + '.' + format)
+  getCoverFromFile(album, file, callback) {
+    const stream = fs.createReadStream(file.filename);
+    musicmetadata(stream, (err, metadata) => {
+      if (err) {
+        throw err;
+      }
+      if (metadata.picture.length) {
+        const pic = metadata.picture[0];
+        this.saveImageFromBuffer(pic.data, pic.format, album)
+          .then(callback)
+          .catch(saveErr => console.error(`Error saving cover for ${album}`, saveErr.stack)); // eslint-disable-line
+      } else {
+        callback(false);
+      }
+    });
   }
-  getCached(album){
-    var coverPath = this.getAlbumCoverPath(album)
-    try{
-      fs.statSync(coverPath)
-    }catch(e){
-      return false
+  saveImageFromBuffer(buffer, format, album) {
+    return new Promise((resolve, reject) => {
+      const targetPath = this.getAlbumCoverPath(album, format);
+      fs.writeFile(targetPath, buffer, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          this.log(`Saved ${targetPath} [${album.getArtist()} - ${album.getTitle()}]`);
+          resolve(targetPath);
+        }
+      });
+    });
+  }
+  getAlbumCoverPath(album, format = 'jpg') {
+    return path.join(this.root, `${album.id}.${format}`);
+  }
+  getCached(album) {
+    const coverPath = this.getAlbumCoverPath(album);
+    try {
+      fs.statSync(coverPath);
+    } catch (e) {
+      return false;
     }
-    return coverPath
+    return coverPath;
   }
-  log(message, response){
-    this.enableLog && (response ? console.info(message, response) : console.info(message))
+  log(message, response) {
+    if (!this.enableLog) {
+      return;
+    }
+    response ? console.info(message, response) : console.info(message); // eslint-disable-line
   }
 }

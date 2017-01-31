@@ -1,40 +1,47 @@
-"use babel";
+import _, { isArray, reduce } from 'lodash';
+import moment from 'moment';
 
-var _ = require('lodash')
-var moment = require('moment')
+const normaliseArtist = function normaliseArtist(value) {
+  if (value.match(/, The$/)) {
+    return `The ${value.replace(/, The$/, '')}`;
+  }
+  return value;
+};
 
-var MetaDoctor = {
-  normalise(metadata){
-    return _.reduce(metadata, (memo, value, key)=>{
-      switch(key = key.toLowerCase()){
+const formatDate = function formatDate(value) {
+  return value ? moment(new Date(value.match(/\d{4}/)[0])).format('YYYY') : '-';
+};
+
+export default {
+  normalise(metadata) {
+    return reduce(metadata, (memo, value, _key) => {
+      const key = _key.toLowerCase();
+      let normalisedValue = null;
+      switch (key) {
         case 'artist':
         case 'albumartist':
-          if(_.isArray(value)){
-            value = _(value).map(this.normaliseArtist).uniq().value().join(', ')
-          }else{
-            value = this.normaliseArtist(value)
+          if (isArray(value)) {
+            normalisedValue = _(value)
+              .map(normaliseArtist)
+              .uniq()
+              .value()
+              .join(', ');
+          } else {
+            normalisedValue = normaliseArtist(value);
           }
-          memo[key] = value
-          break
+          break;
         case 'track':
-          memo[key] = value ? value.no : 0
-          break
+          normalisedValue = value ? value.no : 0;
+          break;
         case 'year':
         case 'date':
-          memo[key] = value ? moment(new Date(value.match(/\d{4}/)[0])).format('YYYY') : '-'
-          break
+          normalisedValue = formatDate(value);
+          break;
         default:
-          memo[key] = value
-          break
+          normalisedValue = value;
+          break;
       }
-      return memo
-    }, {})
+      return Object.assign({ [key]: normalisedValue }, memo);
+    }, {});
   },
-  normaliseArtist(artist){
-    return artist.match(/, The$/)
-      ? artist = 'The ' + artist.replace(/, The$/, '')
-      : artist
-  }
-}
-
-module.exports = MetaDoctor
+};

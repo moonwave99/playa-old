@@ -1,0 +1,71 @@
+{
+  "playlist": {
+    "item": {
+      "contextMenu": {
+        "locateFolder": "Locate folder for {{folder}}",
+        "finder": "Reveal in Finder",
+        "discogs": "Search on Discogs",
+        "rym": "Search on RYM",
+        "lastfm": "Search on Last.fm"
+      }
+    }
+  },
+  "sidebar": {
+    "playlist": {
+      "delete": {
+        "confirm": "Are you sure to delete {{name}}?",
+        "cannotDelete": "You cannot delete an open playlist."
+      },
+      "contextMenu": {
+        "load": "Load playlist",
+        "delete": "Delete playlist",
+        "rename": "Rename playlist"
+      },
+      "rename": {
+        "fileExists": "File already exists."
+      }
+    },
+    "fileBrowser": {
+      "contextMenu": {
+        "reveal": "Reveal in Finder",
+        "addToPlaylist": "Add {{folder}} to current playlist"
+      }
+    },
+    "settings": {
+      "folders": {
+        "title": "Folder",
+        "root": "Current file browser root:",
+        "change": "Change folder"
+      },
+      "interface": {
+        "title": "Interface",
+        "wideScreen": "Leave Sidebar open on wide screens"
+      },
+      "lastfm": {
+        "title": "Last.fm",
+        "authorise": "Authorise Playa",
+        "signedin": "Signed in as:",
+        "signout": "Sign out",
+        "enable": "Enable scrobbling",
+        "visit": "Visit Last.FM profile of {{user}}"
+      },
+      "playlist": {
+        "title": "Playlists",
+        "autosave": "Autosave"
+      },
+      "remote": {
+        "title": "Remote Control",
+        "allow": "Allow HTTP Remote Control"
+      }
+    }
+  },
+  "footer": {
+    "noPlaylist": "No playlist selected.",
+    "emptyPlaylist": "No tracks in this playlist yet.",
+    "stats": "{{albums}} albums · {{tracks}} tracks · {{totalTime}}"
+  },
+  "infoDrawer": {
+    "title": "Now playing",
+    "placeholder": "Seems like you are enjoying the silence now"
+  }
+}
