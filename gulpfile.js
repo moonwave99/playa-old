@@ -153,6 +153,10 @@ gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'bundle', 'dev-sym-
 
 gulp.task('watch', () => {
   gulp.watch(SRC_DIR + '/styles/*.styl', ['css']);
+  gulp.watch([
+    SRC_DIR + '/**/*.js',
+    SRC_DIR + '/**/*.jsx'
+  ], ['bundle']);
 });
 
 gulp.task('serve', ['watch', 'build'], (next) => {
