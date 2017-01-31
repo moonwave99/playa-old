@@ -78,8 +78,7 @@ const selectTab = function selectTab(tab, tabScopeName) {
 
 const onPlayerChange = function onPlayerChange() {
   ipc.send('remote:update', {
-    playbackInfo: PlayerStore.getPlaybackInfo,
-    remote: true,
+    playbackInfo: PlayerStore.getPlaybackInfo({ remote: true }),
   });
 };
 

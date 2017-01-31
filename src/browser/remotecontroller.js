@@ -68,7 +68,7 @@ export default class RemoteController extends EventEmitter {
     return `http://${ipAddress}:${this.port}`;
   }
   update(data) {
-    return Object.keys(this.data).forEach((key) => {
+    Object.keys(this.data).forEach((key) => {
       if (data[key]) {
         this.data[key] = data[key];
         this.io.sockets.emit(key, this.data[key]);
