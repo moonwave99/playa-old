@@ -1,5 +1,5 @@
-var shell = require('electron').shell
-var appConfig = require('../config/appConfig')
+var shell = require('electron').shell;
+var appConfig = require('../config/playaConfig');
 
 document.addEventListener("DOMContentLoaded", function() {
   document.body.classList.toggle('loaded')

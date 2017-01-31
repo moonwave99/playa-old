@@ -1,10 +1,8 @@
-'use babel';
-
 import path from 'path';
 import FileTreeNode from './FileTreeNode';
 import fileBrowser from './fileBrowser';
 
-module.exports = class FileTree {
+export default class FileTree {
   constructor({ rootFolder, rootName = '/', filter = 'directory' }) {
     this.rootFolder = rootFolder;
     this.rootNode = null;
@@ -52,4 +50,4 @@ module.exports = class FileTree {
     _flatten(this.rootNode);
     return memo;
   }
-};
+}

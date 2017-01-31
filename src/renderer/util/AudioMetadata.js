@@ -2,7 +2,7 @@
 
 import Promise from 'bluebird';
 import ffmpeg from 'fluent-ffmpeg';
-import appConfig from '../../config/appConfig';
+import appConfig from '../../config/playaConfig';
 
 Promise.promisifyAll(ffmpeg);
 

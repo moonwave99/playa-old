@@ -1,5 +1,3 @@
-'use babel';
-
 import { map } from 'lodash';
 import fs from 'fs-extra';
 import fsPlus from 'fs-plus';
@@ -33,8 +31,8 @@ import OpenPlaylistActions from './renderer/actions/OpenPlaylistActions';
 import KeyboardNameSpaceConstants from './renderer/constants/KeyboardNameSpaceConstants';
 import OpenPlaylistManager from './renderer/util/OpenPlaylistManager';
 import FileTree from './renderer/util/FileTree';
-import SettingsBag from './SettingsBag';
-import config from './config/appConfig';
+import SettingsBag from './renderer/util/SettingsBag';
+import config from './config/playaConfig';
 
 Promise.promisifyAll(fs);
 
@@ -85,7 +83,7 @@ const onPlayerChange = function onPlayerChange() {
   });
 };
 
-class Playa {
+export default class Playa {
   constructor(options) {
     this.settings = {};
     this.settings.config = new SettingsBag({
@@ -572,5 +570,3 @@ class Playa {
     }
   }
 }
-
-module.exports = Playa;

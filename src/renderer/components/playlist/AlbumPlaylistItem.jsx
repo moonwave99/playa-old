@@ -10,11 +10,10 @@ import DragDropConstants from '../../constants/DragDropConstants';
 import ContextMenuActions from '../../actions/ContextMenuActions';
 import KeyboardNameSpaceConstants from '../../constants/KeyboardNameSpaceConstants';
 import OpenPlaylistActions from '../../actions/OpenPlaylistActions';
-import {
-  revealInFinder,
+import { revealInFinder,
   searchOnDiscogs,
   searchOnRym,
-  searchOnLastfm,
+  searchOnLastfm
 } from '../../util/helpers/openLink';
 
 const DRAGGING_OPACITY = 0.4;

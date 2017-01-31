@@ -1,5 +1,3 @@
-'use babel';
-
 import fs from 'fs-plus';
 
 export default class SettingsBag {
@@ -14,7 +12,7 @@ export default class SettingsBag {
   }
   load() {
     if (!fs.existsSync(this.path)) {
-      return;
+      return this;
     }
     this.data = JSON.parse(
       fs.readFileSync(this.path, 'utf-8'),
@@ -23,14 +21,14 @@ export default class SettingsBag {
   }
   save() {
     if (this.readOnly) {
-      return;
+      return this;
     }
     fs.writeFileSync(this.path, JSON.stringify(this.data));
     return this;
   }
   set(key, value) {
     if (this.readOnly) {
-      return;
+      return this;
     }
     this.data[key] = value;
     return this;

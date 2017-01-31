@@ -24,6 +24,9 @@ const handleAfter = function handleAfter(selectedIndex) {
 class Sidebar extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selection: [],
+    };
     this.handleScrollToElement = this.handleScrollToElement.bind(this);
   }
   handleScrollToElement(state, list) {

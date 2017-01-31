@@ -1,5 +1,3 @@
-'use babel';
-
 import { ipcRenderer as ipc } from 'electron';
 import Playa from '../playa';
 
