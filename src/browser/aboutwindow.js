@@ -24,7 +24,7 @@ export default class AboutWindow extends EventEmitter {
   show() {
     const targetUrl = url.format({
       protocol: 'file',
-      pathname: path.resolve(__dirname, '..', '..', 'src', 'ui', 'about.html'),
+      pathname: path.resolve(__dirname, '..', 'src', 'ui', 'about.html'),
       slashes: true,
     });
     this.window.loadURL(targetUrl);

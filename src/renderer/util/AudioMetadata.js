@@ -1,21 +1,19 @@
-'use babel';
-
 import Promise from 'bluebird';
 import ffmpeg from 'fluent-ffmpeg';
-import appConfig from '../../config/playaConfig';
 
 Promise.promisifyAll(ffmpeg);
 
 export default class AudioMetadata {
-  constructor(filename) {
+  constructor({ filename, ffprobePath }) {
     this.filename = filename;
+    this.ffprobePath = ffprobePath;
     this.data = {};
   }
   load() {
     if (!this.filename) {
       return Promise.reject('No filename provided!');
     }
-    ffmpeg.setFfprobePath(appConfig.ffprobePath);
+    ffmpeg.setFfprobePath(this.ffprobePath);
     return ffmpeg.ffprobeAsync(this.filename)
       .bind(this)
       .then(this._parseMetadata);

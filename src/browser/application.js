@@ -3,7 +3,7 @@
 import { app, BrowserWindow, ipcMain as ipc, Menu, dialog, globalShortcut } from 'electron';
 import { EventEmitter } from 'events';
 import path from 'path';
-import config from '../config/playaConfig';
+import config from '../config';
 import AppMenu from './appmenu';
 import AppWindow from './appwindow';
 import AboutWindow from './aboutwindow';
@@ -20,7 +20,7 @@ export default class Application extends EventEmitter {
 
     this.windows = [];
     this.configSettings = new SettingsBag({
-      data: config,
+      data: config(process.NODE_ENV),
       readOnly: true,
     });
 
@@ -61,7 +61,7 @@ export default class Application extends EventEmitter {
   }
   openWindow(options) {
     const appWindow = new AppWindow(options);
-    this.menu = new AppMenu({ pkg: config });
+    this.menu = new AppMenu();
 
     this.menu.attachToWindow(appWindow);
 

@@ -32,7 +32,6 @@ import KeyboardNameSpaceConstants from './renderer/constants/KeyboardNameSpaceCo
 import OpenPlaylistManager from './renderer/util/OpenPlaylistManager';
 import FileTree from './renderer/util/FileTree';
 import SettingsBag from './renderer/util/SettingsBag';
-import config from './config/playaConfig';
 
 Promise.promisifyAll(fs);
 
@@ -87,7 +86,7 @@ export default class Playa {
     this.settings = {};
     this.settings.config = new SettingsBag({
       readOnly: true,
-      data: config,
+      data: options.config,
     });
 
     this.settings.common = new SettingsBag({

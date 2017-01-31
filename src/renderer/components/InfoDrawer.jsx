@@ -24,7 +24,10 @@ class InfoDrawer extends Component {
     if (!currentTrack) {
       return;
     }
-    const metadata = new AudioMetadata(currentTrack.filename);
+    const metadata = new AudioMetadata({
+      filename: currentTrack.filename,
+      ffprobePath: playa.getSetting('config', 'ffprobePath'),
+    });
     metadata.load().then(() =>
       this.setState({ audioInfo: metadata.toJSON() })
     );
