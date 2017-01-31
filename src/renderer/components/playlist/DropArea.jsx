@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import cx from 'classnames';
 import { DropTarget as dropTarget } from 'react-dnd';
-import { NativeTypes } from 'react-dnd/modules/backends/HTML5';
+import { NativeTypes } from 'react-dnd-html5-backend';
 import DragDropConstants from '../../constants/DragDropConstants';
 
 const normaliseDroppedFolder = function normaliseDroppedFolder(files) {

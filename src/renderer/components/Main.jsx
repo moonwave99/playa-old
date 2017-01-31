@@ -6,7 +6,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Tabs from 'react-simpletabs';
 import { DragDropContext as dragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd/modules/backends/HTML5';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { minWidth } from '../util/helpers/mediaQuery';
 import Modal from './Modal.jsx';
 import ContextMenu from './ContextMenu.jsx';
