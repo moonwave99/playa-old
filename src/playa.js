@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import { omit, map } from 'lodash';
 import fs from 'fs-extra';
 import fsPlus from 'fs-plus';
 import md5 from 'md5';
@@ -88,19 +88,15 @@ export default class Playa {
       readOnly: true,
       data: options.config,
     });
-
     this.settings.common = new SettingsBag({
       readOnly: true,
       data: {
         userDataFolder: options.userDataFolder,
         playlistRoot: path.join(options.userDataFolder, this.getSetting('config', 'playlistFolderName')),
-        fileExtensions: ['mp3', 'm4a', 'flac', 'ogg'],
-        playlistExtension: '.yml',
+        fileExtensions: this.getSetting('config', 'fileExtensions'),
+        playlistExtension: this.getSetting('config', 'playlistExtension'),
         useragent: `playa/v${this.getSetting('config', 'version')}`,
-        scrobbleThreshold: {
-          percent: 0.5,
-          absolute: 4 * 60,
-        },
+        scrobbleThreshold: this.getSetting('config', 'lastFM').scrobbleThreshold,
         storeFolders: {
           covers: this.getSetting('config', 'coverFolderName'),
           waveforms: this.getSetting('config', 'waveformFolderName'),
@@ -167,28 +163,21 @@ export default class Playa {
       fileExtensions: this.getSetting('common', 'fileExtensions'),
     });
 
+    const discogsSettings = this.getSetting('config', 'discogs');
     this.coverLoader = new CoverLoader({
       root: path.join(options.userDataFolder, this.getSetting('common', 'storeFolders').covers),
       enableLog: this.getSetting('config', 'coverLoaderLog'),
-      discogs: {
+      discogs: Object.assign(discogsSettings, {
         key: this.getSetting('discogs', 'DISCOGS_KEY'),
         secret: this.getSetting('discogs', 'DISCOGS_SECRET'),
-        apiRoot: this.getSetting('config', 'discogsApiRoot'),
-        throttle: 1000,
-      },
+      }),
     });
 
+    const waveformSettings = this.getSetting('config', 'waveformLoader');
     this.waveformLoader = new WaveformLoader({
       root: path.join(options.userDataFolder, this.getSetting('common', 'storeFolders').waveforms),
-      enableLog: this.getSetting('config', 'waveformLoaderLog'),
-      config: {
-        wait: 300,
-        'png-width': 1600,
-        'png-height': 160,
-        'png-color-bg': '00000000',
-        'png-color-center': '505050FF',
-        'png-color-outer': '505050FF',
-      },
+      enableLog: waveformSettings.log,
+      config: omit(waveformSettings, 'log'),
     });
 
     this.openPlaylistManager = new OpenPlaylistManager({
@@ -202,7 +191,7 @@ export default class Playa {
       secret: this.getSetting('lastfm', 'LASTFM_SECRET'),
       useragent: this.getSetting('common', 'useragent'),
       sessionInfo: this.getSetting('session', 'lastFMSession'),
-      authURL: this.getSetting('config', 'lastfmAuthURL'),
+      authURL: this.getSetting('config', 'lastFM').authURL,
     });
 
     this.player = new Player({
