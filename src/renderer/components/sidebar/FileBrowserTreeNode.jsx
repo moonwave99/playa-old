@@ -1,5 +1,3 @@
-'use babel';
-
 import cx from 'classnames';
 import React, { PropTypes, Component } from 'react';
 import { DragSource as dragSource } from 'react-dnd';

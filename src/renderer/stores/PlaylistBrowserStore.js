@@ -1,5 +1,3 @@
-'use babel';
-
 import { EventEmitter } from 'events';
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import PlaylistBrowserConstants from '../constants/PlaylistBrowserConstants';

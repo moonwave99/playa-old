@@ -1,5 +1,3 @@
-'use babel';
-
 import { map } from 'lodash';
 import React, { Component } from 'react';
 import cx from 'classnames';

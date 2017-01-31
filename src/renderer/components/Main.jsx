@@ -1,5 +1,3 @@
-'use babel';
-
 import { range } from 'lodash';
 import cx from 'classnames';
 import key from 'keymaster';

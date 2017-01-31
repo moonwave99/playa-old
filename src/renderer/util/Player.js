@@ -1,5 +1,3 @@
-'use babel';
-
 import { EventEmitter } from 'events';
 import Promise from 'bluebird';
 import groove from 'groove';

@@ -1,5 +1,3 @@
-'use babel';
-
 import { ipcRenderer as ipc } from 'electron';
 import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';

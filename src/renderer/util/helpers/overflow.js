@@ -1,5 +1,3 @@
-'use babel';
-
 export const overflowsParent = function overflowsParent(parent, element) {
   const parentBounds = parent.getBoundingClientRect();
   const elBounds = element.getBoundingClientRect();

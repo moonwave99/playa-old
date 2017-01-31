@@ -1,5 +1,3 @@
-'use babel';
-
 export const minWidth = function minWidth(value) {
   return `screen and (min-width: ${value})`;
 };

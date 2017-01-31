@@ -1,5 +1,3 @@
-'use babel';
-
 import { shell } from 'electron';
 
 const DISCOGS_SEARCH_URL = 'http://www.discogs.com/search?type=release&q=';

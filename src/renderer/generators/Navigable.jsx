@@ -1,5 +1,3 @@
-'use babel';
-
 import { difference, without, uniq } from 'lodash';
 import React, { Component as ReactComponent, PropTypes } from 'react';
 import KeyboardFocusStore from '../stores/KeyboardFocusStore';

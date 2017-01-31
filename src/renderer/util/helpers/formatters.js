@@ -1,5 +1,3 @@
-'use babel';
-
 import moment from 'moment';
 import momentDurationFormat from 'moment-duration-format';  // eslint-disable-line
 

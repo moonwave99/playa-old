@@ -1,5 +1,3 @@
-'use babel';
-
 import { contains, reduce } from 'lodash';
 import React, { PropTypes, Component } from 'react';
 import cx from 'classnames';

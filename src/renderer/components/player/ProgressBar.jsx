@@ -1,5 +1,3 @@
-'use babel';
-
 import React, { Component, PropTypes } from 'react';
 
 class ProgressBar extends Component {

@@ -1,5 +1,3 @@
-'use babel';
-
 import Promise from 'bluebird';
 import { shell } from 'electron';
 import { EventEmitter } from 'events';

@@ -1,5 +1,3 @@
-'use babel';
-
 import { difference, find, findIndex, findWhere, forEach, isNumber } from 'lodash';
 import md5 from 'md5';
 import AlbumPlaylist from './AlbumPlaylist';

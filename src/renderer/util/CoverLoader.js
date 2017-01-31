@@ -1,5 +1,3 @@
-'use babel';
-
 import path from 'path';
 import { contains, find } from 'lodash';
 import fs from 'fs-extra';

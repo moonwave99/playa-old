@@ -1,5 +1,3 @@
-'use babel';
-
 import { map } from 'lodash';
 import { EventEmitter } from 'events';
 import key from 'keymaster';

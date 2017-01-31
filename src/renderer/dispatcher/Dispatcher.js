@@ -1,5 +1,3 @@
-'use babel';
-
 const Dispatcher = function Dispatcher() {};
 
 Dispatcher.prototype = Object.assign({

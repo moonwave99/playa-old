@@ -1,5 +1,3 @@
-'use babel';
-
 import _, { isArray, reduce } from 'lodash';
 import moment from 'moment';
 

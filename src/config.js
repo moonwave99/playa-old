@@ -1,5 +1,4 @@
 /* eslint no-console: 0 */
-import jetpack from 'fs-jetpack';
 import appConfig from './config/default';
 import pkg from '../package.json';
 

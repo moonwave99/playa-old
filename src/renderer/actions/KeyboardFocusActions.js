@@ -1,5 +1,3 @@
-'use babel';
-
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import KeyboardFocusConstants from '../constants/KeyboardFocusConstants';
 

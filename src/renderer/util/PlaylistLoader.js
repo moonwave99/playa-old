@@ -1,5 +1,3 @@
-'use babel';
-
 import { uniq } from 'lodash';
 import fs from 'fs-extra';
 import Promise from 'bluebird';

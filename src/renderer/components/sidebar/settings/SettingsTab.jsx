@@ -1,5 +1,3 @@
-'use babel';
-
 import React, { PropTypes } from 'react';
 import InterfaceSettings from './InterfaceSettings.jsx';
 import PlaylistSettings from './PlaylistSettings.jsx';

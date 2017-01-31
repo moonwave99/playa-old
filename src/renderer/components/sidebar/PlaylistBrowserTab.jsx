@@ -1,5 +1,3 @@
-'use babel';
-
 import { contains, find } from 'lodash';
 import md5 from 'md5';
 import i18n from 'i18next';

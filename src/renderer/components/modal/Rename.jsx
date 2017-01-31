@@ -1,5 +1,3 @@
-'use babel';
-
 import React, { Component as ReactComponent, PropTypes } from 'react';
 import { form, struct, Str } from 'tcomb-form';
 

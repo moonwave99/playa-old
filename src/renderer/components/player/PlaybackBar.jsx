@@ -1,5 +1,3 @@
-'use babel';
-
 import React, { Component } from 'react';
 import cx from 'classnames';
 import { formatTimeShort as formatTime } from '../../util/helpers/formatters';

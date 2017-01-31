@@ -1,5 +1,3 @@
-'use babel';
-
 import Dispatcher from './Dispatcher';
 
 export default Object.assign({}, Dispatcher.prototype, {

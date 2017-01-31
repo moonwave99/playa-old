@@ -1,5 +1,3 @@
-'use babel';
-
 import { contains, find } from 'lodash';
 import i18n from 'i18next';
 import React, { PropTypes, Component } from 'react';

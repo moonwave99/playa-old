@@ -1,5 +1,3 @@
-'use babel';
-
 import keyMirror from 'keymirror';
 
 export default keyMirror({

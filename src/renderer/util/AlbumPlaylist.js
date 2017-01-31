@@ -1,5 +1,3 @@
-'use babel';
-
 import path from 'path';
 import _, { flatten, find, findWhere, findIndex, where } from 'lodash';
 import Promise from 'bluebird';

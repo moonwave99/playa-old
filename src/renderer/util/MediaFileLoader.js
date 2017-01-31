@@ -1,5 +1,3 @@
-'use babel';
-
 import { isArray, flatten } from 'lodash';
 import fs from 'fs-extra';
 import md5 from 'md5';

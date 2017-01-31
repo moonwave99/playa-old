@@ -1,5 +1,3 @@
-'use babel';
-
 import { isBoolean } from 'lodash';
 import { EventEmitter } from 'events';
 import AppDispatcher from '../dispatcher/AppDispatcher';

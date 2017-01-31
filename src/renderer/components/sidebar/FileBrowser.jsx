@@ -1,5 +1,3 @@
-'use babel';
-
 import React, { PropTypes, Component } from 'react';
 import cx from 'classnames';
 import FileBrowserTreeNode from './FileBrowserTreeNode.jsx';

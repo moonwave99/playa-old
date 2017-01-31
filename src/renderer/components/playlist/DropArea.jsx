@@ -1,5 +1,3 @@
-'use babel';
-
 import _, { } from 'lodash';
 import path from 'path';
 import React, { Component, PropTypes } from 'react';

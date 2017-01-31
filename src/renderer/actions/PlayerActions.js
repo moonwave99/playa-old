@@ -1,5 +1,3 @@
-'use babel';
-
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import PlayerConstants from '../constants/PlayerConstants';
 

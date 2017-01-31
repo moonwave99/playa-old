@@ -1,5 +1,3 @@
-'use babel';
-
 import _, { find, uniq, findWhere } from 'lodash';
 import path from 'path';
 import AlbumConstants from '../constants/AlbumConstants';

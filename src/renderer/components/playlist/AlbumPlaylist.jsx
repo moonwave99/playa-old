@@ -1,5 +1,3 @@
-'use babel';
-
 import { debounce, findIndex, forEach } from 'lodash';
 import cx from 'classnames';
 import React, { PropTypes, Component } from 'react';

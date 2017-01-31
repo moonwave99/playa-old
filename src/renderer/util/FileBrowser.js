@@ -1,4 +1,4 @@
-'use babel';
+
 
 import path from 'path';
 import Promise from 'bluebird';
