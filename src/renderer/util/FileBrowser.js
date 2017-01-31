@@ -1,5 +1,3 @@
-
-
 import path from 'path';
 import Promise from 'bluebird';
 import walkdir from 'walkdir';

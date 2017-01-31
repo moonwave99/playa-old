@@ -1,6 +1,6 @@
 import path from 'path';
 import FileTreeNode from './FileTreeNode';
-import fileBrowser from './fileBrowser';
+import fileBrowser from './FileBrowser';
 
 export default class FileTree {
   constructor({ rootFolder, rootName = '/', filter = 'directory' }) {
