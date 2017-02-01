@@ -93,7 +93,7 @@ class FileBrowserTreeNode extends Component {
       >
         { node.isDirectory() ? this.renderNodeArrow() : null }
         { this.renderNodeLabel() }
-      </li>
+      </li>,
     );
   }
 }

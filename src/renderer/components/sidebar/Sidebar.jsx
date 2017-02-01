@@ -15,7 +15,7 @@ const handleAfter = function handleAfter(selectedIndex) {
   setTimeout(() => KeyboardFocusActions.requestFocus(
     KeyboardNameSpaceConstants[
       selectedIndex === 1 ? 'PLAYLIST_BROWSER' : 'FILE_BROWSER'
-    ]
+    ],
   ), 100);
 };
 

@@ -16,7 +16,7 @@ Dispatcher.prototype = Object.assign({
       new Promise((resolve, reject) => {
         resolves[i] = resolve;
         rejects[i] = reject;
-      })
+      }),
     );
     // Dispatch to callbacks and resolve/reject promises.
     this._callbacks.forEach((callback, i) =>
@@ -24,8 +24,8 @@ Dispatcher.prototype = Object.assign({
       // See waitFor() for why this might be useful.
       Promise.resolve(callback(payload)).then(
         () => resolves[i](payload),
-        () => rejects[i](new Error('Dispatcher callback unsuccessful'))
-      )
+        () => rejects[i](new Error('Dispatcher callback unsuccessful')),
+      ),
     );
     this._promises = [];
   },

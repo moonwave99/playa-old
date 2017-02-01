@@ -28,7 +28,7 @@ export default class PlaylistLoader {
       return Promise.resolve(playlist);
     }
     return this.parse(playlist.path).then(data =>
-      playlist.hydrate(data).load(uniq(data.tracklist), opts)
+      playlist.hydrate(data).load(uniq(data.tracklist), opts),
     );
   }
   save(playlist) {

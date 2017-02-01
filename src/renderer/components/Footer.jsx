@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import cx from 'classnames';
 import { ipcRenderer as ipc } from 'electron';
 import i18n from 'i18next';
-import InfoDrawer from './InfoDrawer.jsx';
+import InfoDrawer from './InfoDrawer';
 import { formatTimeLong } from '../util/helpers/formatters';
 
 class Footer extends Component {
@@ -84,7 +84,7 @@ class Footer extends Component {
             </li>
           </ul>
         </div>
-        <InfoDrawer {...this.props} />
+        <InfoDrawer audioMetadata={this.props.audioMetadata} />
       </footer>
     );
   }
@@ -94,6 +94,7 @@ Footer.propTypes = {
   selectedPlaylist: PropTypes.shape({
     getStats: PropTypes.func,
   }),
+  audioMetadata: PropTypes.shape({}),
 };
 
 export default Footer;

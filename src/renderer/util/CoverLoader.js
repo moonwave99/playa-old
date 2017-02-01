@@ -70,15 +70,16 @@ export default class CoverLoader {
       } else {
         this.log(`Found ${title}`, response);
         const thumbResult = find(response[1].results, result =>
-          result.thumb.length > 0 && contains(['release', 'master'], result.type)
+          result.thumb.length > 0 && contains(['release', 'master'], result.type),
         );
         if (!thumbResult) {
           throw new Error(`No results for: ${title}`);
         }
         return needle.getAsync(thumbResult.thumb);
       }
-    }).then(response => this.saveImageFromBuffer(response[1], 'jpg', album)
-    ).catch((err) => {
+    })
+    .then(response => this.saveImageFromBuffer(response[1], 'jpg', album))
+    .catch((err) => {
       this.notFound.push(album.id);
       throw err;
     });

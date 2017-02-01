@@ -17,7 +17,7 @@ const FileBrowserOnSteroids = navGenerator(FileBrowser, KeyboardNameSpaceConstan
   null,
   (component, buffer) => {
     const result = find(component.props.tree,
-      x => x.name.toLowerCase().startsWith(buffer)
+      x => x.name.toLowerCase().startsWith(buffer),
     ) || {};
     return result.id;
   },
@@ -86,12 +86,12 @@ class FileBrowserTab extends Component {
   }
   handleOpen(ids) {
     FileBrowserActions.expandNodes(
-      this.state.fileTree.filter(node => contains(ids, node.id))
+      this.state.fileTree.filter(node => contains(ids, node.id)),
     );
   }
   handleClose(ids) {
     FileBrowserActions.collapseNodes(
-      this.state.fileTree.filter(node => contains(ids, node.id))
+      this.state.fileTree.filter(node => contains(ids, node.id)),
     );
   }
   render() {

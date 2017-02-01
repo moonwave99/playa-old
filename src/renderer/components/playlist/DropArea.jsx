@@ -15,7 +15,7 @@ const normaliseDroppedFolder = function normaliseDroppedFolder(files) {
     .tap((f) => { folders = f; })
     .sortBy(f => f.split(path.sep).length)
     .filter(f => folders.filter(
-      _f => (_f.indexOf(f) === 0) && (f !== _f)).length === 0
+      _f => (_f.indexOf(f) === 0) && (f !== _f)).length === 0,
     )
     .value();
 };
@@ -65,7 +65,7 @@ class DropArea extends Component {
         <span className="text">
           {i18n.t('dropArea.placeholder')}
         </span>
-      </div>
+      </div>,
     );
   }
 }

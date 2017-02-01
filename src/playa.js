@@ -8,6 +8,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import Promise from 'bluebird';
+import ffmpeg from 'fluent-ffmpeg';
 import Main from './renderer/components/Main.jsx';
 import Player from './renderer/util/Player';
 import AlbumPlaylist from './renderer/util/AlbumPlaylist';
@@ -76,9 +77,8 @@ const selectTab = function selectTab(tab, tabScopeName) {
 };
 
 const onPlayerChange = function onPlayerChange() {
-  ipc.send('remote:update', {
-    playbackInfo: PlayerStore.getPlaybackInfo({ remote: true }),
-  });
+  PlayerStore.getPlaybackInfo({ remote: true })
+    .then(playbackInfo => ipc.send('remote:update', { playbackInfo }));
 };
 
 export default class Playa {
@@ -200,6 +200,8 @@ export default class Playa {
       scrobbleThreshold: this.getSetting('common', 'scrobbleThreshold'),
     });
 
+    ffmpeg.setFfprobePath(this.getSetting('config', 'ffprobePath'));
+
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
     this.saveSetting = this.saveSetting.bind(this);
   }
@@ -225,18 +227,18 @@ export default class Playa {
     this.player.on('trackChange', () => PlayerStore.emitChange());
 
     this.player.on('nowplaying', () => {
-      const playbackInfo = PlayerStore.getPlaybackInfo();
-      const selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist();
-
-      if (
-        (selectedPlaylist.lastPlayedAlbumId !== playbackInfo.currentAlbum.id)
-        || (selectedPlaylist.lastPlayedTrackId !== playbackInfo.currentTrack.id)
-      ) {
-        selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id;
-        selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id;
-        OpenPlaylistActions.savePlaylist();
-      }
-      PlayerStore.emitChange();
+      PlayerStore.getPlaybackInfo().then((playbackInfo) => {
+        const selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist();
+        if (
+          (selectedPlaylist.lastPlayedAlbumId !== playbackInfo.currentAlbum.id)
+          || (selectedPlaylist.lastPlayedTrackId !== playbackInfo.currentTrack.id)
+        ) {
+          selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id;
+          selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id;
+          OpenPlaylistActions.savePlaylist();
+        }
+        PlayerStore.emitChange();
+      });
     });
 
     this.player.on('playerTick', () => PlayerStore.emitChange());
@@ -263,7 +265,7 @@ export default class Playa {
           new AlbumPlaylist({
             id: md5(file),
             path: file,
-          })
+          }),
       );
     }
 
@@ -347,26 +349,26 @@ export default class Playa {
     ipc.on('playback:prev', () =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.PREV_TRACK,
-      })
+      }),
     );
 
     ipc.on('playback:next', () =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.NEXT_TRACK,
-      })
+      }),
     );
 
     ipc.on('playback:toggle', () =>
       AppDispatcher.dispatch({
         actionType: this.player.playing ? PlayerConstants.PAUSE : PlayerConstants.PLAY,
-      })
+      }),
     );
 
     ipc.on('playback:seek', (event, params) =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.SEEK,
         to: params.seekTo,
-      })
+      }),
     );
 
     ipc.on('sidebar:toggle', () => this.toggleSidebar());
@@ -392,26 +394,26 @@ export default class Playa {
     ipc.on('playlist:save', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.SAVE_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:reload', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.RELOAD_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:close', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:select', (event, params) =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID,
         id: params.playlistId,
-      })
+      }),
     );
 
     ipc.on('playlist:gotoAlbum', (event, message) => {
@@ -429,8 +431,7 @@ export default class Playa {
           play: true,
         });
       }
-    }
-    );
+    });
 
     ipc.on('playlist:gotoTrack', (event, message) => {
       const selectedPlaylist = this.openPlaylistManager.getSelectedPlaylist();
@@ -449,11 +450,11 @@ export default class Playa {
       }
     });
 
-    return ipc.on('open:folder', (event, folder) =>
+    ipc.on('open:folder', (event, folder) =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.ADD_FOLDER,
         folder,
-      })
+      }),
     );
   }
   render() {
@@ -487,8 +488,8 @@ export default class Playa {
   ensureFolders(folders = []) {
     folders.forEach(
       folder => fs.ensureDirSync(
-        path.join(this.getSetting('common', 'userDataFolder'), folder)
-      )
+        path.join(this.getSetting('common', 'userDataFolder'), folder),
+      ),
     );
   }
   _onOpenPlaylistChange() {
@@ -531,8 +532,7 @@ export default class Playa {
           _album.tracks = _album.tracks.map((track) => {
             track.formattedDuration = formatTime(track.duration);  // eslint-disable-line
             return track;
-          }
-          );
+          });
           return _album;
         });
       })).then((albums) => {

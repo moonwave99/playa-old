@@ -148,8 +148,8 @@ export default class Application extends EventEmitter {
   registerGlobalShortcuts() {
     MEDIA_KEYS_SHORTCUTS.forEach(shortcut =>
       globalShortcut.register(shortcut, () =>
-        this.windows[0].sendMediaControl(shortcut)
-      )
+        this.windows[0].sendMediaControl(shortcut),
+      ),
     );
   }
   openAboutWindow() {

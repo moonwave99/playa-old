@@ -67,10 +67,10 @@ export default class OpenPlaylistManager {
   add(playlists) {
     const newPlaylists = difference(
       playlists.map(i => i.id),
-      this.playlists.map(i => i.id)
+      this.playlists.map(i => i.id),
     );
     this.playlists = this.playlists.concat(playlists.filter(
-      p => newPlaylists.indexOf(p.id) > -1
+      p => newPlaylists.indexOf(p.id) > -1,
     ));
   }
   addFolder(folder, playlist = this.getSelectedPlaylist()) {
@@ -106,7 +106,7 @@ export default class OpenPlaylistManager {
       return;
     }
     const filesToRemove = ids.reduce((memo, id) => memo.concat(
-        playlist.getAlbumById(id).tracks.map(t => t.filename)
+        playlist.getAlbumById(id).tracks.map(t => t.filename),
       )
     , []);
     playlist.removeItems(ids);

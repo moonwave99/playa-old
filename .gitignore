@@ -17,3 +17,4 @@ build
 .idea
 .env*
 /settings/**/*.json
+/test_data

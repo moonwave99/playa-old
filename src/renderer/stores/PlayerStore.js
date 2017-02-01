@@ -5,7 +5,7 @@ import { formatTimeShort } from '../util/helpers/formatters';
 
 const CHANGE_EVENT = 'change';
 
-const formatInfo = function formatRemoteInfo(info, totalTime, currentTime) {
+const formatInfo = function formatRemoteInfo(info, totalTime, currentTime, audioMetadata) {
   return {
     totalTime,
     currentTime,
@@ -14,6 +14,7 @@ const formatInfo = function formatRemoteInfo(info, totalTime, currentTime) {
     hideInfo: !info.currentTrack,
     currentTrack: info.currentTrack,
     currentAlbum: info.currentAlbum,
+    audioMetadata,
   };
 };
 
@@ -37,10 +38,16 @@ const PlayerStore = Object.assign({}, EventEmitter.prototype, {
     const info = playa.player.playbackInfo();
     const totalTime = info.currentTrack ? info.currentTrack.duration : 0;
     const currentTime = info.position || 0;
-    if (options.remote) {
-      return formatRemoteInfo(info, totalTime, currentTime);
+    if (!info.currentTrack) {
+      return Promise.resolve(formatInfo(info, totalTime, currentTime));
     }
-    return formatInfo(info, totalTime, currentTime);
+    return info.currentTrack.loadAudioMetadata()
+      .then((currentTrack) => {
+        if (options.remote) {
+          return formatRemoteInfo(info, totalTime, currentTime);
+        }
+        return formatInfo(info, totalTime, currentTime, currentTrack.audioMetadata);
+      });
   },
   emitChange() {
     this.emit(CHANGE_EVENT);

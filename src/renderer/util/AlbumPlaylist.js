@@ -55,7 +55,7 @@ export default class AlbumPlaylist {
   }
   getFileList() {
     return flatten(
-      this.items.toArray().map(i => i.tracks.map(t => t.filename))
+      this.items.toArray().map(i => i.tracks.map(t => t.filename)),
     );
   }
   getItems(opts) {
@@ -84,7 +84,7 @@ export default class AlbumPlaylist {
   find(buffer) {
     return find(this.items.toArray(), a =>
       a.getArtist().toLowerCase().startsWith(buffer)
-      || a.getTitle().toLowerCase().startsWith(buffer)
+      || a.getTitle().toLowerCase().startsWith(buffer),
     );
   }
   getStats() {
@@ -241,7 +241,7 @@ export default class AlbumPlaylist {
               ? md5(
                   path.dirname(candidateTrack.filename)
                   + candidateTrack.metadata.artist
-                  + candidateTrack.metadata.album
+                  + candidateTrack.metadata.album,
                 )
               : md5(path.dirname(tracks[0].filename)),
           ].join('_'),

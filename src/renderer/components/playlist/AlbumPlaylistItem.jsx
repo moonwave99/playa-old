@@ -11,7 +11,7 @@ import OpenPlaylistActions from '../../actions/OpenPlaylistActions';
 import { revealInFinder,
   searchOnDiscogs,
   searchOnRym,
-  searchOnLastfm
+  searchOnLastfm,
 } from '../../util/helpers/openLink';
 
 const DRAGGING_OPACITY = 0.4;

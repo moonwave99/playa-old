@@ -116,7 +116,7 @@ export default function navigable(
       } else if (event.shiftKey && this.props.allowMultipleSelection) {
         this.setState({
           selection: ids.slice(
-            Math.min(low, index), Math.max(hi, index) + 1
+            Math.min(low, index), Math.max(hi, index) + 1,
           ),
         });
       } else {
@@ -282,4 +282,4 @@ export default function navigable(
     initSelection: PropTypes.arrayOf(PropTypes.string),
   };
   return NavigableComponent;
-};
+}

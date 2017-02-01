@@ -16,7 +16,7 @@ export default class MediaFileLoader {
   }
   loadFiles(files, opts) {
     return Promise.settle(files.map(
-      f => this.openFile(f, opts))
+      f => this.openFile(f, opts)),
     );
   }
   loadFolder(folder) {
@@ -31,10 +31,10 @@ export default class MediaFileLoader {
             resolve(files.map(file => path.join(f, file)));
           }
         });
-      })
+      }),
     ))
     .then(files => Promise.settle(
-      flatten(files).map(f => this.openFile(f)))
+      flatten(files).map(f => this.openFile(f))),
     )
     .catch(err => console.error(err, err.stack)); // eslint-disable-line
   }

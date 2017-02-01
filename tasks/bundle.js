@@ -6,6 +6,7 @@ const { rollup } = require('rollup');
 const jsx = require('rollup-plugin-jsx');
 const babel = require('rollup-plugin-babel');
 const json = require('rollup-plugin-json');
+const nodeResolve = require('rollup-plugin-node-resolve');
 
 const nodeBuiltInModules = ['assert', 'buffer', 'child_process', 'cluster',
     'console', 'constants', 'crypto', 'dgram', 'dns', 'domain', 'events',
@@ -32,6 +33,7 @@ module.exports = function bundle(src, dest, pkg) {
     external: generateExternalModulesList(pkg),
     cache: cached[src],
     plugins: [
+      nodeResolve(),
       json(),
       babel({
         exclude: 'node_modules/**',
