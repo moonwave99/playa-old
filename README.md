@@ -10,7 +10,8 @@
 - open playlists in multiple tabs;
 - displays track [waveform](https://github.com/andrewrk/waveform);
 - displays album cover art from [Discogs](https://www.discogs.com/developers/);
-- [scrobbles to your Last.fm account](http://www.last.fm/about).
+- [scrobbles to your Last.fm account](http://www.last.fm/about);
+- allows remote control over HTTP.
 
 ## Philosophy
 
@@ -21,22 +22,74 @@ So now that I found a solid match between a low level audio player, and an appli
 
 ## Install
 
-Playa delivers sound to your loudspeakers (and eventually to your ears) via [libgroove](https://github.com/andrewrk/libgroove).  
+Playa delivers sound to your loudspeakers (and eventually to your ears) via [libgroove](https://github.com/andrewrk/libgroove).
 As I haven't found a way to pack it with the app itself yet, you have to install it via `brew`:
 
     $ brew install libgroove
 
 Then either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually:
 
-    // npm i gulp -g, if you do not have gulp installed
     $ npm install
     $ gulp release
 
 You'll find built app in the `/release` folder.
 
+## Development
+
+### Run
+
+    $ npm i
+    $ npm rebuild // see * below
+    $ npm start
+
+\* (in case you install new native modules and you run into the [dreadful module version mismatch issue](https://github.com/electron-userland/electron-builder/issues/453))
+
+### Test
+
+    $ npm run test
+
+Tests are written in [tape](https://github.com/substack/tape) and should live along the code itself:
+
+```
+pathTo
+  └── component
+        ├── index.js
+        ├── component.js
+        └── component.spec.js
+```
+
+Where `index.js`is just:
+
+```
+import Component from './component';
+
+export default Component;
+```
+
+The template for specs is:
+
+```
+/* eslint import/no-extraneous-dependencies: 0 */
+
+import test from 'tape';
+import Component from './';
+
+test('whatToTest', (assert) => {
+  ...
+  assert.equal(
+    something, toSomethingElse,
+    'expected result',
+  );
+  ...
+  assert.end();
+});
+```
+
+The eslint directive on top is needed in order to import `tape` from `devDependencies`.
+
 ---
 
-Note: in order to use [Discogs webservice](https://www.discogs.com/developers/) you need to obtain a Consumer Key/Secret pair from them and create `settings/discogs.json` using following template:
+**Note**: in order to use [Discogs webservice](https://www.discogs.com/developers/) you need to obtain a Consumer Key/Secret pair from them and create `settings/discogs.json` using following template:
 
     {
       "DISCOGS_KEY"     : <yourDiscogsKey>,
@@ -54,12 +107,11 @@ Same for [Last.fm scrobbling](http://www.last.fm/api/scrobbling), please save it
 
 Plans for the close future are:
 
-- **Remote control** over HTTP/Websockets, via a simple HTML5 interface;
 - Implementation of `MetaDoctor`, an interface driven process that help you **solve track metadata problems** when importing media to playlists.
 
 Plans for the not-so-close future:
 
-- **search feature** over a library, whose changes are monitored (see [Watchman](https://facebook.github.io/watchman/));
+- **search feature** over a library, whose changes are monitored;
 - inclusion of arbitrary media **URLs** in playlists (Youtube, Soundcloud, Bandcamp...).
 
 ## Known issues
