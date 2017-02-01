@@ -98,13 +98,15 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-json": "^2.1.0",
     "rollup-plugin-jsx": "^1.0.3",
+    "rollup-plugin-node-resolve": "^2.0.0",
     "run-sequence": "1.1.4",
-    "shelljs": "0.5.3"
+    "shelljs": "0.5.3",
+    "tape": "^4.6.3"
   },
   "scripts": {
     "start": "gulp serve",
     "build": "gulp release",
-    "test": "gulp test",
+    "test": "tape -r babel-register src/**/*.spec.js",
     "eslint": "eslint src",
     "postinstall": "make postinstall",
     "rebuild": "./node_modules/.bin/electron-rebuild -v 1.4.13",

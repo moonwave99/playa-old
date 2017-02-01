@@ -1,4 +1,4 @@
-import fs from 'fs-plus';
+import jetpack from 'fs-jetpack';
 
 export default class SettingsBag {
   constructor({
@@ -11,19 +11,18 @@ export default class SettingsBag {
     this.readOnly = readOnly;
   }
   load() {
-    if (!fs.existsSync(this.path)) {
-      return this;
+    const data = jetpack.read(this.path, 'json');
+    if (!data) {
+      throw new Error(`Could not read from ${this.path}`);
     }
-    this.data = JSON.parse(
-      fs.readFileSync(this.path, 'utf-8'),
-    );
+    this.data = data;
     return this;
   }
   save() {
     if (this.readOnly) {
       return this;
     }
-    fs.writeFileSync(this.path, JSON.stringify(this.data));
+    jetpack.write(this.path, this.data);
     return this;
   }
   set(key, value) {
