@@ -1,5 +1,4 @@
 /* eslint import/no-extraneous-dependencies: 0 */
-/* eslint jsx-a11y/heading-has-content: 0 */
 
 import test from 'tape';
 import Path from 'path';

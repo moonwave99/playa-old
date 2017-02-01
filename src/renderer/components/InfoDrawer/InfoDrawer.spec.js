@@ -1,5 +1,6 @@
 /* eslint import/no-extraneous-dependencies: 0 */
 /* eslint react/jsx-filename-extension: 0 */
+/* eslint jsx-a11y/heading-has-content: 0 */
 
 import tape from 'tape';
 import addAssertions from 'extend-tape';
