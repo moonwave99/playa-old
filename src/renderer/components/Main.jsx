@@ -15,6 +15,7 @@ import Playlist from './playlist/Playlist.jsx';
 import Sidebar from './sidebar/Sidebar.jsx';
 import Footer from './Footer.jsx';
 import ModalStore from '../stores/ModalStore';
+import PlayerStore from '../stores/PlayerStore';
 import ContextMenuStore from '../stores/ContextMenuStore';
 import OpenPlaylistStore from '../stores/OpenPlaylistStore';
 import SidebarStore from '../stores/SidebarStore';
@@ -43,6 +44,10 @@ const getOpenPlaylistState = function getOpenPlaylistState() {
     selectedPlaylist: OpenPlaylistStore.getSelectedPlaylist(),
     selectedIndex: OpenPlaylistStore.getSelectedIndex(),
   };
+};
+
+const getPlayerState = function getPlayerState() {
+  return PlayerStore.getPlaybackInfo();
 };
 
 const getSettingsState = function getSettingsState() {
@@ -74,10 +79,12 @@ class Main extends Component {
       contextMenu: getContextMenuState(),
       modal: getModalState(),
       settings: getSettingsState(),
+      playerState: {},
       baseFontSize: this.props.baseFontSize.normal,
     }, getOpenPlaylistState());
 
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
+    this._onPlayerChange = this._onPlayerChange.bind(this);
     this._onSidebarChange = this._onSidebarChange.bind(this);
     this._onContextMenuChange = this._onContextMenuChange.bind(this);
     this._onModalChange = this._onModalChange.bind(this);
@@ -85,6 +92,7 @@ class Main extends Component {
   }
   componentDidMount() {
     OpenPlaylistStore.addChangeListener(this._onOpenPlaylistChange);
+    PlayerStore.addChangeListener(this._onPlayerChange);
     SidebarStore.addChangeListener(this._onSidebarChange);
     ContextMenuStore.addChangeListener(this._onContextMenuChange);
     ModalStore.addChangeListener(this._onModalChange);
@@ -100,6 +108,7 @@ class Main extends Component {
   }
   componentWillUnmount() {
     OpenPlaylistStore.removeChangeListener(this._onOpenPlaylistChange);
+    PlayerStore.removeChangeListener(this._onPlayerChange);
     SidebarStore.removeChangeListener(this._onSidebarChange);
     ContextMenuStore.removeChangeListener(this._onContextMenuChange);
     ModalStore.removeChangeListener(this._onModalChange);
@@ -117,6 +126,19 @@ class Main extends Component {
   }
   _onOpenPlaylistChange() {
     this.setState(getOpenPlaylistState());
+  }
+  _onPlayerChange() {
+    getPlayerState().then((playerState) => {
+      const newId = playerState.currentTrack
+        ? playerState.currentTrack.id
+        : null;
+      const oldId = this.state.playerState.currentTrack
+        ? this.state.playerState.currentTrack.id
+        : null;
+      if (newId !== oldId) {
+        this.setState({ playerState });
+      }
+    });
   }
   _onSidebarChange() {
     this.setState({ sidebar: getSidebarState() });
@@ -164,12 +186,14 @@ class Main extends Component {
     const openPlaylists = this.state.openPlaylists.map(playlist => (
       <Tabs.Panel title={playlist.title} key={playlist.id}>
         <Playlist
+          currentTrack={this.state.currentTrack}
           playlist={playlist}
           isSidebarOpen={this.state.sidebar.isOpen}
           baseFontSize={baseFontSize}
         />
       </Tabs.Panel>
     ));
+    const audioMetadata = this.state.playerState.audioMetadata;
     const classes = cx({
       'playa-main': true,
       'sidebar-open': this.state.sidebar.isOpen,
@@ -192,7 +216,10 @@ class Main extends Component {
             {openPlaylists}
           </Tabs>
         </div>
-        <Footer selectedPlaylist={this.state.selectedPlaylist} />
+        <Footer
+          audioMetadata={audioMetadata}
+          selectedPlaylist={this.state.selectedPlaylist}
+        />
         <ContextMenu {...this.state.contextMenu} />
       </div>
     );

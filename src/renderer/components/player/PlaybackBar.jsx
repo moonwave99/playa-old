@@ -26,7 +26,8 @@ class PlaybackBar extends Component {
     super(props);
     this.state = Object.assign({
       showRemaining: false,
-    }, getPlayerState());
+      hideInfo: true,
+    });
     this.handleTimeIndicatorClick = this.handleTimeIndicatorClick.bind(this);
     this._onPlayerChange = this._onPlayerChange.bind(this);
     this.play = this.play.bind(this);
@@ -50,12 +51,14 @@ class PlaybackBar extends Component {
     });
   }
   _onPlayerChange() {
-    this.setState(getPlayerState());
-    if (this.state.currentAlbum) {
-      playa.coverLoader.load(this.state.currentAlbum)
-        .then(this.updateCover)
-        .catch(() => this.updateCover(false));
-    }
+    getPlayerState().then((playerState) => {
+      this.setState(playerState);
+      if (this.state.currentAlbum) {
+        playa.coverLoader.load(this.state.currentAlbum)
+          .then(this.updateCover)
+          .catch(() => this.updateCover(false));
+      }
+    });
   }
   play(event) {
     if (!event.clientX) {

@@ -1,4 +1,5 @@
 /* eslint import/no-extraneous-dependencies: 0 */
+/* eslint jsx-a11y/heading-has-content: 0 */
 
 import test from 'tape';
 import Path from 'path';
@@ -22,7 +23,7 @@ before('before', (assert) => {
   assert.end();
 });
 
-test('get()', (assert) => {
+test('SettingsBag # get()', (assert) => {
   const bag = new SettingsBag({ data });
 
   assert.equal(
@@ -38,7 +39,7 @@ test('get()', (assert) => {
   assert.end();
 });
 
-test('set()', (assert) => {
+test('SettingsBag # set()', (assert) => {
   const bag = new SettingsBag({ data });
   const newTitle = 'Just for a Day';
   const returnBag = bag.set('title', newTitle);
@@ -63,7 +64,7 @@ test('set()', (assert) => {
   assert.end();
 });
 
-test('all()', (assert) => {
+test('SettingsBag # all()', (assert) => {
   const bag = new SettingsBag({ data });
 
   assert.deepEqual(
@@ -74,7 +75,7 @@ test('all()', (assert) => {
   assert.end();
 });
 
-test('load()', (assert) => {
+test('SettingsBag # load()', (assert) => {
   jetpack.write(TEST_DATA_PATH, data);
   const bag = new SettingsBag({ path: TEST_DATA_PATH });
   const loadedBag = bag.load();
@@ -94,7 +95,7 @@ test('load()', (assert) => {
   assert.end();
 });
 
-test('save()', (assert) => {
+test('SettingsBag # save()', (assert) => {
   const bag = new SettingsBag({ data, path: TEST_DATA_SAVE_PATH });
   const savedBag = bag.save();
 

@@ -3,7 +3,6 @@ import React, { PropTypes, Component } from 'react';
 import cx from 'classnames';
 import AlbumPlaylist from './AlbumPlaylist.jsx';
 import OpenPlaylistActions from '../../actions/OpenPlaylistActions';
-import PlayerStore from '../../stores/PlayerStore';
 import KeyboardFocusActions from '../../actions/KeyboardFocusActions';
 import navGenerator from '../../generators/Navigable.jsx';
 import KeyboardNameSpaceConstants from '../../constants/KeyboardNameSpaceConstants';
@@ -41,13 +40,6 @@ const AlbumPlaylistOnSteroids = navGenerator(
   },
 );
 
-const getPlayerState = function getPlayerState() {
-  const playerState = PlayerStore.getPlaybackInfo();
-  return {
-    currentTrack: playerState.currentTrack || {},
-  };
-};
-
 const handleDelKeyPress = function handleDelKeyPress(event, item, tracksToRemove) {
   OpenPlaylistActions.removeFiles(tracksToRemove, item.props.playlist);
 };
@@ -65,20 +57,12 @@ const handleScrollToElement = function handleScrollToElement(state, list, compon
 class Playlist extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      currentTrack: {},
-    };
     this.handleEnterKeyPress = this.handleEnterKeyPress.bind(this);
-    this._onPlayerChange = this._onPlayerChange.bind(this);
   }
   componentDidMount() {
-    PlayerStore.addChangeListener(this._onPlayerChange);
     if (!this.props.playlist.loaded) {
       OpenPlaylistActions.load(this.props.playlist.id);
     }
-  }
-  componentWillUnmount() {
-    PlayerStore.removeChangeListener(this._onPlayerChange);
   }
   handleEnterKeyPress(event, item) {
     if (item.state.selection.length !== 1) {
@@ -92,12 +76,6 @@ class Playlist extends Component {
       true,
     );
   }
-  _onPlayerChange() {
-    const playerState = getPlayerState();
-    if (playerState.currentTrack.id !== this.state.currentTrack.id) {
-      this.setState(playerState);
-    }
-  }
   render() {
     const classes = cx({
       playlist: true,
@@ -107,7 +85,7 @@ class Playlist extends Component {
       <div className={classes} onClick={handleGlobalClick}>
         <AlbumPlaylistOnSteroids
           allowMultipleSelection
-          currentTrack={this.state.currentTrack}
+          currentTrack={this.props.currentTrack}
           playlist={this.props.playlist}
           baseFontSize={this.props.baseFontSize}
           initSelection={[this.props.playlist.lastScrolledAlbumId]}
@@ -124,6 +102,7 @@ class Playlist extends Component {
 Playlist.propTypes = {
   isSidebarOpen: PropTypes.bool,
   baseFontSize: PropTypes.number,
+  currentTrack: PropTypes.shape({}),
   playlist: PropTypes.shape({
     id: PropTypes.string,
     loaded: PropTypes.bool,

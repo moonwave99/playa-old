@@ -88,12 +88,15 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.9.0",
+    "extend-tape": "^1.2.0",
+    "faucet": "0.0.1",
     "gulp": "3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-google-webfonts": "0.0.11",
     "gulp-stylus": "2.1.0",
     "gulp-task-list": "0.0.1",
     "merge-stream": "1.0.0",
+    "react-addons-test-utils": "^0.14",
     "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-json": "^2.1.0",
@@ -101,13 +104,14 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "run-sequence": "1.1.4",
     "shelljs": "0.5.3",
-    "tape": "^4.6.3"
+    "tape": "^4.6.3",
+    "tape-jsx-equals": "^1.0.0"
   },
   "scripts": {
     "start": "gulp serve",
     "build": "gulp release",
-    "test": "tape -r babel-register src/**/*.spec.js",
-    "eslint": "eslint src",
+    "test": "tape -r babel-register src/**/*.spec.js | faucet",
+    "eslint": "eslint --ext .js,.jsx src",
     "postinstall": "make postinstall",
     "rebuild": "./node_modules/.bin/electron-rebuild -v 1.4.13",
     "localInstall": "cp -r ./release/Playa-darwin-x64/Playa.app/ /Applications/Playa.app/"

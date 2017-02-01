@@ -19,10 +19,10 @@ const FileBrowserOnSteroids = navGenerator(FileBrowser, KeyboardNameSpaceConstan
   null,
   (component, buffer) => {
     const result = find(component.props.tree,
-      x => x.name.toLowerCase().startsWith(buffer)
+      x => x.name.toLowerCase().startsWith(buffer),
     ) || {};
     return result.id;
-  }
+  },
 );
 
 const openPlaylist = function openPlaylist(playlistPath) {
@@ -136,7 +136,12 @@ class PlaylistBrowserTab extends Component {
   componentWillUnmount() {
     PlaylistBrowserStore.removeChangeListener(this.onPlaylistBrowserChange);
   }
-  _getNodesById(ids) {
+  onPlaylistBrowserChange() {
+    this.setState({
+      playlistTree: PlaylistBrowserStore.getPlaylistTree(),
+    });
+  }
+  getNodesById(ids) {
     return this.state.playlistTree.filter(node => contains(ids, node.id) && node.isDirectory());
   }
   handleDelKeyPress(event, item, elementsToRemove) {
@@ -152,21 +157,16 @@ class PlaylistBrowserTab extends Component {
     this.props.handleScrollToElement(state, list);
   }
   handleOpen(ids) {
-    const nodes = this._getNodesById(ids);
+    const nodes = this.getNodesById(ids);
     if (nodes.length) {
       PlaylistBrowserActions.expandNodes(nodes);
     }
   }
   handleClose(ids) {
-    const nodes = this._getNodesById(ids);
+    const nodes = this.getNodesById(ids);
     if (nodes.length) {
       PlaylistBrowserActions.collapseNodes(nodes);
     }
-  }
-  onPlaylistBrowserChange() {
-    this.setState({
-      playlistTree: PlaylistBrowserStore.getPlaylistTree(),
-    });
   }
   render() {
     return (

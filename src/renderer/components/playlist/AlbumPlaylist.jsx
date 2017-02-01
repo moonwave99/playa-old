@@ -218,7 +218,7 @@ class AlbumPlaylist extends Component {
   calculateDropAreaHeight() {
     const height = this.state.list.reduce(
       (memo, item, index) => memo + this.itemSizeGetter(index),
-      0
+      0,
     );
     return `calc(100vh - 9rem - ${height}px`;
   }

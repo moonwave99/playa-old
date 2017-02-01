@@ -77,9 +77,8 @@ const selectTab = function selectTab(tab, tabScopeName) {
 };
 
 const onPlayerChange = function onPlayerChange() {
-  ipc.send('remote:update', {
-    playbackInfo: PlayerStore.getPlaybackInfo({ remote: true }),
-  });
+  PlayerStore.getPlaybackInfo({ remote: true })
+    .then(playbackInfo => ipc.send('remote:update', { playbackInfo }));
 };
 
 export default class Playa {
@@ -228,18 +227,18 @@ export default class Playa {
     this.player.on('trackChange', () => PlayerStore.emitChange());
 
     this.player.on('nowplaying', () => {
-      const playbackInfo = PlayerStore.getPlaybackInfo();
-      const selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist();
-
-      if (
-        (selectedPlaylist.lastPlayedAlbumId !== playbackInfo.currentAlbum.id)
-        || (selectedPlaylist.lastPlayedTrackId !== playbackInfo.currentTrack.id)
-      ) {
-        selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id;
-        selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id;
-        OpenPlaylistActions.savePlaylist();
-      }
-      PlayerStore.emitChange();
+      PlayerStore.getPlaybackInfo().then((playbackInfo) => {
+        const selectedPlaylist = OpenPlaylistStore.getSelectedPlaylist();
+        if (
+          (selectedPlaylist.lastPlayedAlbumId !== playbackInfo.currentAlbum.id)
+          || (selectedPlaylist.lastPlayedTrackId !== playbackInfo.currentTrack.id)
+        ) {
+          selectedPlaylist.lastPlayedAlbumId = playbackInfo.currentAlbum.id;
+          selectedPlaylist.lastPlayedTrackId = playbackInfo.currentTrack.id;
+          OpenPlaylistActions.savePlaylist();
+        }
+        PlayerStore.emitChange();
+      });
     });
 
     this.player.on('playerTick', () => PlayerStore.emitChange());

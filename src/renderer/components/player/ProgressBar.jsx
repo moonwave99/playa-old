@@ -37,7 +37,7 @@ class ProgressBar extends Component {
     this.waveformProgress.classList.toggle('clicked', true);
     setTimeout(
       () => this.waveformProgress.classList.toggle('clicked', false)
-      , 100
+      , 100,
     );
     this.props.seekTo(position);
   }

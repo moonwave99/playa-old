@@ -9,10 +9,14 @@
     "window": true,
     "document": true,
     "playa": true,
-    "confirm": true
+    "confirm": true,
+    "alert": true
   },
   "settings": {
     "import/core-modules": ["electron"]
+  },
+  "ecmaFeatures": {
+    "jsx": true
   },
   "rules" : {
     "import/extensions": "off",
