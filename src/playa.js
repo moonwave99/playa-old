@@ -8,6 +8,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import Promise from 'bluebird';
+import ffmpeg from 'fluent-ffmpeg';
 import Main from './renderer/components/Main.jsx';
 import Player from './renderer/util/Player';
 import AlbumPlaylist from './renderer/util/AlbumPlaylist';
@@ -199,6 +200,8 @@ export default class Playa {
       resolution: 1000,
       scrobbleThreshold: this.getSetting('common', 'scrobbleThreshold'),
     });
+
+    ffmpeg.setFfprobePath(this.getSetting('config', 'ffprobePath'));
 
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
     this.saveSetting = this.saveSetting.bind(this);
