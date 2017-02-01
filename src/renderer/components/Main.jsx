@@ -83,6 +83,7 @@ class Main extends Component {
       baseFontSize: this.props.baseFontSize.normal,
     }, getOpenPlaylistState());
 
+    this.handleCommandNumberPress = this.handleCommandNumberPress.bind(this);
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
     this._onPlayerChange = this._onPlayerChange.bind(this);
     this._onSidebarChange = this._onSidebarChange.bind(this);
