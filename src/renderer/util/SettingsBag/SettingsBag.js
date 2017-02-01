@@ -7,7 +7,7 @@ export default class SettingsBag {
     readOnly = false,
   }) {
     this.path = path;
-    this.data = data;
+    this.data = Object.assign({}, data);
     this.readOnly = readOnly;
   }
   load() {
