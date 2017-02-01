@@ -263,7 +263,7 @@ export default class Playa {
           new AlbumPlaylist({
             id: md5(file),
             path: file,
-          })
+          }),
       );
     }
 
@@ -347,26 +347,26 @@ export default class Playa {
     ipc.on('playback:prev', () =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.PREV_TRACK,
-      })
+      }),
     );
 
     ipc.on('playback:next', () =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.NEXT_TRACK,
-      })
+      }),
     );
 
     ipc.on('playback:toggle', () =>
       AppDispatcher.dispatch({
         actionType: this.player.playing ? PlayerConstants.PAUSE : PlayerConstants.PLAY,
-      })
+      }),
     );
 
     ipc.on('playback:seek', (event, params) =>
       AppDispatcher.dispatch({
         actionType: PlayerConstants.SEEK,
         to: params.seekTo,
-      })
+      }),
     );
 
     ipc.on('sidebar:toggle', () => this.toggleSidebar());
@@ -392,26 +392,26 @@ export default class Playa {
     ipc.on('playlist:save', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.SAVE_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:reload', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.RELOAD_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:close', () =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.CLOSE_PLAYLIST,
-      })
+      }),
     );
 
     ipc.on('playlist:select', (event, params) =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.SELECT_PLAYLIST_BY_ID,
         id: params.playlistId,
-      })
+      }),
     );
 
     ipc.on('playlist:gotoAlbum', (event, message) => {
@@ -429,8 +429,7 @@ export default class Playa {
           play: true,
         });
       }
-    }
-    );
+    });
 
     ipc.on('playlist:gotoTrack', (event, message) => {
       const selectedPlaylist = this.openPlaylistManager.getSelectedPlaylist();
@@ -449,11 +448,11 @@ export default class Playa {
       }
     });
 
-    return ipc.on('open:folder', (event, folder) =>
+    ipc.on('open:folder', (event, folder) =>
       AppDispatcher.dispatch({
         actionType: OpenPlaylistConstants.ADD_FOLDER,
         folder,
-      })
+      }),
     );
   }
   render() {
@@ -487,8 +486,8 @@ export default class Playa {
   ensureFolders(folders = []) {
     folders.forEach(
       folder => fs.ensureDirSync(
-        path.join(this.getSetting('common', 'userDataFolder'), folder)
-      )
+        path.join(this.getSetting('common', 'userDataFolder'), folder),
+      ),
     );
   }
   _onOpenPlaylistChange() {
@@ -531,8 +530,7 @@ export default class Playa {
           _album.tracks = _album.tracks.map((track) => {
             track.formattedDuration = formatTime(track.duration);  // eslint-disable-line
             return track;
-          }
-          );
+          });
           return _album;
         });
       })).then((albums) => {

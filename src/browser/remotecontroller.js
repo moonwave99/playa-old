@@ -83,7 +83,7 @@ export default class RemoteController extends EventEmitter {
     socketIO.on('connection', (socket) => {
       console.log('New incoming connection'); // eslint-disable-line
       Object.keys(this.data).forEach(key =>
-        socket.emit(key, this.data[key])
+        socket.emit(key, this.data[key]),
       );
       return socket.on('control:playback', (data) => {
         switch (data.action) {
@@ -108,10 +108,10 @@ export default class RemoteController extends EventEmitter {
     app.use(express.static(this.serverOpts.root, this.staticOpts));
     app.get('/', (req, res) => res.sendFile('remote.html', this.serverOpts));
     app.get('/js/:file(*)', (req, res) =>
-      res.sendFile(path.resolve(__dirname, '../node_modules/', req.params.file))
+      res.sendFile(path.resolve(__dirname, '../node_modules/', req.params.file)),
     );
     app.get('/covers/:cover', (req, res) =>
-      res.sendFile(path.resolve(this.coverPath, req.params.cover))
+      res.sendFile(path.resolve(this.coverPath, req.params.cover)),
     );
     return app;
   }

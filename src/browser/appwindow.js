@@ -47,11 +47,11 @@ export default class AppWindow extends EventEmitter {
     this.window.on('closed', e => this.emit('closed', e));
 
     this.window.on('devtools-opened', () =>
-      this.window.webContents.send('window:toggle-dev-tools', true)
+      this.window.webContents.send('window:toggle-dev-tools', true),
     );
 
     this.window.on('devtools-closed', () =>
-      this.window.webContents.send('window:toggle-dev-tools', false)
+      this.window.webContents.send('window:toggle-dev-tools', false),
     );
   }
 

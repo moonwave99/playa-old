@@ -1,3 +1,6 @@
+/* eslint no-restricted-syntax: 0 */
+/* eslint no-param-reassign: 0 */
+
 import { Menu } from 'electron';
 import path from 'path';
 import season from 'season';
@@ -8,7 +11,7 @@ export default class AppMenu extends EventEmitter {
   constructor() {
     super();
     const menuJson = season.resolve(
-      path.join(__dirname, '../menus', `${process.platform}.json`)
+      path.join(__dirname, '../menus', `${process.platform}.json`),
     );
     const template = season.readFileSync(menuJson);
     this.template = this.translateTemplate(template.menu);
@@ -18,6 +21,20 @@ export default class AppMenu extends EventEmitter {
     return Menu.setApplicationMenu(this.menu);
   }
   translateTemplate(template) {
+    Array.from(template).forEach((item) => {
+      if (item.metadata == null) {
+        item.metadata = {};
+      }
+      if (item.label) {
+        item.label = (_.template(item.label))();
+      }
+      if (item.command) {
+        item.click = () => this.emit(item.command);
+      }
+      if (item.submenu) {
+        this.translateTemplate(item.submenu);
+      }
+    });
     for (const item of Array.from(template)) {
       if (item.metadata == null) {
         item.metadata = {};

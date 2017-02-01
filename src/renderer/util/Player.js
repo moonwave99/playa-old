@@ -31,7 +31,7 @@ const openTrack = function openTrack(filename) {
       } else {
         resolve(file);
       }
-    })
+    }),
   );
 };
 
@@ -282,7 +282,7 @@ export default class Player extends EventEmitter {
     this.loading = true;
     return this.clearPlaylist()
       .then(() => Promise.settle(
-        album.tracks.map(({ filename }) => openTrack(filename))
+        album.tracks.map(({ filename }) => openTrack(filename)),
       ))
       .then((files) => {
         this.currentAlbum = album;
