@@ -103,7 +103,10 @@ class ContextMenu extends Component {
 }
 
 ContextMenu.propTypes = {
-  actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  actions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    handler: PropTypes.func.isRequired,
+  })).isRequired,
   position: PropTypes.shape({
     top: PropTypes.number,
     left: PropTypes.number,
