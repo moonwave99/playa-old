@@ -1,3 +1,5 @@
+/* eslint class-methods-use-this: 0 */
+
 import path from 'path';
 import FileTreeNode from './FileTreeNode';
 import fileBrowser from './FileBrowser';
@@ -38,9 +40,9 @@ export default class FileTree {
   expand(nodes) {
     return Promise.all(nodes.map(n => this.expandSingleNode(n)));
   }
-  collapse(nodes) { // eslint-disable-line
-    nodes.forEach(n => n.collapse()); // eslint-disable-line
-  } // eslint-disable-line
+  collapse(nodes) {
+    nodes.forEach(n => n.collapse());
+  }
   flatten() {
     const memo = [];
     const _flatten = function _flatten(node) {
