@@ -16,7 +16,7 @@ const data = {
   title: 'Souvlaki',
 };
 
-before('before', (assert) => {
+before('SettingsBag # before', (assert) => {
   jetpack.remove(TEST_DATA_FOLDER);
   assert.pass('Delete data');
   assert.end();
