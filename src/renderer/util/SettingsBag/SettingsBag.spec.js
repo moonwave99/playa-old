@@ -1,5 +1,3 @@
-/* eslint import/no-extraneous-dependencies: 0 */
-
 import test from 'tape';
 import Path from 'path';
 import jetpack from 'fs-jetpack';

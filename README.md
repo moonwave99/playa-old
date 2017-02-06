@@ -69,8 +69,6 @@ export default Component;
 The template for specs is:
 
 ```
-/* eslint import/no-extraneous-dependencies: 0 */
-
 import test from 'tape';
 import Component from './';
 
@@ -84,8 +82,6 @@ test('whatToTest', (assert) => {
   assert.end();
 });
 ```
-
-The eslint directive on top is needed in order to import `tape` from `devDependencies`.
 
 ---
 
