@@ -96,6 +96,7 @@
     "gulp-stylus": "2.1.0",
     "gulp-task-list": "0.0.1",
     "merge-stream": "1.0.0",
+    "proxyquire": "^1.7.11",
     "react-addons-test-utils": "^0.14",
     "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
