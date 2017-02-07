@@ -53,6 +53,8 @@ Tests are written in [tape](https://github.com/substack/tape) and should live al
 ```
 pathTo
   └── component
+        ├── __stubs__
+        |       └── index.js
         ├── index.js
         ├── component.js
         └── component.spec.js
@@ -82,6 +84,26 @@ test('whatToTest', (assert) => {
   assert.end();
 });
 ```
+
+If the need to mock underlyings deps arises, use [proxyquire](https://www.npmjs.com/package/proxyquire) and place stubs into `__stubs__/index.js`:
+
+```
+export const Component = proxyquire('../Component', {
+  __esModule: true,
+  'lib_to_mock': {
+    method_to_mock: () => ...,
+  },
+});
+```
+
+Import in the spec file accordingly then:
+
+```
+import { Component } from './__stubs__';
+...
+```
+
+Keep in mind that proxyquire proxies the deps only, not the component itself, and it is meant to simulate network / fs layers. An abuse of its features is a smell of tight coupling, and implies a lot of work. Work less, and save tight coupling for the weekend.
 
 ---
 
