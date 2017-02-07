@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
-import { shell } from 'electron';
 import { EventEmitter } from 'events';
 import { LastFmNode } from 'lastfm';
+import { openLink } from './helpers/openLink';
 
 export default class LastFMClient extends EventEmitter {
   constructor(options) {
@@ -59,7 +59,7 @@ export default class LastFMClient extends EventEmitter {
     });
   }
   openAuthPage() {
-    shell.openExternal(`${this.authURL}?api_key=${this.key}&token=${this.token}`);
+    openLink(`${this.authURL}?`, `api_key=${this.key}&token=${this.token}`);
   }
   scrobble(track) {
     if (!this.isAuthorised()) {

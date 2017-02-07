@@ -5,7 +5,7 @@ const RYM_SEARCH_URL = 'https://rateyourmusic.com/search?searchtype=l&searchterm
 const LASTFM_SEARCH_URL = 'http://www.last.fm/search?type=album&q=';
 const LASTFM_USER_URL = 'http://www.last.fm/user/';
 
-const openLink = function openLink(base, queryTerm) {
+export const openLink = function openLink(base, queryTerm) {
   let link = base;
   if (queryTerm) {
     link += encodeURIComponent(queryTerm);
@@ -30,6 +30,7 @@ export const openLastfmUser = function openLastfmUser(user) {
 };
 
 export default {
+  openLink,
   revealInFinder,
   searchOnDiscogs,
   searchOnRym,
