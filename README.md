@@ -140,7 +140,7 @@ Plans for the not-so-close future:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Diego Caponera
+Copyright (c) 2015-2017 Diego Caponera
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
