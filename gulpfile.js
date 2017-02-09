@@ -171,7 +171,10 @@ gulp.task('serve', ['watch', 'build'], (next) => {
 
   child.on('exit', (exitCode) => {
     console.log('Child exited with code: ' + exitCode);
-    return next(exitCode === 1 ? new Error('Error running serve task') : null);
+    if (exitCode === 1) {
+      return next(new Error('Error running serve task'));
+    }
+    process.exit(0);
   });
 });
 
