@@ -1,5 +1,5 @@
 import md5 from 'md5';
-import AudioMetadata from './AudioMetadata';
+import AudioMetadata from '../AudioMetadata';
 
 export default class PlaylistItem {
   constructor({ metadata = {}, duration = 0, filename, disabled = false }) {
@@ -31,11 +31,8 @@ export default class PlaylistItem {
   }
   loadAudioMetadata() {
     if (!this.audioMetadata) {
-      const audioMetadata = new AudioMetadata({
-        filename: this.filename,
-      });
-      return audioMetadata.load().then(() => {
-        this.audioMetadata = audioMetadata.toJSON();
+      return AudioMetadata.load(this.filename).then((audioMetadata) => {
+        this.audioMetadata = audioMetadata;
         return this;
       });
     }
