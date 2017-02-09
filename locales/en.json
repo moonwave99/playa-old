@@ -3,13 +3,15 @@
     "album": {
       "disc": "Disc {{disc}}",
       "contextMenu": {
+        "locateFolderShort": "Locate folder",
         "locateFolder": "Locate folder for {{folder}}",
         "finder": "Reveal in Finder",
         "discogs": "Search on Discogs",
         "rym": "Search on RYM",
         "lastfm": "Search on Last.fm"
       }
-    }
+    },
+    "save": "Save Playlist as"
   },
   "sidebar": {
     "playlist": {

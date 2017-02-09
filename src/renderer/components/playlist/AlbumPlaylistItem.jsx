@@ -89,13 +89,14 @@ class AlbumPlaylistItem extends Component {
       .catch(() => {});
   }
   getDisabledContextMenuActions() {
+    const folder = this.props.album.getFolder();
+    const label = i18n.t('playlist.album.contextMenu.locateFolderShort');
     return [
       {
-        label: 'Locate Folder',
+        label,
         handler: () => {
-          const folder = this.props.album.getFolder();
           const remoteFolder = ipc.sendSync('request:open:dialog', {
-            title: i18n.t('playlist.album.contextMenu.locateFolder', { folder }),
+            title: label,
             properties: ['openDirectory'],
           });
           if (remoteFolder[0]) {

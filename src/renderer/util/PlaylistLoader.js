@@ -6,6 +6,7 @@ import md5 from 'md5';
 import path from 'path';
 import yaml from 'js-yaml';
 import glob from 'glob';
+import i18n from 'i18next';
 
 Promise.promisifyAll(fs);
 Promise.promisifyAll(yaml);
@@ -35,7 +36,7 @@ export default class PlaylistLoader {
     let targetPath;
     if (playlist.isNew()) {
       targetPath = ipc.sendSync('request:save:dialog', {
-        title: 'Save Playlist as',
+        title: i18n.t('playlist.save'),
         defaultPath: this.root,
         filters: [
           {
