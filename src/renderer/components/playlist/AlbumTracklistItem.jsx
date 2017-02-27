@@ -1,11 +1,15 @@
 import React, { PropTypes, Component } from 'react';
+import i18n from 'i18next';
 import cx from 'classnames';
+import { clipboard } from 'electron';
+import ContextMenuActions from '../../actions/ContextMenuActions';
 import { formatTimeShort as formatTime } from '../../util/helpers/formatters';
 
 class AlbumTracklistItem extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.handleContextMenu = this.handleContextMenu.bind(this);
     this.handleDoubleClick = this.handleDoubleClick.bind(this);
   }
   handleClick(event) {
@@ -13,6 +17,18 @@ class AlbumTracklistItem extends Component {
   }
   handleDoubleClick(event) {
     this.props.handleDoubleClick(event, this);
+  }
+  handleContextMenu(event) {
+    ContextMenuActions.show(
+      [
+        {
+          label: i18n.t('playlist.track.contextMenu.copyLocation'),
+          handler: () => clipboard.writeText(this.props.track.filename),
+        },
+      ],
+      { top: event.clientY, left: event.clientX },
+      event,
+    );
   }
   renderTrackTitle() {
     const track = this.props.track;
@@ -45,6 +61,7 @@ class AlbumTracklistItem extends Component {
         className={classes}
         onClick={this.handleClick}
         onDoubleClick={this.handleDoubleClick}
+        onContextMenu={this.handleContextMenu}
         data-id={track.id}
       >
         <span className="track-playing-indicator">
@@ -67,6 +84,7 @@ AlbumTracklistItem.propTypes = {
   }),
   track: PropTypes.shape({
     disabled: PropTypes.bool,
+    filename: PropTypes.string,
   }),
   isPlaying: PropTypes.bool,
   isSelected: PropTypes.bool,
