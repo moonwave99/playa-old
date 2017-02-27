@@ -11,6 +11,11 @@
         "lastfm": "Search on Last.fm"
       }
     },
+    "track": {
+      "contextMenu": {
+        "copyLocation": "Copy location to clipboard"
+      }
+    },
     "save": "Save Playlist as"
   },
   "sidebar": {
