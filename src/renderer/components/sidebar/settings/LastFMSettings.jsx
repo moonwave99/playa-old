@@ -28,10 +28,12 @@ class LastFMSettings extends Component {
     event.preventDefault();
     openLastfmUser(this.props.lastFMClient.session.user);
   }
-  handleAuthoriseClick() {
+  handleAuthoriseClick(event) {
+    event.preventDefault();
     this.props.lastFMClient.authorise();
   }
-  handleSignoutClick() {
+  handleSignoutClick(event) {
+    event.preventDefault();
     this.props.lastFMClient.signout();
   }
   handleScrobbleChange() {
