@@ -187,7 +187,7 @@ class Main extends Component {
     const openPlaylists = this.state.openPlaylists.map(playlist => (
       <Tabs.Panel title={playlist.title} key={playlist.id}>
         <Playlist
-          currentTrack={this.state.currentTrack}
+          currentTrack={this.state.playerState.currentTrack}
           playlist={playlist}
           isSidebarOpen={this.state.sidebar.isOpen}
           baseFontSize={baseFontSize}
