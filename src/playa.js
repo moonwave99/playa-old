@@ -198,6 +198,7 @@ export default class Playa {
       mediaFileLoader: this.mediaFileLoader,
       resolution: 1000,
       scrobbleThreshold: this.getSetting('common', 'scrobbleThreshold'),
+      audioElement: options.audioElement,
     });
 
     ffmpeg.setFfprobePath(this.getSetting('config', 'ffprobePath'));
