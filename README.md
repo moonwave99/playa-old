@@ -22,12 +22,7 @@ So now that I found a solid match between a low level audio player, and an appli
 
 ## Install
 
-Playa delivers sound to your loudspeakers (and eventually to your ears) via [libgroove](https://github.com/andrewrk/libgroove).
-As I haven't found a way to pack it with the app itself yet, you have to install it via `brew`:
-
-    $ brew install libgroove
-
-Then either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually:
+Either [download the latest build from here](https://github.com/moonwave99/playa/releases), or build manually:
 
     $ npm install
     $ gulp release

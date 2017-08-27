@@ -1,7 +1,5 @@
 import path from 'path';
 import fs from 'fs-plus';
-import waveform from 'waveform';
-import { omit } from 'lodash';
 
 const OUTPUT_EXT = '.png';
 
@@ -21,17 +19,7 @@ export default class WaveformLoader {
         );
       } else {
         waveformPath = this.getWaveformPath(track);
-        const waveformOptions = Object.assign({
-          scan: false,
-          png: waveformPath,
-        }, omit(this.config, 'wait'));
-        waveform(track.filename, waveformOptions, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(waveformPath);
-          }
-        });
+        reject(waveformPath);
       }
     });
   }
