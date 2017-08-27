@@ -1,12 +1,24 @@
-import _, { find, uniq, findWhere } from 'lodash';
+import _, { find, findIndex, uniq, findWhere } from 'lodash';
 import path from 'path';
-import AlbumConstants from '../constants/AlbumConstants';
+import AlbumConstants from '../../constants/AlbumConstants';
 
-const isCompilation = function isCompilation(album) {
+export const isCompilation = function isCompilation(album) {
   return (
     album.tracks[0].metadata.albumartist
     && album.tracks[0].metadata.albumartist.match(/various/i)
   ) || album._artists.length > AlbumConstants.VARIOUS_ARTISTS_THRESHOLD;
+};
+
+export const isMultiple = function isMultiple(album) {
+  return uniq(album.tracks.map(t => t.getDiscNumber())).length > 1;
+};
+
+export const findValue = function findValue(tracks, key, defaultValue) {
+  const foundTrack = find(tracks, t => t.metadata[key]);
+  if (foundTrack) {
+    return foundTrack.metadata[key];
+  }
+  return defaultValue;
 };
 
 export default class Album {
@@ -15,20 +27,19 @@ export default class Album {
     this.tracks = tracks;
     this._folder = this.tracks.length && path.dirname(this.tracks[0].filename);
     this.disabled = disabled;
+    this._artists = [];
     if (this.disabled) {
-      this._artists = [];
       return;
     }
-    this._title = find(this.tracks, t => t.metadata.album).metadata.album
-      || AlbumConstants.NO_ALBUM;
-    this._year = +find(this.tracks, t => t.metadata.year).metadata.year;
+    this._title = findValue(this.tracks, 'album', AlbumConstants.NO_ALBUM);
+    this._year = findValue(this.tracks, 'year', 0);
     this._artists = _(this.tracks.map(t => t.metadata.artist))
       .uniq(a => (a || '').toLowerCase())
       .compact()
       .value();
     this._isCompilation = isCompilation(this);
-    this._isSplit = this._artists.length > 1 && !this._isCompilation;
-    this._isMultiple = uniq(this.tracks.map(t => t.getDiscNumber())).length > 1;
+    this._isMultiple = isMultiple(this);
+    this._isSplit = this.getArtistCount() > 1 && !this.isCompilation();
   }
   contains(id) {
     return this.tracks.map(i => i.id).indexOf(id) > -1;
@@ -36,11 +47,25 @@ export default class Album {
   findById(id) {
     return findWhere(this.tracks, { id });
   }
+  findNextById(id) {
+    const currentIndex = findIndex(this.tracks, { id });
+    if (currentIndex === this.tracks.length - 1) {
+      return null;
+    }
+    return this.tracks[currentIndex + 1];
+  }
+  findPrevById(id) {
+    const currentIndex = findIndex(this.tracks, { id });
+    if (currentIndex === 0) {
+      return null;
+    }
+    return this.tracks[currentIndex - 1];
+  }
   isCompilation() {
-    return !!this._isCompilation;
+    return this._isCompilation;
   }
   isMultiple() {
-    return !!this._isMultiple;
+    return this._isMultiple;
   }
   getTitle() {
     return this._title;
@@ -49,7 +74,9 @@ export default class Album {
     return this._artists.length;
   }
   getArtist() {
-    return this._isCompilation ? AlbumConstants.VARIOUS_ARTISTS_LABEL : this._artists.join(', ');
+    return this._isCompilation
+      ? AlbumConstants.VARIOUS_ARTISTS_LABEL
+      : this._artists.join(', ');
   }
   getYear() {
     return this._year;
