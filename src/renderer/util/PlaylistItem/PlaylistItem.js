@@ -2,7 +2,7 @@ import md5 from 'md5';
 import AudioMetadata from '../AudioMetadata';
 
 export default class PlaylistItem {
-  constructor({ metadata = {}, duration = 0, filename, disabled = false }) {
+  constructor({ metadata = { disk: {} }, duration = 0, filename, disabled = false }) {
     this.metadata = metadata;
     this.duration = duration;
     this.filename = filename;

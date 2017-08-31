@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import wavesurfer from 'wavesurfer.js';
 
 class ProgressBar extends Component {
   constructor(props) {
@@ -9,18 +10,22 @@ class ProgressBar extends Component {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.updateWaveform = this.updateWaveform.bind(this);
   }
+  componentDidMount() {
+    this.wavesurfer = wavesurfer.create(
+      Object.assign(this.props.wavesurferSettings, {
+        container: this.waveform,
+        interact: false,
+      }),
+    );
+    this.wavesurfer.on('ready', () => {
+      this.waveform.classList.add('loaded');
+    });
+  }
   componentDidUpdate(prevProps) {
-    if (!this.props.currentTrack) {
-      this.updateWaveform(null);
-    } else if (
-      this.props.currentTrack
-      && (!prevProps.currentTrack || prevProps.currentTrack.id !== this.props.currentTrack.id)
-    ) {
-      this.updateWaveform(null);
-      playa.waveformLoader.load(this.props.currentTrack)
-        .then(this.updateWaveform)
-        .catch( err => console.error(err, err.stack));  // eslint-disable-line
-    }
+    this.updateWaveform(this.props.currentTrack, prevProps.currentTrack);
+  }
+  componentWillUnmount() {
+    this.wavesurfer.unAll();
   }
   handleMouseEnter() {
     this.cursor.style.opacity = '1';
@@ -46,12 +51,15 @@ class ProgressBar extends Component {
     const percent = ((event.clientX - waveformBounds.left) / waveformBounds.width) * 100;
     this.cursor.style.left = `${percent}%`;
   }
-  updateWaveform(waveform) {
-    if (waveform) {
-      this.waveform.style.backgroundImage = `url('file://${encodeURI(waveform)}')`;
-      this.waveform.classList.add('loaded');
-    } else {
+  updateWaveform(currentTrack, prevTrack) {
+    if (!currentTrack) {
+      this.wavesurfer.empty();
       this.waveform.classList.remove('loaded');
+    } else if (
+      currentTrack
+      && (!prevTrack || prevTrack.id !== currentTrack.id)
+    ) {
+      this.wavesurfer.load(currentTrack.filename);
     }
   }
   render() {
@@ -93,6 +101,11 @@ ProgressBar.propTypes = {
     id: PropTypes.string,
   }),
   playing: PropTypes.bool,
+  wavesurferSettings: PropTypes.shape({
+    waveColor: PropTypes.String,
+    progressColor: PropTypes.String,
+    height: PropTypes.Number,
+  }),
 };
 
 export default ProgressBar;

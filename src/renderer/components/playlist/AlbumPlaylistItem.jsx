@@ -89,7 +89,6 @@ class AlbumPlaylistItem extends Component {
       .catch(() => {});
   }
   getDisabledContextMenuActions() {
-    const folder = this.props.album.getFolder();
     const label = i18n.t('playlist.album.contextMenu.locateFolderShort');
     return [
       {

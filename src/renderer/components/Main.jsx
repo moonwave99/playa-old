@@ -161,7 +161,7 @@ class Main extends Component {
     enquire.register(minWidth(this.props.breakpoints.widescreen), {
       match: () => {
         if (this.state.settings.user.openSidebar) {
-          playa.toggleSidebar(true);
+          this.props.toggleSidebar(true);
         }
       },
       unmatch: () => {},
@@ -202,9 +202,11 @@ class Main extends Component {
     return (
       <div className={classes} onClick={handleGlobalClick}>
         <Modal {...this.state.modal} />
-        <PlaybackBar />
+        <PlaybackBar
+          wavesurferSettings={this.props.wavesurferSettings}
+        />
         <Sidebar
-          lastFMClient={playa.lastFMClient}
+          lastFMClient={this.props.lastFMClient}
           settings={this.state.settings}
           {...this.state.sidebar}
         />
@@ -235,6 +237,15 @@ Main.propTypes = {
   breakpoints: PropTypes.shape({
     widescreen: PropTypes.string,
     widefont: PropTypes.string,
+  }),
+  lastFMClient: PropTypes.shape({
+
+  }),
+  toggleSidebar: PropTypes.func,
+  wavesurferSettings: PropTypes.shape({
+    waveColor: PropTypes.String,
+    progressColor: PropTypes.String,
+    height: PropTypes.Number,
   }),
 };
 

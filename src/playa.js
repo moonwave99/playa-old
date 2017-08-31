@@ -1,4 +1,4 @@
-import { omit, map } from 'lodash';
+import { map } from 'lodash';
 import fs from 'fs-extra';
 import fsPlus from 'fs-plus';
 import md5 from 'md5';
@@ -15,7 +15,6 @@ import AlbumPlaylist from './renderer/util/AlbumPlaylist';
 import PlaylistLoader from './renderer/util/PlaylistLoader';
 import MediaFileLoader from './renderer/util/MediaFileLoader';
 import CoverLoader from './renderer/util/CoverLoader';
-import WaveformLoader from './renderer/util/WaveformLoader';
 import LastFMClient from './renderer/util/LastFMClient';
 import { formatTimeShort as formatTime } from './renderer/util/helpers/formatters';
 import AppDispatcher from './renderer/dispatcher/AppDispatcher';
@@ -99,7 +98,6 @@ export default class Playa {
         scrobbleThreshold: this.getSetting('config', 'lastFM').scrobbleThreshold,
         storeFolders: {
           covers: this.getSetting('config', 'coverFolderName'),
-          waveforms: this.getSetting('config', 'waveformFolderName'),
           playlists: this.getSetting('config', 'playlistFolderName'),
         },
       },
@@ -173,13 +171,6 @@ export default class Playa {
       }),
     });
 
-    const waveformSettings = this.getSetting('config', 'waveformLoader');
-    this.waveformLoader = new WaveformLoader({
-      root: path.join(options.userDataFolder, this.getSetting('common', 'storeFolders').waveforms),
-      enableLog: waveformSettings.log,
-      config: omit(waveformSettings, 'log'),
-    });
-
     this.openPlaylistManager = new OpenPlaylistManager({
       loader: this.playlistLoader,
       mediaFileLoader: this.mediaFileLoader,
@@ -198,12 +189,15 @@ export default class Playa {
       mediaFileLoader: this.mediaFileLoader,
       resolution: 1000,
       scrobbleThreshold: this.getSetting('common', 'scrobbleThreshold'),
+      audioElement: options.audioElement,
     });
 
+    ffmpeg.setFfmpegPath(this.getSetting('config', 'ffmpegPath'));
     ffmpeg.setFfprobePath(this.getSetting('config', 'ffprobePath'));
 
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
     this.saveSetting = this.saveSetting.bind(this);
+    this.toggleSidebar = this.toggleSidebar.bind(this);
   }
   init() {
     this.firstPlaylistLoad = false;
@@ -459,7 +453,11 @@ export default class Playa {
   }
   render() {
     ReactDOM.render(
-      React.createElement(Main, this.settings.ui.all()),
+      React.createElement(Main, Object.assign({
+        lastFMClient: this.lastFMClient,
+        toggleSidebar: this.toggleSidebar,
+        wavesurferSettings: this.getSetting('config', 'wavesurfer'),
+      }, this.settings.ui.all())),
       document.getElementById('main'),
     );
     this.postRender();
