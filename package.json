@@ -6,8 +6,8 @@
   "main": "./build/browser.js",
   "author": {
     "name": "Diego Caponera",
-    "email": "diego.caponera@gmail.com",
-    "url": "http://www.diegocaponera.com"
+    "email": "hello@diegocaponera.com",
+    "url": "https://www.diegocaponera.com"
   },
   "engine": "node 7.1.0",
   "repository": {
