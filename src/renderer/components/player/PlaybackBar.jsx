@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import cx from 'classnames';
 import { formatTimeShort as formatTime } from '../../util/helpers/formatters';
 import PlayerStore from '../../stores/PlayerStore';
@@ -115,7 +115,10 @@ class PlaybackBar extends Component {
           </button>
         </div>
         <div className={wrapperClasses}>
-          <ProgressBar seekTo={seekTo} {...this.state} />
+          <ProgressBar
+            wavesurferSettings={this.props.wavesurferSettings}
+            seekTo={seekTo} {...this.state}
+          />
           { this.renderCover() }
           <span
             className="playback-time-indicator time-progress"
@@ -138,5 +141,13 @@ class PlaybackBar extends Component {
     );
   }
 }
+
+PlaybackBar.propTypes = {
+  wavesurferSettings: PropTypes.shape({
+    waveColor: PropTypes.String,
+    progressColor: PropTypes.String,
+    height: PropTypes.Number,
+  }),
+};
 
 export default PlaybackBar;
