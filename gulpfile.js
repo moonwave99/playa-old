@@ -8,6 +8,8 @@ const stylus = require('gulp-stylus');
 const autoprefixer = require('gulp-autoprefixer');
 const merge = require('merge-stream');
 const googleWebFonts = require('gulp-google-webfonts');
+const ffbinaries = require('ffbinaries');
+const path = require('path');
 
 require('gulp-task-list')(gulp);
 
@@ -61,6 +63,24 @@ gulp.task('css', () => {
       }))
       .pipe(gulp.dest(SRC_DIR + '/ui/css'));
   }));
+});
+
+gulp.task('ffmpeg', (next) => {
+  const destination = path.join(__dirname, 'node_modules', 'ffmpeg');
+  console.log(`Downloading ffplay and ffprobe binaries for osx to ${destination}`);
+  ffbinaries.downloadFiles(
+    ['ffmpeg', 'ffprobe'],
+    {
+      platform: 'osx',
+      destination,
+    }, (err, data) => {
+      if (err) {
+        console.error(err);
+        throw(err);
+      }
+      console.log(`Downloaded ffplay and ffprobe binaries for osx to ${destination}`);
+      next();
+    });
 });
 
 gulp.task('fonts', () => {
@@ -149,7 +169,7 @@ gulp.task('dev-sym-links', () => {
   });
 });
 
-gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'bundle', 'dev-sym-links', 'lib', 'pkg', 'assets']);
+gulp.task('build', ['clean', 'fonts', 'font-awesome', 'css', 'ffmpeg', 'bundle', 'dev-sym-links', 'lib', 'pkg', 'assets']);
 
 gulp.task('watch', () => {
   gulp.watch(SRC_DIR + '/styles/*.styl', ['css']);
