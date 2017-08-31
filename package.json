@@ -23,7 +23,13 @@
       "url": "http://github.com/moonwave99/playa/raw/master/LICENSE.md"
     }
   ],
+  "build": {
+    "asarUnpack": [
+      "**/node_modules/ffmpeg/*"
+    ]
+  },
   "dependencies": {
+    "app-root-dir": "^1.0.2",
     "async": "1.4.0",
     "bluebird": "2.9.27",
     "bootstrap-styl": "^4.0.4",
@@ -32,6 +38,7 @@
     "emissary": "^1.3.1",
     "enquire.js": "^2.1.1",
     "express": "^4.13.4",
+    "ffbinaries": "^1.0.2",
     "fluent-ffmpeg": "^2.0.1",
     "font-awesome": "^4.5.0",
     "fs-extra": "^0.20.1",

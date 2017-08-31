@@ -1,6 +1,9 @@
+const path = require('path');
+const appRootDir = require('app-root-dir').get();
+
 export default {
-  ffmpegPath: '/usr/local/bin/ffmpeg',
-  ffprobePath: '/usr/local/bin/ffprobe',
+  ffmpegPath: path.join(appRootDir, 'node_modules/ffmpeg/ffmpeg'),
+  ffprobePath: path.join(appRootDir, 'node_modules/ffmpeg/ffprobe'),
   coverFolderName: 'Covers',
   playlistFolderName: 'Playlists',
   coverLoaderLog: false,

@@ -192,6 +192,7 @@ export default class Playa {
       audioElement: options.audioElement,
     });
 
+    ffmpeg.setFfmpegPath(this.getSetting('config', 'ffmpegPath'));
     ffmpeg.setFfprobePath(this.getSetting('config', 'ffprobePath'));
 
     this._onOpenPlaylistChange = this._onOpenPlaylistChange.bind(this);
