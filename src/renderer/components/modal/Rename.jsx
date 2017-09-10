@@ -1,9 +1,9 @@
-import React, { Component as ReactComponent, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { form, struct, Str } from 'tcomb-form';
 
 const Form = form.Form;
 
-class Rename extends ReactComponent {
+class Rename extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -15,6 +15,11 @@ class Rename extends ReactComponent {
   }
   componentDidMount() {
     this.formElement.querySelector('input[name="name"]').focus();
+  }
+  onSubmit(event) {
+    event.preventDefault();
+    const { name } = this.form.getValue();
+    this.props.handleSubmit(this.props.item, name);
   }
   render() {
     const Model = struct({
@@ -40,11 +45,6 @@ class Rename extends ReactComponent {
         />
       </form>
     );
-  }
-  onSubmit(event) {
-    event.preventDefault();
-    const { name } = this.form.getValue();
-    this.props.handleSubmit(this.props.item, name);
   }
 }
 

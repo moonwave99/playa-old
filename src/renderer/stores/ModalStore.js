@@ -25,12 +25,12 @@ const ModalStore = Object.assign({}, EventEmitter.prototype, {
   removeChangeListener(callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  dispatcherIndex: AppDispatcher.register((action) => {
-    switch (action.actionType) {
+  dispatcherIndex: AppDispatcher.register(({ params, actionType }) => {
+    switch (actionType) {
       case ModalConstants.MODAL_SHOW:
-        _params = action.params;
+        _params = params;
         _isVisible = true;
-        _isDismissable = !!action.params.isDismissable;
+        _isDismissable = !!params.isDismissable;
         ModalStore.emitChange();
         break;
       case ModalConstants.MODAL_HIDE:

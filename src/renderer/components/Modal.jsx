@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import cx from 'classnames';
 import key from 'keymaster';
 import ModalActions from '../actions/ModalActions';
+import Rename from './modal/Rename.jsx';
+
+const componentMap = { Rename };
 
 const handleInnerClick = function handleInnerClick(event) {
   event.stopPropagation();
@@ -21,6 +24,10 @@ const bindKeyHandler = function bindKeyHandler() {
 
 const unbindKeyHandler = function unbindKeyHandler() {
   key.unbind('esc', handleEscKeyPress);
+};
+
+const getModalComponent = function getModalComponent(component) {
+  return componentMap[component];
 };
 
 class Modal extends Component {
@@ -53,7 +60,7 @@ class Modal extends Component {
     if (!this.props.params.component) {
       return null;
     }
-    const InnerComponent = require(`./modal/${this.props.params.component}.jsx`); // eslint-disable-line
+    const InnerComponent = getModalComponent(this.props.params.component);
     return (
       <div
         className={classes}
