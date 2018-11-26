@@ -1,5 +1,6 @@
 import { BrowserWindow, dialog } from 'electron';
 import { EventEmitter } from 'events';
+import settings from 'electron-settings';
 import path from 'path';
 import url from 'url';
 
@@ -37,6 +38,8 @@ export default class AppWindow extends EventEmitter {
       this.window.maximize();
     }
 
+    settings.set('loadSettings', this.loadSettings);
+
     this.window.on('close', () => {
       this.loadSettings.sessionSettings.set('lastWindowState', Object.assign({
         maximized: this.window.isMaximized(),
@@ -61,9 +64,6 @@ export default class AppWindow extends EventEmitter {
       protocol: 'file',
       pathname: targetPath,
       slashes: true,
-      query: {
-        loadSettings: JSON.stringify(this.loadSettings),
-      },
     });
     this.window.loadURL(targetUrl);
     this.window.show();

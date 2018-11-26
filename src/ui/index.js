@@ -1,11 +1,11 @@
+const settings = require('electron-settings');
+
 window.onload = function() {
   try {
-    // Skip "?loadSettings=".
-    var loadSettings = JSON.parse(decodeURIComponent(location.search.substr(14)));
-    var startTime = Date.now();
+    const startTime = Date.now();
+    const bootstrapScript = settings.get('loadSettings.bootstrapScript');
     require('vm-compatibility-layer');
-    window.loadSettings = loadSettings;
-    require(loadSettings.bootstrapScript);
+    require(bootstrapScript);
     require('electron').ipcRenderer.send('window-command', 'window:loaded');
   }
   catch (error) {

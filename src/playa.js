@@ -33,8 +33,6 @@ import OpenPlaylistManager from './renderer/util/OpenPlaylistManager';
 import FileTree from './renderer/util/FileTree';
 import SettingsBag from './renderer/util/SettingsBag';
 
-Promise.promisifyAll(fs);
-
 const _tabScopeNames = [
   KeyboardNameSpaceConstants.PLAYLIST_BROWSER,
   KeyboardNameSpaceConstants.FILE_BROWSER,
