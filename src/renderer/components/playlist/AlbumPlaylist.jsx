@@ -220,7 +220,7 @@ class AlbumPlaylist extends Component {
       (memo, item, index) => memo + this.itemSizeGetter(index),
       0,
     );
-    return `calc(100vh - 9rem - ${height}px`;
+    return `calc(100vh - 9rem - ${height}px)`;
   }
   scrollAround(id) {
     const index = findIndex(this.state.list, item => item.id === id);
