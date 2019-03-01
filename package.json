@@ -88,7 +88,7 @@
     "babel-preset-react": "^6.22.0",
     "babel-register": "^6.22.0",
     "electron": "3.0.10",
-    "electron-packager": "^12.2.0",
+    "electron-packager": "^13.1.0",
     "electron-rebuild": "^1.8.0",
     "eslint": "^3.14.1",
     "eslint-config-airbnb": "^13.0.0",
@@ -109,7 +109,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-json": "^2.1.0",
     "rollup-plugin-jsx": "^1.0.3",
-    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
     "run-sequence": "1.1.4",
     "shelljs": "0.5.3",
     "tape": "^4.6.3",
@@ -121,7 +121,7 @@
     "test": "tape -r babel-register src/**/*.spec.js | faucet",
     "eslint": "eslint --ext .js,.jsx src",
     "postinstall": "make postinstall",
-    "rebuild": "./node_modules/.bin/electron-rebuild -v 1.6.11",
+    "rebuild": "./node_modules/.bin/electron-rebuild -v 1.8.2",
     "localInstall": "cp -r ./release/Playa-darwin-x64/Playa.app/ /Applications/Playa.app/"
   },
   "private": true

@@ -83,6 +83,11 @@ gulp.task('ffmpeg', (next) => {
     });
 });
 
+gulp.task('electron-settings', () => {
+  return gulp.src('./node_modules/electron-settings/**')
+    .pipe(gulp.dest(releasePath + '/Playa-darwin-x64/Playa.app/Contents/Resources/app/node_modules/electron-settings'));
+});
+
 gulp.task('fonts', () => {
   return gulp.src('./fonts.list')
     .pipe(googleWebFonts({}))
@@ -114,7 +119,7 @@ gulp.task('pre-release', (next) => {
   runSequence('build', 'prod-sym-links', next);
 });
 
-gulp.task('release', ['pre-release'], (next) => {
+gulp.task('release-electron', ['pre-release'], (next) => {
   const env = Object.assign({}, process.env);
   env.NODE_ENV = 'production';
   const packageArgs = [
@@ -146,6 +151,10 @@ gulp.task('release', ['pre-release'], (next) => {
     console.log('Child exited with code: ' + exitCode);
     return next(exitCode === 1 ? new Error('Error running release task') : null);
   });
+});
+
+gulp.task('release', (next) => {
+  runSequence('release-electron', 'electron-settings', next);
 });
 
 gulp.task('prod-sym-links', (next) => {
