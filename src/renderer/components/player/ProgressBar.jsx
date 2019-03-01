@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import wavesurfer from 'wavesurfer.js';
+import { encodePath } from '../../util/helpers/url';
 
 class ProgressBar extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class ProgressBar extends Component {
       currentTrack
       && (!prevTrack || prevTrack.id !== currentTrack.id)
     ) {
-      this.wavesurfer.load(currentTrack.filename);
+      this.wavesurfer.load(encodePath(currentTrack.filename));
     }
   }
   render() {

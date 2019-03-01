@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import Promise from 'bluebird';
+import { encodePath } from '../util/helpers/url';
 
 export default class Player extends EventEmitter {
   constructor({
@@ -114,7 +115,7 @@ export default class Player extends EventEmitter {
       return;
     }
     this.currentTrack = currentTrack;
-    this.player.src = this.currentTrack.filename;
+    this.player.src = encodePath(this.currentTrack.filename);
     this.play();
     this.emit('trackChange');
   }
