@@ -14,6 +14,8 @@ import { revealInFinder,
   searchOnLastfm,
 } from '../../util/helpers/openLink';
 
+import { formatTimeShort } from '../../util/helpers/formatters';
+
 const DRAGGING_OPACITY = 0.4;
 
 const albumSource = {
@@ -195,6 +197,7 @@ class AlbumPlaylistItem extends Component {
         </li>
       );
     } else {
+      const totalTime = formatTimeShort(this.props.album.getStats().totalTime);
       const status = this.props.album.missingTracksCount() > 0
         ? (
           <button className="album-status album-warning sidebar-offset">
@@ -219,6 +222,7 @@ class AlbumPlaylistItem extends Component {
               ? <i className="fa fa-fw fa-volume-up" />
               : null
             }
+            { isPlaying ? <span className="duration">{totalTime}</span> : null }
           </span>
           {status}
           <button className="menu-link sidebar-offset" onClick={this.handleMenuLinkClick}>
@@ -241,6 +245,7 @@ AlbumPlaylistItem.propTypes = {
     getFolder: PropTypes.func,
     getTitle: PropTypes.func,
     getYear: PropTypes.func,
+    getStats: PropTypes.func,
     contains: PropTypes.func,
     tracks: PropTypes.arrayOf({
       id: PropTypes.string,

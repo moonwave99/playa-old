@@ -67,6 +67,7 @@
         background-color $albumPlayingBackgroundColor
         .artist
         .title
+        .duration
         .year
           color black
         &.selected:after
@@ -117,10 +118,15 @@
         max-width 80%
         transition color .3s ease-in
         ellipsed()
+      .duration
+        color $albumArtistColor
+        &:before
+          margin 0 .25rem
+          content '·'
       .year
         font-size size($albumDateFontSize)
         vertical-align middle
-        margin-right 1rem
+        margin-right 1.5rem
         position absolute
         right 0
         top size(($albumItemHeight - $albumDateFontSize) * .5)
