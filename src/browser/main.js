@@ -15,6 +15,18 @@ process.on('uncaughtException', (error = {}) => {
   }
 });
 
+function statSyncNoException(fsPath) {
+  if ('statSyncNoException' in fs) {
+    return fs.statSyncNoException(fsPath);
+  }
+
+  try {
+    return fs.statSync(fsPath);
+  } catch (e) {
+    return null;
+  }
+}
+
 const parseCommandLine = function parseCommandLine() {
   let resourcePath = null;
   const version = app.getVersion();
@@ -63,7 +75,7 @@ const parseCommandLine = function parseCommandLine() {
       }
     }
   }
-  if (!fs.statSyncNoException(resourcePath)) {
+  if (!statSyncNoException(resourcePath)) {
     resourcePath = path.join(process.resourcesPath, 'app.asar');
   }
   resourcePath = path.resolve(resourcePath);

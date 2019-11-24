@@ -9,7 +9,10 @@
     "email": "hello@diegocaponera.com",
     "url": "https://www.diegocaponera.com"
   },
-  "engine": "node 7.1.0",
+  "engines": {
+    "node": "10.15.3",
+    "npm": "6.13.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/moonwave99/playa.git"
@@ -87,8 +90,8 @@
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-preset-react": "^6.22.0",
     "babel-register": "^6.22.0",
-    "electron": "3.0.10",
-    "electron-packager": "^13.1.0",
+    "electron": "4.1.0",
+    "electron-packager": "^14.1.0",
     "electron-rebuild": "^1.8.0",
     "eslint": "^3.14.1",
     "eslint-config-airbnb": "^13.0.0",
