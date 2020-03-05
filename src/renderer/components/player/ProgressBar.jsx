@@ -29,10 +29,10 @@ class ProgressBar extends Component {
     this.wavesurfer.unAll();
   }
   handleMouseEnter() {
-    this.cursor.style.opacity = '1';
+    this.cursor.style.opacity = 1;
   }
   handleMouseOut() {
-    this.cursor.style.opacity = '0';
+    this.cursor.style.opacity = 0;
   }
   handleClick(event) {
     if (!this.props.playing) {
